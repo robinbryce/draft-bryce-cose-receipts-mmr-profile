@@ -19,22 +19,19 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "COSE Receipts for MMR based transparency ledgers"
+abbrev: MMRIVER
 category: info
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+docname: draft-bryce-cose-mmriver-profile-latest
+submissiontype: IETF
 number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
-keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+area: "Security"
+workgroup: TBD
+kw: Internet-Draft
 venue:
   group: WG
   type: Working Group
@@ -44,12 +41,13 @@ venue:
   latest: https://example.com/LATEST
 
 author:
- -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+- name: Robin Bryce
+  org: DataTrails
+  email: <robinbryce@gmail.com>
 
 normative:
+  RFC9053: COSE
+  I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
 informative:
 
@@ -57,7 +55,9 @@ informative:
 
 --- abstract
 
-TODO Abstract
+This document defines a new verifiable data structure profile for the COSE Receipts document {{-cose-receipts}} specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.
+
+Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges.
 
 
 --- middle
