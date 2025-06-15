@@ -2,7 +2,7 @@
 
 
 
-CBOR Object Signing and Encryption                              R. Bryce
+COSE                                                            R. Bryce
 Internet-Draft                                                DataTrails
 Intended status: Informational                              15 June 2025
 Expires: 17 December 2025
