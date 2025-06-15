@@ -4,8 +4,8 @@
 
 CBOR Object Signing and Encryption                              R. Bryce
 Internet-Draft                                                DataTrails
-Intended status: Informational                              13 June 2025
-Expires: 15 December 2025
+Intended status: Informational                              15 June 2025
+Expires: 17 December 2025
 
 
             COSE Receipts for MMR based transparency ledgers
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 December 2025.
+   This Internet-Draft will expire on 17 December 2025.
 
 Copyright Notice
 
