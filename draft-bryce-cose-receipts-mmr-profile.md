@@ -4,13 +4,11 @@ abbrev: "COSE Receipts for MMR based transparency ledgers"
 category: info
 
 docname: draft-bryce-cose-receipts-mmr-profile-latest
+stand_alone: true
 submissiontype: IETF
-number:
-date:
-consensus: true
 v: 3
 area: "Security"
-workgroup: "CBOR Object Signing and Encryption"
+wg: "COSE"
 kw: Internet-Draft
 venue:
   group: "CBOR Object Signing and Encryption"
@@ -31,8 +29,6 @@ normative:
   I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
 informative:
-
-...
 
 --- abstract
 
