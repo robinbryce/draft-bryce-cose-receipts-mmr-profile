@@ -19,22 +19,20 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-category: info
+title: "COSE Receipts for MMRs"
+abbrev: "COSE Receipts for MMRs"
+category: std
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+docname: draft-bryce-cose-receipts-mmr-profile-latest
+submissiontype: IETF
 number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: Security
+workgroup: TBD
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - Internet-Draft
 venue:
   group: WG
   type: Working Group
@@ -45,9 +43,9 @@ venue:
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Robin Bryce
+    organization: Datatrails
+    email: robinbryce@gmail.com
 
 normative:
 
