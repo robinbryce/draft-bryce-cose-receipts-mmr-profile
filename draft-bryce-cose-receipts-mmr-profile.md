@@ -9,17 +9,17 @@ number:
 date:
 consensus: true
 v: 3
-area: Security
-workgroup: TBD
+area: "Security"
+workgroup: "CBOR Object Signing and Encryption"
 keyword:
  - Internet-Draft
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+  group: "CBOR Object Signing and Encryption"
+  type: "Working Group"
+  mail: "cose@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/cose/"
+  github: "robinbryce/draft-bryce-cose-receipts-mmr-profile"
+  latest: "https://robinbryce.github.io/draft-bryce-cose-receipts-mmr-profile/draft-bryce-cose-receipts-mmr-profile.html"
 
 author:
  -
