@@ -15,7 +15,7 @@ keyword:
 
 - Internet-Draft
 
-author
+author:
  -
 
     fullname: Robin Bryce
@@ -23,6 +23,7 @@ author
     email: robinbryce@gmail.com
 
 normative:
+  RFC9053: COSE
   I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
 informative:
@@ -603,6 +604,21 @@ We define `peaks`
 See the security considerations section of:
 
 - {{-COSE}}
+
+## Detection of improper inclusion
+
+A receipt of inclusion shows only that the element is included in the ledger.
+Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.
+
+## Misbehaving Ledgers
+
+A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.
+
+Detection of a failure to include items in the first place is out of scope for
+this document.
+
+Having included an element, ledger implementations using this draft MUST use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
+Similarly, consistency proofs MUST be the basis for proving the unequivocal history of additions.
 
 # IANA Considerations
 
