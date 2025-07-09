@@ -514,7 +514,7 @@ Append MAY fail for transient reasons.
 
 ## Node values
 
-Interior nodes in the MUST prefix the value provided to `H(x)` with `pos`.
+Interior nodes in the tree MUST prefix the value provided to `H(x)` with `pos`.
 
 The value `v` for any interior node MUST be `H(pos || Get(LEFT_CHILD) || Get(RIGHT_CHILD))`
 
