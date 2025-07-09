@@ -32,7 +32,7 @@ informative:
 
 --- abstract
 
-This document defines a new verifiable data structure profile for the COSE Receipts document {{-cose-receipts}} specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.
+This document defines a new verifiable data structure type for COSE Receipts {{-cose-receipts}} specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.
 
 Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges.
 
@@ -40,7 +40,9 @@ Post-order traversal binary Merkle trees, also known as history trees, are more 
 
 # Introduction
 
-A post ordered binary merkle tree is, logically, the unique series of perfect binary merkle trees required to commit its leaves.
+The COSE Receipts document {{-cose-receipts}} defines a common framework for defining different types of proofs, such as proof of inclusion, about verifiable data structures (VDS). For instance, inclusion proofs guarantee to a verifier that a given serializable element is recorded at a given state of the VDS, while consistency proofs are used to establish that an inclusion proof is still consistent with the new state of the VDS at a later time.
+
+In this document, we define a new type of VDS: a post ordered binary merkle tree is, logically, the unique series of perfect binary merkle trees required to commit its leaves.
 
 Example,
 
