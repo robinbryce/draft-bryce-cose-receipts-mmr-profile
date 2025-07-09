@@ -4,8 +4,8 @@
 
 TBD                                                             R. Bryce
 Internet-Draft                                                Datatrails
-Intended status: Standards Track                            21 June 2025
-Expires: 23 December 2025
+Intended status: Standards Track                             9 July 2025
+Expires: 10 January 2026
 
 
                          COSE Receipts for MMRs
@@ -13,11 +13,11 @@ Expires: 23 December 2025
 
 Abstract
 
-   This document defines a new verifiable data structure profile for the
-   COSE Receipts document [I-D.ietf-cose-merkle-tree-proofs]
-   specifically for use with ledgers based on post-order traversal
-   binary Merkle trees and which are designed for high throughput, ease
-   of replication and compatibility with commodity cloud storage.
+   This document defines a new verifiable data structure type for COSE
+   Receipts [I-D.ietf-cose-merkle-tree-proofs] specifically for use with
+   ledgers based on post-order traversal binary Merkle trees and which
+   are designed for high throughput, ease of replication and
+   compatibility with commodity cloud storage.
 
    Post-order traversal binary Merkle trees, also known as history
    trees, are more commonly known as Merkle Mountain Ranges.
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 December 2025.
+   This Internet-Draft will expire on 10 January 2026.
 
 Copyright Notice
 
@@ -99,8 +99,17 @@ Table of Contents
 
 1.  Introduction
 
-   A post ordered binary merkle tree is, logically, the unique series of
-   perfect binary merkle trees required to commit its leaves.
+   The COSE Receipts document [I-D.ietf-cose-merkle-tree-proofs] defines
+   a common framework for defining different types of proofs, such as
+   proof of inclusion, about verifiable data structures (VDS).  For
+   instance, inclusion proofs guarantee to a verifier that a given
+   serializable element is recorded at a given state of the VDS, while
+   consistency proofs are used to establish that an inclusion proof is
+   still consistent with the new state of the VDS at a later time.
+
+   In this document, we define a new type of VDS: a post ordered binary
+   merkle tree is, logically, the unique series of perfect binary merkle
+   trees required to commit its leaves.
 
    Example,
 
