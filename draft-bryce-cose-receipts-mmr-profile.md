@@ -429,7 +429,6 @@ We define `consistent_roots` as
 # Appending a leaf
 
 An algorithm for appending to a tree maintained in post order layout is provided.
-Implementation defined methods for interacting with storage are specified.
 
 ## add_leaf_hash
 
@@ -442,7 +441,7 @@ This process MUST proceed until there are no more completable sub trees.
 Given:
 
 - `f` the leaf value resulting from `H(x)` for the caller defined leaf value `x`
-- `db` an interface supporting the [append](#append) and [get](#get) implementation defined storage methods.
+- `db` an interface supporting `append(entry) -> index` and `get(index) -> entry` methods.
 
 And the methods:
 
@@ -484,33 +483,6 @@ We define `add_leaf_hash` as
 
     return i
 ~~~~
-
-## Implementation defined storage methods
-
-The following methods are assumed to be available to the implementation.
-Very minimal requirements are specified.
-
-Informally, the storage must be array like and have no gaps.
-
-### Get
-
-Reads the value from the tree at the supplied index.
-
-The read MUST be consistent with any other calls to Append or Get within the same algorithm invocation.
-
-Get MAY fail for transient reasons.
-
-### Append
-
-Appends new node to storage and returns the index that will be occupied by the node provided to the next call to append.
-
-The implementation MUST guarantee that the results of Append are immediately available to Get calls in the same invocation of the algorithm.
-
-Append MUST return the node `i` identifying the node location which comes next.
-
-The implementation MAY defer commitment to underlying persistent storage.
-
-Append MAY fail for transient reasons.
 
 ## Node values
 
