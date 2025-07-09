@@ -439,7 +439,7 @@ This process MUST proceed until there are no more completable sub trees.
 Given:
 
 - `f` the leaf value resulting from `H(x)` for the caller defined leaf value `x`
-- `db` an interface supporting `append(entry)` and `get(index)` methods.
+- `db` an interface supporting `append(entry) -> index` and `get(index) -> entry` methods.
 
 And the methods:
 
