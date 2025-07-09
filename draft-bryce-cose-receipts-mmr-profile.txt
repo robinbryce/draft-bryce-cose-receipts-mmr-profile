@@ -70,11 +70,8 @@ Table of Contents
        7.1.1.  consistent_roots
    8.  Appending a leaf
      8.1.  add_leaf_hash
-     8.2.  Implementation defined storage methods
-       8.2.1.  Get
-       8.2.2.  Append
-     8.3.  Node values
-       8.3.1.  hash_pospair64
+     8.2.  Node values
+       8.2.1.  hash_pospair64
    9.  Essential supporting algorithms
      9.1.  index_height
      9.2.  peaks
@@ -331,7 +328,7 @@ Table of Contents
    *  index_height (Section 9.1) which obtains the zero based height g
       of any node.
 
-   *  hash_pospair64 (Section 8.3.1) which applies H to the new node
+   *  hash_pospair64 (Section 8.2.1) which applies H to the new node
       position and its children.
 
    We define included_root as
@@ -563,8 +560,7 @@ Table of Contents
 8.  Appending a leaf
 
    An algorithm for appending to a tree maintained in post order layout
-   is provided.  Implementation defined methods for interacting with
-   storage are specified.
+   is provided.
 
 8.1.  add_leaf_hash
 
@@ -581,14 +577,14 @@ Table of Contents
    *  f the leaf value resulting from H(x) for the caller defined leaf
       value x
 
-   *  db an interface supporting the Section 8.2.2 and Section 8.2.1
-      implementation defined storage methods.
+   *  db an interface supporting append(entry) -> index and get(index)
+      -> entry methods.
 
    And the methods:
 
    *  index_height (Section 9.1)
 
-   *  Section 8.3.1
+   *  Section 8.2.1
 
    We define add_leaf_hash as
 
@@ -624,40 +620,7 @@ Table of Contents
 
        return i
 
-8.2.  Implementation defined storage methods
-
-   The following methods are assumed to be available to the
-   implementation.  Very minimal requirements are specified.
-
-   Informally, the storage must be array like and have no gaps.
-
-8.2.1.  Get
-
-   Reads the value from the tree at the supplied index.
-
-   The read MUST be consistent with any other calls to Append or Get
-   within the same algorithm invocation.
-
-   Get MAY fail for transient reasons.
-
-8.2.2.  Append
-
-   Appends new node to storage and returns the index that will be
-   occupied by the node provided to the next call to append.
-
-   The implementation MUST guarantee that the results of Append are
-   immediately available to Get calls in the same invocation of the
-   algorithm.
-
-   Append MUST return the node i identifying the node location which
-   comes next.
-
-   The implementation MAY defer commitment to underlying persistent
-   storage.
-
-   Append MAY fail for transient reasons.
-
-8.3.  Node values
+8.2.  Node values
 
    Interior nodes in the tree MUST prefix the value provided to H(x)
    with pos.
@@ -668,7 +631,7 @@ Table of Contents
    The algorithm for leaf addition is provided the result of H(x)
    directly.
 
-8.3.1.  hash_pospair64
+8.2.1.  hash_pospair64
 
    Returns H(pos || a || b), which is the value for the node identified
    by index pos - 1
