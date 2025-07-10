@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T00:23:28.031626+00:00",
+  "timestamp": "2025-07-10T00:24:02.018786+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -50,5 +50,160 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOO_kfWc6eAShw",
+      "title": "Remove storage implementation section",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/1",
+      "state": "MERGED",
+      "author": "achamayou",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Counterpart to https://github.com/robinbryce/draft-bryce-cose-merkle-mountain-range-proofs/pull/21 on the old repo, which was a proposed fix for https://github.com/robinbryce/draft-bryce-cose-merkle-mountain-range-proofs/issues/15.",
+      "createdAt": "2025-07-08T19:53:30Z",
+      "updatedAt": "2025-07-09T07:52:45Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "22785545151b61564ffc704ce8f91f49626484be",
+      "headRepository": "achamayou/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "remove_storage_implementation",
+      "headRefOid": "98b4b7c8f2d826a84fabb413e90c31dd55510d4e",
+      "closedAt": "2025-07-09T07:52:45Z",
+      "mergedAt": "2025-07-09T07:52:45Z",
+      "mergedBy": "achamayou",
+      "mergeCommit": {
+        "oid": "3294d1b68377f25a56d7f7555ecf6e0ce1d41a29"
+      },
+      "comments": [
+        {
+          "author": "achamayou",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@robinbryce ah that's a good point, I have made a slight tweak that hopefully captures this clearly.",
+          "createdAt": "2025-07-09T07:48:37Z",
+          "updatedAt": "2025-07-09T07:48:37Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc6yxOF8",
+          "commit": {
+            "abbreviatedOid": "5a8f261"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM.\r\n\r\nThere is a detail about the add leaf algorithm description which depends on append returning the index of the next node. Line 507 in the diff. I think the algorithm description is fine without that extra context",
+          "createdAt": "2025-07-08T22:31:58Z",
+          "updatedAt": "2025-07-08T22:31:58Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOO_kfWc6y1w2A",
+          "commit": {
+            "abbreviatedOid": "5a8f261"
+          },
+          "author": "achamayou",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-09T07:47:48Z",
+          "updatedAt": "2025-07-09T07:47:48Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "```suggestion\r\n- `db` an interface supporting `append(entry) -> index` and `get(index) -> entry` methods.\r\n```",
+              "createdAt": "2025-07-09T07:47:48Z",
+              "updatedAt": "2025-07-09T07:47:48Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOO_kfWc6eATFg",
+      "title": "Typo fix, missing \"tree\" presumed",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/2",
+      "state": "MERGED",
+      "author": "achamayou",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://github.com/robinbryce/draft-bryce-cose-merkle-mountain-range-proofs/pull/22",
+      "createdAt": "2025-07-08T19:54:46Z",
+      "updatedAt": "2025-07-09T07:52:32Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "22785545151b61564ffc704ce8f91f49626484be",
+      "headRepository": "achamayou/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "patch-1",
+      "headRefOid": "4093cbb7d3de254d07f5fc02dc9aff2d7f8598c4",
+      "closedAt": "2025-07-09T07:52:32Z",
+      "mergedAt": "2025-07-09T07:52:31Z",
+      "mergedBy": "achamayou",
+      "mergeCommit": {
+        "oid": "8f907a2a314760a412744db38db47f8847c6f49b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc6yxMde",
+          "commit": {
+            "abbreviatedOid": "4093cbb"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "LGTM",
+          "createdAt": "2025-07-08T22:27:00Z",
+          "updatedAt": "2025-07-08T22:27:00Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOO_kfWc6eAUfU",
+      "title": "Update abstract and intro",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/3",
+      "state": "MERGED",
+      "author": "achamayou",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://github.com/robinbryce/draft-bryce-cose-merkle-mountain-range-proofs/pull/24",
+      "createdAt": "2025-07-08T19:58:06Z",
+      "updatedAt": "2025-07-09T07:52:15Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "22785545151b61564ffc704ce8f91f49626484be",
+      "headRepository": "achamayou/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "update_abstract_and_intro",
+      "headRefOid": "27dfc1e5ff642224d8e0509cd90234d2098852b1",
+      "closedAt": "2025-07-09T07:52:15Z",
+      "mergedAt": "2025-07-09T07:52:15Z",
+      "mergedBy": "achamayou",
+      "mergeCommit": {
+        "oid": "c32b5e3b4cd59c6cbf775b307f1af9affff0c4da"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc6yxK6m",
+          "commit": {
+            "abbreviatedOid": "27dfc1e"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM. Thanks!",
+          "createdAt": "2025-07-08T22:23:43Z",
+          "updatedAt": "2025-07-08T22:23:43Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
 }
