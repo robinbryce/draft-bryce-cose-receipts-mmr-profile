@@ -7,26 +7,25 @@
 <title>COSE Receipts for MMRs</title>
 <meta content="Robin Bryce" name="author">
 <meta content="
-       This document defines a new verifiable data structure profile for the COSE Receipts document   specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage. 
+       This document defines a new verifiable data structure type for COSE Receipts   specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage. 
        Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-bryce-cose-receipts-mmr-profile-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
-    Python 3.12.11
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.5.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
-    setuptools 80.9.0
-    wcwidth 0.2.13
+    requests 2.32.5
+    wcwidth 0.2.14
 -->
 <link href="draft-bryce-cose-receipts-mmr-profile.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1045,11 +1044,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">COSE Receipts for MMRs</td>
-<td class="right">June 2025</td>
+<td class="right">December 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Bryce</td>
-<td class="center">Expires 23 December 2025</td>
+<td class="center">Expires 18 June 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1062,12 +1061,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-bryce-cose-receipts-mmr-profile-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-21" class="published">21 June 2025</time>
+<time datetime="2025-12-15" class="published">15 December 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-23">23 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-06-18">18 June 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1080,7 +1079,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">COSE Receipts for MMRs</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a new verifiable data structure profile for the COSE Receipts document <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a new verifiable data structure type for COSE Receipts <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
@@ -1102,7 +1101,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 23 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 June 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1187,21 +1186,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-add_leaf_hash" class="internal xref">add_leaf_hash</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-implementation-defined-stor" class="internal xref">Implementation defined storage methods</a></p>
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-node-values" class="internal xref">Node values</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2.2.1">
-                    <p id="section-toc.1-1.8.2.2.2.1.1"><a href="#section-8.2.1" class="auto internal xref">8.2.1</a>.  <a href="#name-get" class="internal xref">Get</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2.2.2">
-                    <p id="section-toc.1-1.8.2.2.2.2.1"><a href="#section-8.2.2" class="auto internal xref">8.2.2</a>.  <a href="#name-append" class="internal xref">Append</a></p>
-</li>
-                </ul>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
-                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-node-values" class="internal xref">Node values</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3.2.1">
-                    <p id="section-toc.1-1.8.2.3.2.1.1"><a href="#section-8.3.1" class="auto internal xref">8.3.1</a>.  <a href="#name-hash_pospair64" class="internal xref">hash_pospair64</a></p>
+                    <p id="section-toc.1-1.8.2.2.2.1.1"><a href="#section-8.2.1" class="auto internal xref">8.2.1</a>.  <a href="#name-hash_pospair64" class="internal xref">hash_pospair64</a></p>
 </li>
                 </ul>
 </li>
@@ -1289,21 +1277,22 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">A post ordered binary merkle tree is, logically, the unique series of perfect binary merkle trees required to commit its leaves.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Example,<a href="#section-1-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1-3">
+<p id="section-1-1">The COSE Receipts document <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> defines a common framework for defining different types of proofs, such as proof of inclusion, about verifiable data structures (VDS). For instance, inclusion proofs guarantee to a verifier that a given serializable element is recorded at a given state of the VDS, while consistency proofs are used to establish that an inclusion proof is still consistent with the new state of the VDS at a later time.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">In this document, we define a new type of VDS: a post ordered binary merkle tree is, logically, the unique series of perfect binary merkle trees required to commit its leaves.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Example,<a href="#section-1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1-4">
 <pre>
    6
  2   5
 0 1 3 4 7
-</pre><a href="#section-1-3" class="pilcrow">¶</a>
+</pre><a href="#section-1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-1-4">This illustrates <code>MMR(8)</code>, which is comprised of two perfect trees rooted at 6 and 7.
-7 is the root of a tree comprised of a single element.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">The peaks of the perfect trees form the accumulator.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">The storage of a tree maintained in this way is addressed as a linear array, and additions to the tree are always appends.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">Proving and verifying are defined in terms of the cryptographic asynchronous accumulator described by <a href="https://eprint.iacr.org/2015/718.pdf">ReyzinYakoubov</a>.
-The technical advantages of post-order traversal binary Merkle trees are discussed in <a href="https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf">CrosbyWallachStorage</a> and <a href="https://research.swtch.com/tlog#appendix_a">PostOrderTlog</a>.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-5">This illustrates <code>MMR(8)</code>, which is comprised of two perfect trees rooted at 6 and 7.
+7 is the root of a tree comprised of a single element.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">The peaks of the perfect trees form the accumulator.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">The storage of a tree maintained in this way is addressed as a linear array, and additions to the tree are always appends.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-8">Proving and verifying are defined in terms of the cryptographic asynchronous accumulator described by <a href="https://eprint.iacr.org/2015/718.pdf">ReyzinYakoubov</a>.
+The technical advantages of post-order traversal binary Merkle trees are discussed in <a href="https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf">CrosbyWallachStorage</a> and <a href="https://research.swtch.com/tlog#appendix_a">PostOrderTlog</a>.<a href="#section-1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1546,7 +1535,7 @@ If the resulting signature does not verify, the signature may have been tampered
             <p id="section-5.2-5.1.1"><span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> which obtains the zero based height <code>g</code> of any node.<a href="#section-5.2-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.2-5.2">
-            <p id="section-5.2-5.2.1"><span><a href="#hashpospair64" class="internal xref">hash_pospair64</a> (<a href="#hashpospair64" class="auto internal xref">Section 8.3.1</a>)</span> which applies <code>H</code> to the new node position and its children.<a href="#section-5.2-5.2.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-5.2.1"><span><a href="#hashpospair64" class="internal xref">hash_pospair64</a> (<a href="#hashpospair64" class="auto internal xref">Section 8.2.1</a>)</span> which applies <code>H</code> to the new node position and its children.<a href="#section-5.2-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-5.2-6">We define <code>included_root</code> as<a href="#section-5.2-6" class="pilcrow">¶</a></p>
@@ -1812,8 +1801,7 @@ This protects against implementation errors where the signature is verified but 
       <h2 id="name-appending-a-leaf">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-appending-a-leaf" class="section-name selfRef">Appending a leaf</a>
       </h2>
-<p id="section-8-1">An algorithm for appending to a tree maintained in post order layout is provided.
-Implementation defined methods for interacting with storage are specified.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">An algorithm for appending to a tree maintained in post order layout is provided.<a href="#section-8-1" class="pilcrow">¶</a></p>
 <div id="addleafhash">
 <section id="section-8.1">
         <h3 id="name-add_leaf_hash">
@@ -1829,7 +1817,7 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
             <p id="section-8.1-4.1.1"><code>f</code> the leaf value resulting from <code>H(x)</code> for the caller defined leaf value <code>x</code><a href="#section-8.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-4.2">
-            <p id="section-8.1-4.2.1"><code>db</code> an interface supporting the <a href="#append" class="auto internal xref">Section 8.2.2</a> and <a href="#get" class="auto internal xref">Section 8.2.1</a> implementation defined storage methods.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-4.2.1"><code>db</code> an interface supporting <code>append(entry) -&gt; index</code> and <code>get(index) -&gt; entry</code> methods.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-8.1-5">And the methods:<a href="#section-8.1-5" class="pilcrow">¶</a></p>
@@ -1838,7 +1826,7 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
             <p id="section-8.1-6.1.1"><span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span><a href="#section-8.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-6.2">
-            <p id="section-8.1-6.2.1"><a href="#hashpospair64" class="auto internal xref">Section 8.3.1</a><a href="#section-8.1-6.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-6.2.1"><a href="#hashpospair64" class="auto internal xref">Section 8.2.1</a><a href="#section-8.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-8.1-7">We define <code>add_leaf_hash</code> as<a href="#section-8.1-7" class="pilcrow">¶</a></p>
@@ -1879,76 +1867,44 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
 </div>
 </section>
 </div>
-<div id="implementation-defined-storage-methods">
-<section id="section-8.2">
-        <h3 id="name-implementation-defined-stor">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-implementation-defined-stor" class="section-name selfRef">Implementation defined storage methods</a>
-        </h3>
-<p id="section-8.2-1">The following methods are assumed to be available to the implementation.
-Very minimal requirements are specified.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">Informally, the storage must be array like and have no gaps.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<div id="get">
-<section id="section-8.2.1">
-          <h4 id="name-get">
-<a href="#section-8.2.1" class="section-number selfRef">8.2.1. </a><a href="#name-get" class="section-name selfRef">Get</a>
-          </h4>
-<p id="section-8.2.1-1">Reads the value from the tree at the supplied index.<a href="#section-8.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.2.1-2">The read <span class="bcp14">MUST</span> be consistent with any other calls to Append or Get within the same algorithm invocation.<a href="#section-8.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.2.1-3">Get <span class="bcp14">MAY</span> fail for transient reasons.<a href="#section-8.2.1-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="append">
-<section id="section-8.2.2">
-          <h4 id="name-append">
-<a href="#section-8.2.2" class="section-number selfRef">8.2.2. </a><a href="#name-append" class="section-name selfRef">Append</a>
-          </h4>
-<p id="section-8.2.2-1">Appends new node to storage and returns the index that will be occupied by the node provided to the next call to append.<a href="#section-8.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2.2-2">The implementation <span class="bcp14">MUST</span> guarantee that the results of Append are immediately available to Get calls in the same invocation of the algorithm.<a href="#section-8.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2.2-3">Append <span class="bcp14">MUST</span> return the node <code>i</code> identifying the node location which comes next.<a href="#section-8.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-8.2.2-4">The implementation <span class="bcp14">MAY</span> defer commitment to underlying persistent storage.<a href="#section-8.2.2-4" class="pilcrow">¶</a></p>
-<p id="section-8.2.2-5">Append <span class="bcp14">MAY</span> fail for transient reasons.<a href="#section-8.2.2-5" class="pilcrow">¶</a></p>
-</section>
-</div>
-</section>
-</div>
 <div id="node-values">
-<section id="section-8.3">
+<section id="section-8.2">
         <h3 id="name-node-values">
-<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-node-values" class="section-name selfRef">Node values</a>
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-node-values" class="section-name selfRef">Node values</a>
         </h3>
-<p id="section-8.3-1">Interior nodes in the <span class="bcp14">MUST</span> prefix the value provided to <code>H(x)</code> with <code>pos</code>.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">The value <code>v</code> for any interior node <span class="bcp14">MUST</span> be <code>H(pos || Get(LEFT_CHILD) || Get(RIGHT_CHILD))</code><a href="#section-8.3-2" class="pilcrow">¶</a></p>
-<p id="section-8.3-3">The algorithm for leaf addition is provided the result of <code>H(x)</code> directly.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">Interior nodes in the tree <span class="bcp14">MUST</span> prefix the value provided to <code>H(x)</code> with <code>pos</code>.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">The value <code>v</code> for any interior node <span class="bcp14">MUST</span> be <code>H(pos || Get(LEFT_CHILD) || Get(RIGHT_CHILD))</code><a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">The algorithm for leaf addition is provided the result of <code>H(x)</code> directly.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 <div id="hashpospair64">
-<section id="section-8.3.1">
+<section id="section-8.2.1">
           <h4 id="name-hash_pospair64">
-<a href="#section-8.3.1" class="section-number selfRef">8.3.1. </a><a href="#name-hash_pospair64" class="section-name selfRef">hash_pospair64</a>
+<a href="#section-8.2.1" class="section-number selfRef">8.2.1. </a><a href="#name-hash_pospair64" class="section-name selfRef">hash_pospair64</a>
           </h4>
-<p id="section-8.3.1-1">Returns <code>H(pos || a || b)</code>, which is the value for the node identified by index <code>pos - 1</code><a href="#section-8.3.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.3.1-2">Editors note: How this draft accommodates hash alg agility is tbd.<a href="#section-8.3.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.3.1-3">Given:<a href="#section-8.3.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.2.1-1">Returns <code>H(pos || a || b)</code>, which is the value for the node identified by index <code>pos - 1</code><a href="#section-8.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.2.1-2">Editors note: How this draft accommodates hash alg agility is tbd.<a href="#section-8.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.2.1-3">Given:<a href="#section-8.2.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-8.3.1-4.1">
-              <p id="section-8.3.1-4.1.1"><code>pos</code> the size of the MMR whose last node index is <code>pos - 1</code><a href="#section-8.3.1-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-8.2.1-4.1">
+              <p id="section-8.2.1-4.1.1"><code>pos</code> the size of the MMR whose last node index is <code>pos - 1</code><a href="#section-8.2.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-8.3.1-4.2">
-              <p id="section-8.3.1-4.2.1"><code>a</code> the first value to include in the hash after <code>pos</code><a href="#section-8.3.1-4.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-8.2.1-4.2">
+              <p id="section-8.2.1-4.2.1"><code>a</code> the first value to include in the hash after <code>pos</code><a href="#section-8.2.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-8.3.1-4.3">
-              <p id="section-8.3.1-4.3.1"><code>b</code> the second value to include in the hash after <code>pos</code><a href="#section-8.3.1-4.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-8.2.1-4.3">
+              <p id="section-8.2.1-4.3.1"><code>b</code> the second value to include in the hash after <code>pos</code><a href="#section-8.2.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-8.3.1-5">And the constraints:<a href="#section-8.3.1-5" class="pilcrow">¶</a></p>
+<p id="section-8.2.1-5">And the constraints:<a href="#section-8.2.1-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-8.3.1-6.1">
-              <p id="section-8.3.1-6.1.1"><code>pos &lt; 2^64</code><a href="#section-8.3.1-6.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-8.2.1-6.1">
+              <p id="section-8.2.1-6.1.1"><code>pos &lt; 2^64</code><a href="#section-8.2.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-8.3.1-6.2">
-              <p id="section-8.3.1-6.2.1"><code>a</code> and <code>b</code> <span class="bcp14">MUST</span> be hashes produced by the appropriate hash alg.<a href="#section-8.3.1-6.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-8.2.1-6.2">
+              <p id="section-8.2.1-6.2.1"><code>a</code> and <code>b</code> <span class="bcp14">MUST</span> be hashes produced by the appropriate hash alg.<a href="#section-8.2.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-8.3.1-7">We define <code>hash_pospair64</code> as<a href="#section-8.3.1-7" class="pilcrow">¶</a></p>
-<div class="lang-python sourcecode" id="section-8.3.1-8">
+<p id="section-8.2.1-7">We define <code>hash_pospair64</code> as<a href="#section-8.2.1-7" class="pilcrow">¶</a></p>
+<div class="lang-python sourcecode" id="section-8.2.1-8">
 <pre>
   def hash_pospair64(pos, a, b):
 
@@ -1960,7 +1916,7 @@ Very minimal requirements are specified.<a href="#section-8.2-1" class="pilcrow"
     h.update(a)
     h.update(b)
     return h.digest()
-</pre><a href="#section-8.3.1-8" class="pilcrow">¶</a>
+</pre><a href="#section-8.2.1-8" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2101,7 +2057,7 @@ We would like to add support for SHA3-256, SHA3-512, and possibly Keccak and Ped
 <dl class="references">
 <dt id="I-D.ietf-cose-merkle-tree-proofs">[I-D.ietf-cose-merkle-tree-proofs]</dt>
       <dd>
-<span class="refAuthor">Steele, O.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, and <span class="refAuthor">C. Fournet</span>, <span class="refTitle">"COSE Receipts"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cose-merkle-tree-proofs-14</span>, <time datetime="2025-05-11" class="refDate">11 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-14">https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-14</a>&gt;</span>. </dd>
+<span class="refAuthor">Steele, O.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, and <span class="refAuthor">C. Fournet</span>, <span class="refTitle">"COSE (CBOR Object Signing and Encryption) Receipts"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cose-merkle-tree-proofs-18</span>, <time datetime="2025-12-02" class="refDate">2 December 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-18">https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>

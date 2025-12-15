@@ -4,8 +4,8 @@
 
 TBD                                                             R. Bryce
 Internet-Draft                                                Datatrails
-Intended status: Standards Track                            21 June 2025
-Expires: 23 December 2025
+Intended status: Standards Track                        15 December 2025
+Expires: 18 June 2026
 
 
                          COSE Receipts for MMRs
@@ -13,11 +13,11 @@ Expires: 23 December 2025
 
 Abstract
 
-   This document defines a new verifiable data structure profile for the
-   COSE Receipts document [I-D.ietf-cose-merkle-tree-proofs]
-   specifically for use with ledgers based on post-order traversal
-   binary Merkle trees and which are designed for high throughput, ease
-   of replication and compatibility with commodity cloud storage.
+   This document defines a new verifiable data structure type for COSE
+   Receipts [I-D.ietf-cose-merkle-tree-proofs] specifically for use with
+   ledgers based on post-order traversal binary Merkle trees and which
+   are designed for high throughput, ease of replication and
+   compatibility with commodity cloud storage.
 
    Post-order traversal binary Merkle trees, also known as history
    trees, are more commonly known as Merkle Mountain Ranges.
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 December 2025.
+   This Internet-Draft will expire on 18 June 2026.
 
 Copyright Notice
 
@@ -70,11 +70,8 @@ Table of Contents
        7.1.1.  consistent_roots
    8.  Appending a leaf
      8.1.  add_leaf_hash
-     8.2.  Implementation defined storage methods
-       8.2.1.  Get
-       8.2.2.  Append
-     8.3.  Node values
-       8.3.1.  hash_pospair64
+     8.2.  Node values
+       8.2.1.  hash_pospair64
    9.  Essential supporting algorithms
      9.1.  index_height
      9.2.  peaks
@@ -99,8 +96,17 @@ Table of Contents
 
 1.  Introduction
 
-   A post ordered binary merkle tree is, logically, the unique series of
-   perfect binary merkle trees required to commit its leaves.
+   The COSE Receipts document [I-D.ietf-cose-merkle-tree-proofs] defines
+   a common framework for defining different types of proofs, such as
+   proof of inclusion, about verifiable data structures (VDS).  For
+   instance, inclusion proofs guarantee to a verifier that a given
+   serializable element is recorded at a given state of the VDS, while
+   consistency proofs are used to establish that an inclusion proof is
+   still consistent with the new state of the VDS at a later time.
+
+   In this document, we define a new type of VDS: a post ordered binary
+   merkle tree is, logically, the unique series of perfect binary merkle
+   trees required to commit its leaves.
 
    Example,
 
@@ -322,7 +328,7 @@ Table of Contents
    *  index_height (Section 9.1) which obtains the zero based height g
       of any node.
 
-   *  hash_pospair64 (Section 8.3.1) which applies H to the new node
+   *  hash_pospair64 (Section 8.2.1) which applies H to the new node
       position and its children.
 
    We define included_root as
@@ -554,8 +560,7 @@ Table of Contents
 8.  Appending a leaf
 
    An algorithm for appending to a tree maintained in post order layout
-   is provided.  Implementation defined methods for interacting with
-   storage are specified.
+   is provided.
 
 8.1.  add_leaf_hash
 
@@ -572,14 +577,14 @@ Table of Contents
    *  f the leaf value resulting from H(x) for the caller defined leaf
       value x
 
-   *  db an interface supporting the Section 8.2.2 and Section 8.2.1
-      implementation defined storage methods.
+   *  db an interface supporting append(entry) -> index and get(index)
+      -> entry methods.
 
    And the methods:
 
    *  index_height (Section 9.1)
 
-   *  Section 8.3.1
+   *  Section 8.2.1
 
    We define add_leaf_hash as
 
@@ -615,43 +620,10 @@ Table of Contents
 
        return i
 
-8.2.  Implementation defined storage methods
+8.2.  Node values
 
-   The following methods are assumed to be available to the
-   implementation.  Very minimal requirements are specified.
-
-   Informally, the storage must be array like and have no gaps.
-
-8.2.1.  Get
-
-   Reads the value from the tree at the supplied index.
-
-   The read MUST be consistent with any other calls to Append or Get
-   within the same algorithm invocation.
-
-   Get MAY fail for transient reasons.
-
-8.2.2.  Append
-
-   Appends new node to storage and returns the index that will be
-   occupied by the node provided to the next call to append.
-
-   The implementation MUST guarantee that the results of Append are
-   immediately available to Get calls in the same invocation of the
-   algorithm.
-
-   Append MUST return the node i identifying the node location which
-   comes next.
-
-   The implementation MAY defer commitment to underlying persistent
-   storage.
-
-   Append MAY fail for transient reasons.
-
-8.3.  Node values
-
-   Interior nodes in the MUST prefix the value provided to H(x) with
-   pos.
+   Interior nodes in the tree MUST prefix the value provided to H(x)
+   with pos.
 
    The value v for any interior node MUST be H(pos || Get(LEFT_CHILD) ||
    Get(RIGHT_CHILD))
@@ -659,7 +631,7 @@ Table of Contents
    The algorithm for leaf addition is provided the result of H(x)
    directly.
 
-8.3.1.  hash_pospair64
+8.2.1.  hash_pospair64
 
    Returns H(pos || a || b), which is the value for the node identified
    by index pos - 1
@@ -784,10 +756,11 @@ Table of Contents
 
    [I-D.ietf-cose-merkle-tree-proofs]
               Steele, O., Birkholz, H., Delignat-Lavaud, A., and C.
-              Fournet, "COSE Receipts", Work in Progress, Internet-
-              Draft, draft-ietf-cose-merkle-tree-proofs-14, 11 May 2025,
+              Fournet, "COSE (CBOR Object Signing and Encryption)
+              Receipts", Work in Progress, Internet-Draft, draft-ietf-
+              cose-merkle-tree-proofs-18, 2 December 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-cose-
-              merkle-tree-proofs-14>.
+              merkle-tree-proofs-18>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
