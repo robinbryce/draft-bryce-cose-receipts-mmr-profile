@@ -9,7 +9,6 @@ This is the working area for the individual Internet-Draft, "COSE Receipts for M
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-bryce-cose-receipts-mmr-profile)
 * [Compare Editor's Copy to Individual Draft](https://robinbryce.github.io/draft-bryce-cose-receipts-mmr-profile/#go.draft-bryce-cose-receipts-mmr-profile.diff)
 
-
 ## Contributing
 
 See the
