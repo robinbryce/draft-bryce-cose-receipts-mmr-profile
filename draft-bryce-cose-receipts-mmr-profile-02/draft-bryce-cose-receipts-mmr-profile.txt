@@ -3,8 +3,8 @@
 
 
 TBD                                                             R. Bryce
-Internet-Draft                                                Datatrails
-Intended status: Standards Track                            14 June 2026
+Internet-Draft                                              14 June 2026
+Intended status: Standards Track                                        
 Expires: 16 December 2026
 
 
@@ -849,5 +849,4 @@ Appendix C.  Acknowledgments
 Author's Address
 
    Robin Bryce
-   Datatrails
    Email: robinbryce@gmail.com
