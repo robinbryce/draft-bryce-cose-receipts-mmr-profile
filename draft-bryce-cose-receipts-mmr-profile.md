@@ -19,7 +19,6 @@ author:
  -
 
     fullname: Robin Bryce
-    organization: Datatrails
     email: robinbryce@gmail.com
 
 normative:
