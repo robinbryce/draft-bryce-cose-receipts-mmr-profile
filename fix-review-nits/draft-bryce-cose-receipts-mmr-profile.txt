@@ -3,9 +3,9 @@
 
 
 TBD                                                             R. Bryce
-Internet-Draft                                               9 July 2026
-Intended status: Standards Track                                        
-Expires: 10 January 2027
+Internet-Draft                                                          
+Intended status: Standards Track                               J. Geater
+Expires: 10 January 2027                                     9 July 2026
 
 
                          COSE Receipts for MMRs
@@ -94,7 +94,7 @@ Table of Contents
      A.5.  ones_count
      A.6.  trailing_zeros
    Appendix B.  Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -143,7 +143,13 @@ Table of Contents
    *  A complete MMR(n) defines an mmr with n nodes where no equal
       height sibling trees exist.
 
-   *  i shall be the index of any node, including leaf nodes, in the MMR
+   *  i shall be the zero based index of any node, including leaf nodes,
+      in the MMR.  Nodes are assigned indices in the order they are
+      appended to the linear array.
+
+   *  pos shall be the one based position of a node, pos = i + 1.  The
+      position is used, rather than the index, as the domain separator
+      when hashing interior nodes.
 
    *  g shall be the zero based height of a node in the tree.
 
@@ -634,14 +640,16 @@ Table of Contents
 
 8.2.1.  hash_pospair64
 
-   Returns H(pos || a || b), which is the value for the node identified
-   by index pos - 1
+   Returns H(pos || a || b), which is the value for the node whose one
+   based position is pos (equivalently, whose zero based index is pos -
+   1).
 
    Editors note: How this draft accommodates hash alg agility is tbd.
 
    Given:
 
-   *  pos the size of the MMR whose last node index is pos - 1
+   *  pos the one based position of the node being computed, pos = i + 1
+      for node index i
 
    *  a the first value to include in the hash after pos
 
@@ -877,7 +885,11 @@ A.6.  trailing_zeros
 
 Appendix B.  Acknowledgments
 
-Author's Address
+Authors' Addresses
 
    Robin Bryce
    Email: robinbryce@gmail.com
+
+
+   Jon Geater
+   Email: jonathan@bowball-tech.com
