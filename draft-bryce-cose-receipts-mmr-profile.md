@@ -100,7 +100,7 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 
 - A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.
 - `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
-- `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree.
+- `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree, guaranteeing uniqueness in the tree without imposing constraints on inputs.
 - g shall be the zero-based height of a node in the tree.
 - `H(x)` shall be the SHA-256 digest of any value x
 - `||` shall mean concatenation of raw byte representations of the referenced values.
@@ -540,7 +540,7 @@ Given:
 And the constraints:
 
 - `pos < 2^64`
-- `a` and `b` MUST be hashes produced by the appropriate hash alg.
+- `a` and `b` MUST be hashes produced by the appropriate hash algorithm.
 
 We define `hash_pospair64` as
 
