@@ -17,15 +17,50 @@ keyword:
 
 author:
  -
-
     fullname: Robin Bryce
     email: robinbryce@gmail.com
+ -
+    fullname: Jon Geater
+    email: jonathan@bowball-tech.com
 
 normative:
+  RFC2119:
+  RFC8174:
   RFC9053: COSE
   I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
 informative:
+  ReyzinYakoubov:
+    title: "Efficient Asynchronous Accumulators for Distributed PKI"
+    target: https://eprint.iacr.org/2015/718.pdf
+    date: 2015
+    author:
+      - name: Leonid Reyzin
+      - name: Sophia Yakoubov
+  CrosbyWallach:
+    title: "Efficient Data Structures for Tamper-Evident Logging"
+    target: https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
+    date: 2009
+    author:
+      - name: Scott A. Crosby
+      - name: Dan S. Wallach
+  PostOrderTlog:
+    title: "Transparent Logs for Skeptical Clients (Appendix A: Storing the Log)"
+    target: https://research.swtch.com/tlog#appendix_a
+    date: 2019
+    author:
+      - name: Russ Cox
+  PeterTodd:
+    title: "Merkle Mountain Ranges (bitcoin-dev mailing list)"
+    target: https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2016-May/012715.html
+    date: 2016
+    author:
+      - name: Peter Todd
+  KnuthTBT:
+    title: "The Art of Computer Programming, Volume 1: Fundamental Algorithms, Section 2.3.1 Traversing Binary Trees"
+    target: https://www-cs-faculty.stanford.edu/~knuth/taocp.html
+    author:
+      - name: Donald E. Knuth
 
 ...
 
@@ -41,7 +76,7 @@ Post-order traversal binary Merkle trees, also known as history trees, are more 
 
 The COSE Receipts document {{-cose-receipts}} defines a common framework for defining different types of proofs, such as proof of inclusion, about verifiable data structures (VDS). For instance, inclusion proofs guarantee to a verifier that a given serializable element is recorded at a given state of the VDS, while consistency proofs are used to establish that an inclusion proof is still consistent with the new state of the VDS at a later time.
 
-In this document, we define a new type of VDS: a post ordered binary merkle tree is, logically, the unique series of perfect binary merkle trees required to commit its leaves.
+In this document, we define a new type of VDS: a post ordered binary merkle tree {{KnuthTBT}} is, logically, the unique series of perfect binary merkle trees required to commit its leaves. Such structures are also commonly known as Merkle Mountain Ranges {{PeterTodd}}.
 
 Example,
 
@@ -56,16 +91,17 @@ The peaks of the perfect trees form the accumulator.
 
 The storage of a tree maintained in this way is addressed as a linear array, and additions to the tree are always appends.
 
-Proving and verifying are defined in terms of the cryptographic asynchronous accumulator described by [ReyzinYakoubov].
-The technical advantages of post-order traversal binary Merkle trees are discussed in [CrosbyWallachStorage] and [PostOrderTlog].
+Proving and verifying are defined in terms of the cryptographic asynchronous accumulator described by {{ReyzinYakoubov}}.
+The technical advantages of post-order traversal binary Merkle trees are discussed in {{CrosbyWallach}} (Section 3.3, "Storing the log on secondary storage") and {{PostOrderTlog}}.
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
 - A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.
-- `i` shall be the index of any node, including leaf nodes, in the MMR
-- g shall be the zero based height of a node in the tree.
+- `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
+- `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree, guaranteeing uniqueness in the tree without imposing constraints on inputs.
+- g shall be the zero-based height of a node in the tree.
 - `H(x)` shall be the SHA-256 digest of any value x
 - `||` shall mean concatenation of raw byte representations of the referenced values.
 
@@ -88,7 +124,7 @@ The CBOR representation of an inclusion proof is
 ~~~~ cddl
 inclusion-proof = bstr .cbor [
 
-  ; zero based index of a tree node
+  ; zero-based index of a tree node
   index: uint
 
   ; path proving the node's inclusion
@@ -110,7 +146,7 @@ Given:
 
 And the methods:
 
-- [index_height](#indexheight) which obtains the zero based height `g` of any node.
+- [index_height](#indexheight) which obtains the zero-based height `g` of any node.
 
 And the constraints:
 
@@ -167,7 +203,7 @@ The cbor representation of an inclusion proof is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => 3
+  &(vds: 395) => TBD_1
   * cose-label => cose-value
 }
 ~~~~
@@ -224,7 +260,7 @@ Given:
 
 And the methods:
 
-- [index_height](#indexheight) which obtains the zero based height `g` of any node.
+- [index_height](#indexheight) which obtains the zero-based height `g` of any node.
 - [hash_pospair64](#hashpospair64) which applies `H` to the new node position and its children.
 
 We define `included_root` as
@@ -268,7 +304,7 @@ We define `included_root` as
 
 # Consistency Proof
 
-A consistency proof shows that the accumulator, defined in [ReyzinYakoubov],
+A consistency proof shows that the accumulator, defined in {{ReyzinYakoubov}},
 for tree-size-1 is a prefix of the accumulator for tree-size-2.
 
 The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of `right-peaks` which complete the accumulator for tree-size-2.
@@ -340,7 +376,7 @@ The cbor representation of an inclusion proof is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => 3
+  &(vds: 395) => TBD_1
   * cose-label => cose-value
 }
 ~~~~
@@ -354,7 +390,7 @@ The unprotected header for an inclusion proof signature is:
 consistency-proofs = [ + consistency-proof ]
 
 verifiable-proofs = {
-  &(consistency-proof: -2) => consistency-proof
+  &(consistency-proof: -2) => consistency-proofs
 }
 
 unprotected-header-map = {
@@ -493,20 +529,18 @@ The algorithm for leaf addition is provided the result of `H(x)` directly.
 
 ### hash_pospair64
 
-Returns `H(pos || a || b)`, which is the value for the node identified by index `pos - 1`
-
-Editors note: How this draft accommodates hash alg agility is tbd.
+Returns `H(pos || a || b)`
 
 Given:
 
-- `pos` the size of the MMR whose last node index is `pos - 1`
+- `pos` the one-based position of the node being computed
 - `a` the first value to include in the hash after `pos`
 - `b` the second value to include in the hash after `pos`
 
 And the constraints:
 
 - `pos < 2^64`
-- `a` and `b` MUST be hashes produced by the appropriate hash alg.
+- `a` and `b` MUST be hashes produced by the appropriate hash algorithm.
 
 We define `hash_pospair64` as
 
@@ -527,7 +561,7 @@ We define `hash_pospair64` as
 
 ## index_height
 
-`index_height(i)` returns the zero based height `g` of the node index `i`
+`index_height(i)` returns the zero-based height `g` of the node index `i`
 
 Given:
 
@@ -572,11 +606,13 @@ We define `peaks`
     return peaks
 ~~~~
 
+# Privacy Considerations
+
+See the privacy considerations section of {{-cose-receipts}}.
+
 # Security Considerations
 
-See the security considerations section of:
-
-- {{-COSE}}
+The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
 
 ## Detection of improper inclusion
 
@@ -595,37 +631,24 @@ Similarly, consistency proofs MUST be the basis for proving the unequivocal hist
 
 # IANA Considerations
 
-Editors note: Hash agility is desired.
-We can start with SHA-256.
-Two of the referenced implementations use BLAKE2b-256,
-We would like to add support for SHA3-256, SHA3-512, and possibly Keccak and Pedersen.
-
 ## Additions to Existing Registries
 
-Editors note: todo registry requests
+### COSE Verifiable Data Structure Algorithms
+
+IANA is requested to add the following value to the "COSE Verifiable Data Structure Algorithms" registry established by {{-cose-receipts}}:
+
+- Name: MMR_SHA256
+- Value: TBD_1 (requested assignment 3)
+- Description: Linearly addressed, position-committing, append-only logs that are integrity-protected by a post-order traversal (Merkle Mountain Range) binary Merkle tree using SHA-256.
+- Reference: RFCthis
+
+Editors note: Hash agility. This document defines a single SHA-256-based identifier, MMR_SHA256, following the convention of binding the hash function into the algorithm identifier. Additional identifiers (for example using BLAKE2b-256, SHA3-256, or SHA3-512, both of which are used by existing implementations) are expected to be registered as separate values in a future revision, rather than negotiated within a single identifier.
 
 ## New Registries
 
+This document requests no new registries.
+
 --- back
-
-# References
-
-## Informative References
-
-- [ReyzinYakoubov]: https://eprint.iacr.org/2015/718.pdf
-  [ReyzinYakoubov]
-- [CrosbyWallach]: https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
-  [CrosbyWallach]
-- [CrosbyWallachStorage]: https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
-  [CrosbyWallachStorage] 3.3 Storing the log on secondary storage
-- [PostOrderTlog]: https://research.swtch.com/tlog#appendix_a
-  [PostOrderTlog]
-- [PeterTodd]: https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2016-May/012715.html
-  [PeterTodd]
-- [KnuthTBT]: https://www-cs-faculty.stanford.edu/~knuth/taocp.html
-  [KnuthTBT] 2.3.1 Traversing Binary Trees
-- [BNT]: https://eprint.iacr.org/2021/038.pdf
-  [BNT]
 
 # Assumed bit primitives
 
