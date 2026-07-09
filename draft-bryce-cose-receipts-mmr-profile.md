@@ -17,9 +17,11 @@ keyword:
 
 author:
  -
-
     fullname: Robin Bryce
     email: robinbryce@gmail.com
+ -
+    fullname: Jon Geater
+    email: jonathan@bowball-tech.com
 
 normative:
   RFC2119:
@@ -97,7 +99,8 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 {::boilerplate bcp14-tagged}
 
 - A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.
-- `i` shall be the index of any node, including leaf nodes, in the MMR
+- `i` shall be the zero based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
+- `pos` shall be the one based position of a node, `pos = i + 1`. The position is used, rather than the index, as the domain separator when hashing interior nodes.
 - g shall be the zero based height of a node in the tree.
 - `H(x)` shall be the SHA-256 digest of any value x
 - `||` shall mean concatenation of raw byte representations of the referenced values.
@@ -526,13 +529,13 @@ The algorithm for leaf addition is provided the result of `H(x)` directly.
 
 ### hash_pospair64
 
-Returns `H(pos || a || b)`, which is the value for the node identified by index `pos - 1`
+Returns `H(pos || a || b)`, which is the value for the node whose one based position is `pos` (equivalently, whose zero based index is `pos - 1`).
 
 Editors note: How this draft accommodates hash alg agility is tbd.
 
 Given:
 
-- `pos` the size of the MMR whose last node index is `pos - 1`
+- `pos` the one based position of the node being computed, `pos = i + 1` for node index `i`
 - `a` the first value to include in the hash after `pos`
 - `b` the second value to include in the hash after `pos`
 
