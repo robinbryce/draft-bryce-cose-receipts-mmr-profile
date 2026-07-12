@@ -610,6 +610,13 @@ We define `peaks`
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+## Disclosure of ledger size and growth
+
+The `index` in a single inclusion proof implies that the tree contained at least `index + 1` nodes when the proven node was appended, disclosing a lower bound on the ledger size at that time.
+The length of the `inclusion-path` reveals the height of the accumulator peak committing the proven node, tightening that bound.
+A consistency proof discloses more directly: it carries `tree-size-1` and `tree-size-2` in the clear, revealing the exact number of nodes in the ledger at the two states and hence the number of entries added between them.
+Because a chain of cumulative consistency proofs can be verified together, a party holding such a chain learns the ledger size at each state in the chain, that is, its growth over the covered period.
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
