@@ -610,6 +610,13 @@ We define `peaks`
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+## Linkability of Receipts
+
+The `index` is permanent: the path for a given index always leads to the same node.
+Two inclusion Receipts that carry the same `index` therefore refer to the same entry and are linkable by that index alone, across tree states and over time.
+Receipts for two entries that lie within the same perfect subtree share the sibling values above their lowest common ancestor, and when both proofs are produced against the same tree state they carry the same detached payload, namely the peak committing that subtree.
+A party that observes such Receipts can determine that the corresponding entries are co-located within a contiguous range of at most `2^g` leaves under that peak, where `g` is the height of the shared peak, without learning their contents.
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
