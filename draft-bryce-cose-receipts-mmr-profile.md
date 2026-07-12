@@ -610,6 +610,16 @@ We define `peaks`
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+An inclusion or consistency Receipt does not carry the entry itself; it commits to metadata and to the structure of the tree. The following considerations concern what that metadata and structure disclose, beyond the generic considerations referenced above.
+
+## Disclosure of position and ordering
+
+An inclusion proof carries the node `index`.
+As stated in Conventions and Definitions, nodes are assigned indices in the order they are appended, so the `index` reveals the absolute position of the proven node in the append sequence and therefore its ordering relative to any other entry whose index is known.
+A party that can associate indices with wall-clock times, for example from other Receipts, can bound the insertion time of the proven entry accordingly.
+The `index` cannot be withheld from a verifier: [included_root](#includedroot) requires `i` to recompute the accumulator peak, so no mechanism in this document removes this disclosure.
+Issuers SHOULD distribute inclusion and consistency Receipts only to parties that need to verify them.
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
