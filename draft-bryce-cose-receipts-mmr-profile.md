@@ -610,6 +610,12 @@ We define `peaks`
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+## Disclosure about other entries
+
+The sibling values in an `inclusion-path`, and the `right-peaks` of a consistency proof, are digests over interior node positions and their child hashes.
+They commit to other, unrelated entries in the tree but, being outputs of `H` over high-entropy child hashes, they do not reveal the content of those entries.
+They are, however, stable identifiers for the corresponding subtrees, and a party that observes multiple Receipts can use shared sibling or peak values to correlate them as relating to overlapping regions of the tree.
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
