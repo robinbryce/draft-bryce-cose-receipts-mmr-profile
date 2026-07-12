@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-09T00:42:03.347212+00:00",
+  "timestamp": "2026-07-12T00:39:37.557560+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -204,6 +204,114 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOO_kfWc7vsZ1F",
+      "title": "Fix review nits",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/4",
+      "state": "MERGED",
+      "author": "JAG-UK",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixed nits findings and filled in BCP boilerplate.\r\n\r\nOne note: Way back when we reached a gentlemen's agreement with the CCF people to take VDS ID 3 but I think very strictly speaking we can't pre-assume this in the adoption call, so put it back to TBD_1 and added IANA request.",
+      "createdAt": "2026-07-09T10:57:00Z",
+      "updatedAt": "2026-07-09T13:28:33Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "1ee524c8cfcfd2ccfc42e92984a2c7a9e3a55bcd",
+      "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "fix-review-nits",
+      "headRefOid": "9b1b1d123a02cf4fda95790509c935cf9344cf91",
+      "closedAt": "2026-07-09T13:28:33Z",
+      "mergedAt": "2026-07-09T13:28:33Z",
+      "mergedBy": "JAG-UK",
+      "mergeCommit": {
+        "oid": "9232f5857a58b483e24c00060129472191491940"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABFepJKQ",
+          "commit": {
+            "abbreviatedOid": "8c581fe"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-09T11:40:53Z",
+          "updatedAt": "2026-07-09T11:40:53Z",
+          "comments": [
+            {
+              "originalPosition": 77,
+              "body": "are you sure \"domain separator\" is the right framing here ? the argument for the position commitment I remember was about leaf uniqueness: leaf hash h(pos+content) is guaranteed unique to the tree. Or are you saying that \"domain separator\" is the best way to state this ?",
+              "createdAt": "2026-07-09T11:40:53Z",
+              "updatedAt": "2026-07-09T11:40:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABFeqV3g",
+          "commit": {
+            "abbreviatedOid": "8c581fe"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2026-07-09T11:43:47Z",
+          "updatedAt": "2026-07-09T11:43:47Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABFetmNQ",
+          "commit": {
+            "abbreviatedOid": "8c581fe"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-09T11:52:50Z",
+          "updatedAt": "2026-07-09T11:52:55Z",
+          "comments": [
+            {
+              "originalPosition": 77,
+              "body": "It's mostly to avoid too many mentions of `foo - 1` and have 2 distinct terms that can be used plainly. \"Domain separator\" is just a name for that uniqueness input to the hashing. So it's as-is, but just with named inputs rather than -+1 arithmetic.\n\nHowever I agree in hindsight it's a bit overly specific. Will simplify back towards the original",
+              "createdAt": "2026-07-09T11:52:50Z",
+              "updatedAt": "2026-07-09T11:52:55Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOO_kfWc7wGHEi",
+      "title": "change author email",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/5",
+      "state": "OPEN",
+      "author": "robinbryce",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-07-10T09:03:03Z",
+      "updatedAt": "2026-07-10T09:03:04Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "robin/update-email",
+      "headRefOid": "f392d571171ad26e9651e7fc9d41df6d388153ef",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
