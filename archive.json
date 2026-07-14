@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-12T00:39:37.557560+00:00",
+  "timestamp": "2026-07-14T00:34:14.464435+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -49,7 +49,24 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 6,
+      "id": "I_kwDOO_kfWc8AAAABIfnyxQ",
+      "title": "Editorial nits: consistency Receipt section mislabels and typos",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/6",
+      "state": "OPEN",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "A few small editorial issues in draft-bryce-cose-receipts-mmr-profile.md, offered ahead of adoption review.\n\nIn the \"COSE Receipt of Consistency\" section, the two introductory lines still refer to an inclusion proof: \"The cbor representation of an inclusion proof is:\" and \"The unprotected header for an inclusion proof signature is:\". Both appear to be copy-paste from the inclusion section and should read \"consistency proof\".\n\nThe consistency verification steps contain a typo, \"From the peaks for tres-size-2\", which should be \"tree-size-2\".\n\nThe supporting algorithm is introduced under the heading \"consistency_proof_path\" but the function it defines is named \"consistency_proof_paths\" (plural); the heading and the function name could be aligned.\n\nThere are two doubled-word typos: \"the index of the the right child of i\" in add_leaf_hash, and \"Returns the mask for the the most significant bit in pos\" in most_sig_bit.",
+      "createdAt": "2026-07-12T01:54:07Z",
+      "updatedAt": "2026-07-12T01:54:07Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": [
     {
       "number": 1,
@@ -312,6 +329,230 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOO_kfWc7wqH3t",
+      "title": "Add Privacy Considerations: position and ordering disclosure",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/7",
+      "state": "CLOSED",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The Privacy Considerations section currently points only to the generic considerations in the COSE Receipts framework, which does not describe disclosures specific to this profile's Receipt encoding. This is the first of a set of small, independent additions to that section, offered for consideration ahead of adoption review.\r\n\r\nThis PR adds the \"Disclosure of position and ordering\" subsection, together with a one-line framing sentence for the section. An inclusion proof carries the node index, and because nodes are indexed in append order (Conventions and Definitions), the index discloses the proven node's absolute position and therefore its ordering relative to any other entry whose index is known. included_root requires i, so the index cannot be withheld from a verifier. A scoped-distribution SHOULD is included.",
+      "createdAt": "2026-07-12T02:05:22Z",
+      "updatedAt": "2026-07-13T20:58:30Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "privacy-position-ordering",
+      "headRefOid": "74e685761b4855de33e06b53336f918b439a095e",
+      "closedAt": "2026-07-13T20:58:30Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dcondrey",
+          "authorAssociation": "NONE",
+          "body": "Agreed. Closing.",
+          "createdAt": "2026-07-13T20:58:26Z",
+          "updatedAt": "2026-07-13T20:58:26Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABFyqEUw",
+          "commit": {
+            "abbreviatedOid": "74e6857"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "Thank you for this contribution. I don't see the need to say more here than is already said here: https://www.rfc-editor.org/rfc/rfc9943.html#name-privacy-considerations which is itself inherited via COSE-Receipts\n\nIt is understood that order and position are revealed.\n\nAnd, specific to the accumulator that is the basis for this draft, anyone with a signed accumulator peak, and possession of a limited range of the VDS content (not the metadata or the pre-image) can self assemble receipts. \n\nThis SHOULD would not accomplish anything\n\nWithout further explanation of why this is specifically needed in this profile I'm not minded to include this.",
+          "createdAt": "2026-07-13T09:57:21Z",
+          "updatedAt": "2026-07-13T09:57:21Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOO_kfWc7wqJBx",
+      "title": "Add Privacy Considerations: ledger size and growth disclosure",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/8",
+      "state": "OPEN",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR adds the \"Disclosure of ledger size and growth\" subsection. A single inclusion index implies the tree contained at least index + 1 nodes when the proven node was appended, a lower bound on ledger size at that time. The inclusion-path length reveals the height of the committing accumulator peak, tightening that bound. A consistency proof carries tree-size-1 and tree-size-2 in the clear, and because a chain of cumulative consistency proofs can be verified together, such a chain discloses the ledger size at each state, that is, its growth over the covered period.",
+      "createdAt": "2026-07-12T02:07:46Z",
+      "updatedAt": "2026-07-13T21:03:25Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "privacy-ledger-size-growth",
+      "headRefOid": "5a9c0f8119a7afee8c7d4c010ea7080a6d3de2a1",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dcondrey",
+          "authorAssociation": "NONE",
+          "body": "Following the discussion on #7: this one is purely descriptive, with no normative SHOULD to be toothless. It concerns fields this profile discloses in the clear, `tree-size-1` and `tree-size-2` in a consistency proof, and the size bound implied by `index` and `inclusion-path` length, which are specific to the accumulator encoding rather than the generic order disclosure already noted in RFC 9943. Offered on that basis; happy to drop it if you consider size disclosure self-evident.",
+          "createdAt": "2026-07-13T21:03:25Z",
+          "updatedAt": "2026-07-13T21:03:25Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 9,
+      "id": "PR_kwDOO_kfWc7wqKjf",
+      "title": "Add Privacy Considerations: linkability of Receipts",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/9",
+      "state": "OPEN",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Adds a \"Linkability of Receipts\" subsection to Privacy Considerations. The `index` is permanent, so Receipts sharing an index are linkable to the same entry; Receipts under a shared perfect subtree expose co-location within `2^g` leaves via shared sibling/peak values, without revealing contents.\n\nNow also folds in the disclosure-about-other-entries point (previously #11, closed): sibling and `right-peaks` values are stable subtree identifiers that let an observer correlate Receipts to overlapping tree regions without learning entry content.",
+      "createdAt": "2026-07-12T02:10:53Z",
+      "updatedAt": "2026-07-13T21:03:26Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "privacy-linkability",
+      "headRefOid": "0ca9232d3a556fcf94301f28d40689b82f8e079c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dcondrey",
+          "authorAssociation": "NONE",
+          "body": "Following #7: descriptive only, no normative text. The index-permanence linkability and the `2^g` co-location bound under a shared peak are mechanics of this profile's proof encoding, not restated from RFC 9943. It now also folds in the point from #11 (closed) about sibling and `right-peaks` values as stable subtree identifiers.",
+          "createdAt": "2026-07-13T21:03:26Z",
+          "updatedAt": "2026-07-13T21:03:26Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOO_kfWc7wqMcW",
+      "title": "Add Privacy Considerations: confirmation of entry values",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/10",
+      "state": "OPEN",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Adds the \"Confirmation of entry values\" subsection.",
+      "createdAt": "2026-07-12T02:14:40Z",
+      "updatedAt": "2026-07-13T21:03:28Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "privacy-entry-value-confirmation",
+      "headRefOid": "2d09d71f6f1a08e71e5dc1b9fb6aae6198657353",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dcondrey",
+          "authorAssociation": "NONE",
+          "body": "This is the one I think stands apart from #7. The leaf is `H(x)` with no per-leaf salt, so a holder of an inclusion Receipt can confirm a guessed entry by recomputing the root, which for a low-entropy domain discloses the content. Unlike the distribution SHOULD in #7, the mitigation here is one the caller can actually apply, adding entropy or a secret salt before insertion, so the SHOULD accomplishes something. Not covered by the generic considerations in RFC 9943.",
+          "createdAt": "2026-07-13T21:03:28Z",
+          "updatedAt": "2026-07-13T21:03:28Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOO_kfWc7wqNtQ",
+      "title": "Add Privacy Considerations: disclosure about other entries",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/11",
+      "state": "CLOSED",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Part of a set of small, independent additions expanding the Privacy Considerations section, offered for consideration ahead of adoption review.\n\nThis PR adds the \"Disclosure about other entries\" subsection. The sibling values in an inclusion-path, and the right-peaks of a consistency proof, are digests over interior node positions and their child hashes. They do not reveal the content of the other entries they commit to, but they are stable identifiers for the corresponding subtrees, letting a party that observes multiple Receipts correlate them as relating to overlapping regions of the tree.\n\nEvery claim is derived from the draft's own mechanics; no references are added, the authors' prose and algorithms are unchanged, and RFC 2119 usage follows the existing text. Submitted as a Contribution under BCP 78/79; DCO signed-off.",
+      "createdAt": "2026-07-12T02:16:51Z",
+      "updatedAt": "2026-07-13T21:01:20Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "privacy-other-entries",
+      "headRefOid": "e3512850e776d24b01869afb7e85e27d41aead35",
+      "closedAt": "2026-07-13T21:01:20Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dcondrey",
+          "authorAssociation": "NONE",
+          "body": "Folded into #9 to avoid a near-duplicate section; the correlation point now sits alongside the linkability discussion there. Closing this in favour of that.",
+          "createdAt": "2026-07-13T21:01:18Z",
+          "updatedAt": "2026-07-13T21:01:18Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOO_kfWc7wqPkO",
+      "title": "Fix consistency section mislabels and typos",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/12",
+      "state": "OPEN",
+      "author": "dcondrey",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #6",
+      "createdAt": "2026-07-12T02:20:03Z",
+      "updatedAt": "2026-07-13T11:35:50Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "fix-editorial-nits",
+      "headRefOid": "fc249117e78ec4db464c8fd87ec5e8beb7307faa",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABFzTu5w",
+          "commit": {
+            "abbreviatedOid": "fc24911"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Thankyou!",
+          "createdAt": "2026-07-13T11:35:50Z",
+          "updatedAt": "2026-07-13T11:35:50Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
