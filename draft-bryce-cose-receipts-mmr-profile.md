@@ -18,7 +18,7 @@ keyword:
 author:
  -
     fullname: Robin Bryce
-    email: robinbryce@gmail.com
+    email: robinbryce@proton.me
  -
     fullname: Jon Geater
     email: jonathan@bowball-tech.com
