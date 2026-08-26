@@ -5,7 +5,7 @@
 TBD                                                             R. Bryce
 Internet-Draft                                                          
 Intended status: Standards Track                               J. Geater
-Expires: 11 January 2027                                    10 July 2026
+Expires: 27 February 2027                                 26 August 2026
 
 
                          COSE Receipts for MMRs
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 January 2027.
+   This Internet-Draft will expire on 27 February 2027.
 
 Copyright Notice
 
@@ -885,7 +885,7 @@ Appendix B.  Acknowledgments
 Authors' Addresses
 
    Robin Bryce
-   Email: robinbryce@proton.me
+   Email: robinbryce@gmail.com
 
 
    Jon Geater
