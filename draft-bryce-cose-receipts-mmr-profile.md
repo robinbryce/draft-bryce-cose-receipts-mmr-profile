@@ -336,7 +336,7 @@ consistency-proof =  bstr .cbor [
 ]
 ~~~~
 
-## consistency_proof_path
+## consistency_proof_paths
 
 Produces the verification paths for inclusion of the peaks of tree-size-1 under the peaks of tree-size-2.
 
@@ -371,7 +371,7 @@ We define `consistency_proof_paths` as
 
 # COSE Receipt of Consistency
 
-The cbor representation of an inclusion proof is:
+The cbor representation of a consistency proof is:
 
 ~~~~ cddl
 protected-header-map = {
@@ -384,7 +384,7 @@ protected-header-map = {
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
 
-The unprotected header for an inclusion proof signature is:
+The unprotected header for a consistency proof signature is:
 
 ~~~~ cddl
 consistency-proofs = [ + consistency-proof ]
@@ -415,7 +415,7 @@ Perform the following for each consistency-proof in the list, verifying the sign
 1. Initialize proofs to the consistency-paths from the current proof.
 1. Apply the algorithm [consistent_roots](#consistentroots)
 1. Apply the peaks algorithm to obtain the accumulator for tree-size-2
-1. From the peaks for tres-size-2, discard from the left the number of roots returned by consistent_roots.
+1. From the peaks for tree-size-2, discard from the left the number of roots returned by consistent_roots.
 1. Create the consistent accumulator by appending the remaining peaks to the consistent roots.
 1. If there are no remaining proofs, use the consistent accumulator as the detached payload and verify the signature of the COSE Sign1.
 
@@ -502,7 +502,7 @@ We define `add_leaf_hash` as
 
       ileft = i - (2 << g)
 
-      # Set iright to the index of the the right child of i,
+      # Set iright to the index of the right child of i,
       # which is i - 1
 
       iright = i - 1
@@ -663,7 +663,7 @@ Returns the floor of log base 2 x
 
 ## most_sig_bit
 
-Returns the mask for the the most significant bit in pos
+Returns the mask for the most significant bit in pos
 
 ~~~~ python
   def most_sig_bit(pos) -> int:
