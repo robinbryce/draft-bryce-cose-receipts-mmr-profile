@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-14T00:34:14.464435+00:00",
+  "timestamp": "2026-08-27T01:38:27.018607+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -309,26 +309,42 @@
       "id": "PR_kwDOO_kfWc7wGHEi",
       "title": "change author email",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/5",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-07-10T09:03:03Z",
-      "updatedAt": "2026-07-10T09:03:04Z",
+      "updatedAt": "2026-08-26T18:03:16Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/update-email",
       "headRefOid": "f392d571171ad26e9651e7fc9d41df6d388153ef",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-08-26T18:03:16Z",
+      "mergedAt": "2026-08-26T18:03:16Z",
+      "mergedBy": "JAG-UK",
+      "mergeCommit": {
+        "oid": "54b1b33a5b0f63ae263067a2111584eec732d3cb"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABLAaaNA",
+          "commit": {
+            "abbreviatedOid": "f392d57"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-08-26T18:03:06Z",
+          "updatedAt": "2026-08-26T18:03:06Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 7,
