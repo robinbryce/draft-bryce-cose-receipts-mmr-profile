@@ -610,6 +610,13 @@ We define `peaks`
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+## Confirmation of entry values
+
+The leaf value is the hash `H(x)` of the caller's entry `x`, applied directly and without a per-leaf salt (see [add_leaf_hash](#addleafhash) and Node values).
+Verification recomputes the root from a candidate entry, so a holder of an inclusion Receipt can test whether any guessed value is the one proven, by recomputing the root and checking the signature.
+For entries drawn from a small or low-entropy domain this confirms the entry content.
+Callers that require entry values to remain confidential SHOULD ensure entries carry sufficient entropy, or blind them, for example by including a secret salt in `x`, before insertion.
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
