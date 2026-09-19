@@ -552,9 +552,19 @@ We define `consistent_roots_for_sizes` as
 
 ### consistent_roots
 
-`consistent_roots` is the unconstrained form of the fold: it applies each consistency path to its origin peak and de-duplicates the results, but does not check that the paths have the lengths the tree sizes imply.
-It is retained for implementations that already hold the peak indices for tree-size-1.
-It MUST NOT be used on its own to verify a receipt of consistency; the checks stated for `consistent_roots_for_sizes` MUST be applied around it.
+`consistent_roots` is the fold defined by earlier versions of this document.
+It applies each consistency path to its origin peak and de-duplicates consecutive equal results, but it does not check that the paths have the lengths the tree sizes imply, and it does not determine how many right-peaks complete the accumulator.
+`consistent_roots_for_sizes` does not call it.
+
+`consistent_roots` MUST NOT be used on its own to verify a receipt of consistency.
+An implementation that retains it MUST apply the following checks around it, which make it accept exactly the proofs `consistent_roots_for_sizes` accepts.
+With `leavesfrom` and `leavesto` the leaf counts of the two sizes, `n` the number of set bits of `leavesfrom`, `nto` the number of set bits of `leavesto`, `split` the highest bit on which they differ, and `nabove` the number of set bits of `leavesfrom` above `split`:
+
+1. tree-size-2 MUST be greater than tree-size-1 and MUST be a complete MMR size.
+1. The number of entries in `accumulatorfrom` and the number of consistency-paths MUST both equal `n`.
+1. The path for an origin peak of height `h` MUST have length 0 if `h` is above `split`, and `split - h` otherwise.
+1. The number of roots returned MUST equal `nabove`, plus one if `n` exceeds `nabove`. Because `consistent_roots` de-duplicates consecutive equal roots, this is the check that every path below `split` produced the same value.
+1. The number of right-peaks MUST equal `nto` minus the number of roots returned.
 
 `consistent_roots` returns the descending height ordered list of elements from the accumulator for the consistent future state.
 
@@ -828,6 +838,12 @@ A verifier that stores the accumulator at the declared size can then be made to 
 This profile therefore carries tree-size-1 and tree-size-2 in the protected header and requires verifiers to compare them with the sizes in the consistency proofs, so that a signature verifies for exactly one pair of sizes.
 It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second.
 It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.
+
+These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
+A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
+A verifier that records a size the ledger never had records a state the ledger never had.
+The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
+A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.
 
 # IANA Considerations
 
