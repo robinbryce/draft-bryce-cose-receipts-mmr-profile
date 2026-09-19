@@ -371,20 +371,30 @@ We define `consistency_proof_paths` as
 
 # COSE Receipt of Consistency
 
-The cbor representation of an inclusion proof is:
+The cbor representation of the protected header of a receipt of consistency is:
 
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
   &(vds: 395) => TBD_1
+  &(tree-size-1: TBD_2) => uint
+  &(tree-size-2: TBD_3) => uint
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
+- tree-size-1 (label: TBD_2): REQUIRED. The tree size from which consistency is proven. MUST equal tree-size-1 of the first consistency-proof in the unprotected header. Value type: uint.
+- tree-size-2 (label: TBD_3): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint.
 
-The unprotected header for an inclusion proof signature is:
+Until TBD_2 and TBD_3 are assigned, implementations of this profile use the private use labels -65932 for tree-size-1 and -65933 for tree-size-2.
+
+The tree sizes are carried in the protected header so that the signature covers them.
+The consistency-proof structure in the unprotected header is unchanged from {{-cose-receipts}} and continues to carry the sizes each proof relates; those values MUST agree with the protected values as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
+A receipt of consistency under this profile that omits either protected tree size MUST be rejected.
+
+The unprotected header for a consistency proof signature is:
 
 ~~~~ cddl
 consistency-proofs = [ + consistency-proof ]
@@ -407,23 +417,144 @@ This protects against implementation errors where the signature is verified but 
 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
-Perform the following for each consistency-proof in the list, verifying the signature with the output of the last.
+The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
+Typically this is its own record of the last state it verified.
+These are referred to below as the trusted tree size and the trusted accumulator.
+The tree-size-1 values carried in the receipt are compared with the trusted tree size; they MUST NOT be used in its place.
+A verifier that takes tree-size-1 from the receipt is verifying a statement the prover chose, and the checks below do not constrain it.
 
-1. Initialize current proof as the first consistency-proof.
-1. Initialize accumulatorfrom to the peaks of tree-size-1 in the current proof.
-1. Initialize ifrom to tree-size-1 - 1 from the current proof.
-1. Initialize proofs to the consistency-paths from the current proof.
-1. Apply the algorithm [consistent_roots](#consistentroots)
-1. Apply the peaks algorithm to obtain the accumulator for tree-size-2
-1. From the peaks for tres-size-2, discard from the left the number of roots returned by consistent_roots.
-1. Create the consistent accumulator by appending the remaining peaks to the consistent roots.
-1. If there are no remaining proofs, use the consistent accumulator as the detached payload and verify the signature of the COSE Sign1.
+Perform the following, in order.
+Verification fails if any step fails.
+
+1. Decode the protected header. tree-size-1 and tree-size-2 MUST be present.
+1. The protected tree-size-1 MUST equal the trusted tree size.
+1. The protected tree-size-1 MUST equal tree-size-1 of the first consistency-proof.
+1. The protected tree-size-2 MUST equal tree-size-2 of the last consistency-proof.
+1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
+1. For each consistency-proof, in order:
+   1. tree-size-1 of the proof MUST equal sizefrom.
+   1. Apply [consistent_roots_for_sizes](#consistentrootsforsizes) to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.
+   1. The length of right-peaks MUST equal nright.
+   1. Set accumulatorfrom to roots followed by right-peaks, and sizefrom to tree-size-2 of the proof.
+1. Use the final accumulatorfrom as the detached payload and verify the signature of the COSE Sign1.
+
+`consistent_roots_for_sizes` requires the proof to have exactly the shape the two sizes imply: tree-size-2 MUST be a complete MMR size; each consistency path MUST have exactly the length that [inclusion_proof_path](#inclusionproofpath) produces for its peak; and every path leading to the same peak of tree-size-2 MUST produce the same value.
+The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.
 
-As the proof must be processed prior to signature verification the implementation SHOULD check the lengths of the proof paths are appropriate for the provided tree sizes.
+As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked against the tree sizes, as `consistent_roots_for_sizes` does.
+A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
+See [Declared tree sizes](#declared-tree-sizes).
+
+### consistent_roots_for_sizes
+
+`consistent_roots_for_sizes` returns the peaks of the accumulator for tree-size-2 that the proof proves from the accumulator for tree-size-1, in descending height order, together with the number of right-peaks the prover must supply to complete that accumulator.
+It requires the proof to have exactly the shape the two tree sizes imply.
+
+For a complete MMR the set bits of [leaf_count](#leafcount)`(size - 1)` are the heights of the accumulator peaks, from the highest bit to the lowest, which is accumulator order.
+Let `split` be the highest bit on which the leaf counts of the two sizes differ.
+Because tree-size-2 is greater than tree-size-1, the target has that bit set and the origin does not.
+An origin peak above `split` is also a peak of the target: its path is empty and its value is returned unchanged.
+Every origin peak below `split` is committed by the target peak of height `split`: its path has length `split - h`, and every such path MUST produce the same value.
+The remaining peaks of the target are below every origin peak, so no path reaches them; the prover supplies them as right-peaks and their number is returned.
+
+Given:
+
+- `sizefrom` the trusted tree size, tree-size-1.
+- `sizeto` the tree size consistency is proven to, tree-size-2.
+- `accumulatorfrom` the node values of the accumulator for `sizefrom`.
+- `proofs` the consistency-paths, one for each entry in `accumulatorfrom`.
+
+And the methods:
+
+- [included_root](#includedroot)
+- [leaf_count](#leafcount)
+- [mmr_size_for_leaf_count](#mmrsizeforleafcount)
+- [bit_length](#bitlength)
+- [ones_count](#onescount)
+
+And the constraints:
+
+- `sizefrom < sizeto`
+- `sizeto` is a complete MMR size.
+- `sizefrom` is a complete MMR size, or 0. This is not checked: every trusted size was itself a checked tree-size-2.
+
+We define `consistent_roots_for_sizes` as
+
+~~~~ python
+  def consistent_roots_for_sizes(
+      sizefrom, sizeto, accumulatorfrom, proofs):
+
+    # if sizeto <= sizefrom -> ERROR
+
+    leavesto = leaf_count(sizeto - 1)
+    # if mmr_size_for_leaf_count(leavesto) != sizeto -> ERROR
+
+    if sizefrom > 0:
+      leavesfrom = leaf_count(sizefrom - 1)
+    else:
+      leavesfrom = 0
+
+    n = ones_count(leavesfrom)
+    # if length(accumulatorfrom) != n -> ERROR
+    # if length(proofs) != n -> ERROR
+
+    nto = ones_count(leavesto)
+    if n == 0:
+      return [], nto
+
+    # The highest bit on which the leaf counts differ.
+    split = bit_length(leavesfrom ^ leavesto) - 1
+
+    roots = []
+
+    # The number of nodes preceding the sub tree of the
+    # current origin peak. A peak of height h is at
+    # offset + 2^(h+1) - 2, and its sub tree has 2^(h+1) - 1 nodes.
+    offset = 0
+    i = 0
+
+    # Origin peaks above the split are peaks of the target.
+    # The path is not read; requiring it to be empty
+    # rejects unused material.
+    for h in range(bit_length(leavesfrom) - 1, split, -1):
+      if not (leavesfrom >> h) & 1:
+        continue
+      # if length(proofs[i]) != 0 -> ERROR
+      roots.append(accumulatorfrom[i])
+      offset += (1 << (h + 1)) - 1
+      i += 1
+
+    # Origin peaks below the split are all committed by the
+    # target peak of height split, so each path has length
+    # split - h and every path must produce the same value.
+    above = len(roots)
+    root = None
+    for h in range(split - 1, -1, -1):
+      if not (leavesfrom >> h) & 1:
+        continue
+      # if length(proofs[i]) != split - h -> ERROR
+      subtree = (1 << (h + 1)) - 1
+      proven = included_root(
+          offset + subtree - 1, accumulatorfrom[i], proofs[i])
+      if i == above:
+        root = proven
+      # elif proven != root -> ERROR
+      offset += subtree
+      i += 1
+
+    if n > above:
+      roots.append(root)
+
+    return roots, nto - len(roots)
+~~~~
 
 ### consistent_roots
+
+`consistent_roots` is the unconstrained form of the fold: it applies each consistency path to its origin peak and de-duplicates the results, but does not check that the paths have the lengths the tree sizes imply.
+It is retained for implementations that already hold the peak indices for tree-size-1.
+It MUST NOT be used on its own to verify a receipt of consistency; the checks stated for `consistent_roots_for_sizes` MUST be applied around it.
 
 `consistent_roots` returns the descending height ordered list of elements from the accumulator for the consistent future state.
 
@@ -606,6 +737,61 @@ We define `peaks`
     return peaks
 ~~~~
 
+## leaf_count
+
+`leaf_count(i)` returns the number of leaves in `MMR(i+1)`.
+
+The bits of the count also form a mask with a single bit set for each peak in the accumulator, where the bit position is the height of the peak.
+Read from the highest bit to the lowest, the set bits give the accumulator peaks in order.
+
+Given:
+
+- `i` the index of any mmr node.
+
+And the methods:
+
+- [bit_length](#bitlength)
+
+We define `leaf_count` as
+
+~~~~ python
+  def leaf_count(i):
+    s = i + 1
+
+    peaksize = (1 << bit_length(s)) - 1
+    peakmap = 0
+    while peaksize > 0:
+      peakmap <<= 1
+      if s >= peaksize:
+        s -= peaksize
+        peakmap |= 1
+      peaksize >>= 1
+
+    return peakmap
+~~~~
+
+## mmr_size_for_leaf_count
+
+`mmr_size_for_leaf_count(leaves)` returns the number of nodes in the complete MMR with `leaves` leaves.
+
+Every leaf adds itself and one interior node for each binary carry, and each peak is a carry that has not happened.
+Because `leaf_count` rounds an incomplete size down to the largest complete MMR below it, `mmr_size_for_leaf_count(leaf_count(size - 1)) == size` holds exactly when `size` is a complete MMR size.
+
+Given:
+
+- `leaves` a leaf count.
+
+And the methods:
+
+- [ones_count](#onescount)
+
+We define `mmr_size_for_leaf_count` as
+
+~~~~ python
+  def mmr_size_for_leaf_count(leaves):
+    return 2 * leaves - ones_count(leaves)
+~~~~
+
 # Privacy Considerations
 
 See the privacy considerations section of {{-cose-receipts}}.
@@ -629,6 +815,20 @@ this document.
 Having included an element, ledger implementations using this draft MUST use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
 Similarly, consistency proofs MUST be the basis for proving the unequivocal history of additions.
 
+## Declared tree sizes
+
+The signed statement of a receipt of consistency is the accumulator for tree-size-2.
+The tree sizes are what give that accumulator its meaning: the same list of node values is the accumulator of every tree size whose peaks have those heights, and a relying party that records the accumulator records it at a size.
+If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.
+
+Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
+It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
+A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.
+
+This profile therefore carries tree-size-1 and tree-size-2 in the protected header and requires verifiers to compare them with the sizes in the consistency proofs, so that a signature verifies for exactly one pair of sizes.
+It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second.
+It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.
+
 # IANA Considerations
 
 ## Additions to Existing Registries
@@ -643,6 +843,26 @@ IANA is requested to add the following value to the "COSE Verifiable Data Struct
 - Reference: RFCthis
 
 Editors note: Hash agility. This document defines a single SHA-256-based identifier, MMR_SHA256, following the convention of binding the hash function into the algorithm identifier. Additional identifiers (for example using BLAKE2b-256, SHA3-256, or SHA3-512, both of which are used by existing implementations) are expected to be registered as separate values in a future revision, rather than negotiated within a single identifier.
+
+### COSE Header Parameters
+
+IANA is requested to add the following entries to the "COSE Header Parameters" registry established by {{-COSE}}, in the Specification Required range:
+
+- Name: tree-size-1
+- Label: TBD_2
+- Value Type: uint
+- Value Registry: none
+- Description: The tree size from which a receipt of consistency proves consistency
+- Reference: RFCthis
+
+- Name: tree-size-2
+- Label: TBD_3
+- Value Type: uint
+- Value Registry: none
+- Description: The tree size to which a receipt of consistency proves consistency, and whose accumulator is its payload
+- Reference: RFCthis
+
+Until these labels are assigned, implementations use the private use values -65932 for tree-size-1 and -65933 for tree-size-2, as stated in [COSE Receipt of Consistency](#cose-receipt-of-consistency).
 
 ## New Registries
 
