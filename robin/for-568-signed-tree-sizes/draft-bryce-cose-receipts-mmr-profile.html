@@ -1933,34 +1933,54 @@ The remaining peaks of the target are below every origin peak, so no path reache
           <h4 id="name-consistent_roots">
 <a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-consistent_roots" class="section-name selfRef">consistent_roots</a>
           </h4>
-<p id="section-7.1.2-1"><code>consistent_roots</code> is the unconstrained form of the fold: it applies each consistency path to its origin peak and de-duplicates the results, but does not check that the paths have the lengths the tree sizes imply.
-It is retained for implementations that already hold the peak indices for tree-size-1.
-It <span class="bcp14">MUST NOT</span> be used on its own to verify a receipt of consistency; the checks stated for <code>consistent_roots_for_sizes</code> <span class="bcp14">MUST</span> be applied around it.<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-7.1.2-2"><code>consistent_roots</code> returns the descending height ordered list of elements from the accumulator for the consistent future state.<a href="#section-7.1.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.1.2-3">Implementations <span class="bcp14">MUST</span> require that the number of peaks returned by <a href="#peaks" class="auto internal xref">Section 9.2</a><code>(ifrom)</code> equals the number of entries in <code>accumulatorfrom</code>.<a href="#section-7.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.1.2-4">Given:<a href="#section-7.1.2-4" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1.2-5.1">
-              <p id="section-7.1.2-5.1.1"><code>ifrom</code> the last index in the complete MMR from which consistency was proven.<a href="#section-7.1.2-5.1.1" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-1"><code>consistent_roots</code> is the fold defined by earlier versions of this document.
+It applies each consistency path to its origin peak and de-duplicates consecutive equal results, but it does not check that the paths have the lengths the tree sizes imply, and it does not determine how many right-peaks complete the accumulator.
+<code>consistent_roots_for_sizes</code> does not call it.<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-2"><code>consistent_roots</code> <span class="bcp14">MUST NOT</span> be used on its own to verify a receipt of consistency.
+An implementation that retains it <span class="bcp14">MUST</span> apply the following checks around it, which make it accept exactly the proofs <code>consistent_roots_for_sizes</code> accepts.
+With <code>leavesfrom</code> and <code>leavesto</code> the leaf counts of the two sizes, <code>n</code> the number of set bits of <code>leavesfrom</code>, <code>nto</code> the number of set bits of <code>leavesto</code>, <code>split</code> the highest bit on which they differ, and <code>nabove</code> the number of set bits of <code>leavesfrom</code> above <code>split</code>:<a href="#section-7.1.2-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1.2-3">
+<li id="section-7.1.2-3.1">
+              <p id="section-7.1.2-3.1.1">tree-size-2 <span class="bcp14">MUST</span> be greater than tree-size-1 and <span class="bcp14">MUST</span> be a complete MMR size.<a href="#section-7.1.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.1.2-5.2">
-              <p id="section-7.1.2-5.2.1"><code>accumulatorfrom</code> the node values corresponding to the peaks of the accumulator for tree-size-1<a href="#section-7.1.2-5.2.1" class="pilcrow">¶</a></p>
+            <li id="section-7.1.2-3.2">
+              <p id="section-7.1.2-3.2.1">The number of entries in <code>accumulatorfrom</code> and the number of consistency-paths <span class="bcp14">MUST</span> both equal <code>n</code>.<a href="#section-7.1.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.1.2-5.3">
-              <p id="section-7.1.2-5.3.1"><code>proofs</code> the inclusion proofs for each node in <code>accumulatorfrom</code> for tree-size-2<a href="#section-7.1.2-5.3.1" class="pilcrow">¶</a></p>
+            <li id="section-7.1.2-3.3">
+              <p id="section-7.1.2-3.3.1">The path for an origin peak of height <code>h</code> <span class="bcp14">MUST</span> have length 0 if <code>h</code> is above <code>split</code>, and <code>split - h</code> otherwise.<a href="#section-7.1.2-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-<p id="section-7.1.2-6">And the methods:<a href="#section-7.1.2-6" class="pilcrow">¶</a></p>
+            <li id="section-7.1.2-3.4">
+              <p id="section-7.1.2-3.4.1">The number of roots returned <span class="bcp14">MUST</span> equal <code>nabove</code>, plus one if <code>n</code> exceeds <code>nabove</code>. Because <code>consistent_roots</code> de-duplicates consecutive equal roots, this is the check that every path below <code>split</code> produced the same value.<a href="#section-7.1.2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.2-3.5">
+              <p id="section-7.1.2-3.5.1">The number of right-peaks <span class="bcp14">MUST</span> equal <code>nto</code> minus the number of roots returned.<a href="#section-7.1.2-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-7.1.2-4"><code>consistent_roots</code> returns the descending height ordered list of elements from the accumulator for the consistent future state.<a href="#section-7.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-5">Implementations <span class="bcp14">MUST</span> require that the number of peaks returned by <a href="#peaks" class="auto internal xref">Section 9.2</a><code>(ifrom)</code> equals the number of entries in <code>accumulatorfrom</code>.<a href="#section-7.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-6">Given:<a href="#section-7.1.2-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1.2-7.1">
-              <p id="section-7.1.2-7.1.1"><span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span><a href="#section-7.1.2-7.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.2-7.1.1"><code>ifrom</code> the last index in the complete MMR from which consistency was proven.<a href="#section-7.1.2-7.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.1.2-7.2">
-              <p id="section-7.1.2-7.2.1"><a href="#peaks" class="auto internal xref">Section 9.2</a><a href="#section-7.1.2-7.2.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.2-7.2.1"><code>accumulatorfrom</code> the node values corresponding to the peaks of the accumulator for tree-size-1<a href="#section-7.1.2-7.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-7.3">
+              <p id="section-7.1.2-7.3.1"><code>proofs</code> the inclusion proofs for each node in <code>accumulatorfrom</code> for tree-size-2<a href="#section-7.1.2-7.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-7.1.2-8">We define <code>consistent_roots</code> as<a href="#section-7.1.2-8" class="pilcrow">¶</a></p>
-<div class="lang-python sourcecode" id="section-7.1.2-9">
+<p id="section-7.1.2-8">And the methods:<a href="#section-7.1.2-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-9.1">
+              <p id="section-7.1.2-9.1.1"><span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span><a href="#section-7.1.2-9.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-9.2">
+              <p id="section-7.1.2-9.2.1"><a href="#peaks" class="auto internal xref">Section 9.2</a><a href="#section-7.1.2-9.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-10">We define <code>consistent_roots</code> as<a href="#section-7.1.2-10" class="pilcrow">¶</a></p>
+<div class="lang-python sourcecode" id="section-7.1.2-11">
 <pre>
   def consistent_roots(ifrom, accumulatorfrom, proofs):
 
@@ -1978,7 +1998,7 @@ It <span class="bcp14">MUST NOT</span> be used on its own to verify a receipt of
       roots.append(root)
 
     return roots
-</pre><a href="#section-7.1.2-9" class="pilcrow">¶</a>
+</pre><a href="#section-7.1.2-11" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2296,6 +2316,11 @@ A verifier that stores the accumulator at the declared size can then be made to 
 <p id="section-11.3-3">This profile therefore carries tree-size-1 and tree-size-2 in the protected header and requires verifiers to compare them with the sizes in the consistency proofs, so that a signature verifies for exactly one pair of sizes.
 It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second.
 It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+<p id="section-11.3-4">These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
+A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
+A verifier that records a size the ledger never had records a state the ledger never had.
+The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
+A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
