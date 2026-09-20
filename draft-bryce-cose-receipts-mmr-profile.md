@@ -26,6 +26,7 @@ author:
 normative:
   RFC2119:
   RFC8174:
+  RFC8949:
   RFC9053: COSE
   I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
@@ -377,22 +378,26 @@ The cbor representation of the protected header of a receipt of consistency is:
 protected-header-map = {
   &(alg: 1) => int
   &(vds: 395) => TBD_1
-  &(tree-size-1: TBD_2) => uint
-  &(tree-size-2: TBD_3) => uint
+  &(tree-size-2: TBD_2) => uint
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
-- tree-size-1 (label: TBD_2): REQUIRED. The tree size from which consistency is proven. MUST equal tree-size-1 of the first consistency-proof in the unprotected header. Value type: uint.
-- tree-size-2 (label: TBD_3): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint.
+- tree-size-2 (label: TBD_2): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).
 
-Until TBD_2 and TBD_3 are assigned, implementations of this profile use the private use labels -65932 for tree-size-1 and -65933 for tree-size-2.
+Until TBD_2 is assigned, implementations of this profile use the private use label -65933 for tree-size-2.
 
-The tree sizes are carried in the protected header so that the signature covers them.
-The consistency-proof structure in the unprotected header is unchanged from {{-cose-receipts}} and continues to carry the sizes each proof relates; those values MUST agree with the protected values as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
-A receipt of consistency under this profile that omits either protected tree size MUST be rejected.
+tree-size-2 is carried in the protected header so that the signature covers the size the signed accumulator belongs to.
+tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
+The consistency-proof structure in the unprotected header is unchanged from {{-cose-receipts}} and continues to carry both sizes each proof relates.
+A receipt of consistency under this profile that omits the protected tree-size-2 MUST be rejected.
+
+The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+The protected header map MUST occupy the whole of the protected header byte string.
+A verifier MUST reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.
 
 The unprotected header for a consistency proof signature is:
 
@@ -420,16 +425,15 @@ Verification accommodates verifying the result of a cumulative series of consist
 The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
 Typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
-The tree-size-1 values carried in the receipt are compared with the trusted tree size; they MUST NOT be used in its place.
+The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
 A verifier that takes tree-size-1 from the receipt is verifying a statement the prover chose, and the checks below do not constrain it.
 
 Perform the following, in order.
 Verification fails if any step fails.
 
-1. Decode the protected header. tree-size-1 and tree-size-2 MUST be present.
-1. The protected tree-size-1 MUST equal the trusted tree size.
-1. The protected tree-size-1 MUST equal tree-size-1 of the first consistency-proof.
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
 1. The protected tree-size-2 MUST equal tree-size-2 of the last consistency-proof.
+1. tree-size-1 of the first consistency-proof MUST equal the trusted tree size.
 1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
 1. For each consistency-proof, in order:
    1. tree-size-1 of the proof MUST equal sizefrom.
@@ -835,8 +839,8 @@ Checking the lengths of the consistency paths against the declared sizes binds t
 It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
 A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.
 
-This profile therefore carries tree-size-1 and tree-size-2 in the protected header and requires verifiers to compare them with the sizes in the consistency proofs, so that a signature verifies for exactly one pair of sizes.
-It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second.
+This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
+It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second; for the same reason tree-size-1 is not signed, since a signed origin would only restate what the verifier must already hold, and would prevent a relying party from presenting a chain of proofs, or a re-based proof, under one signature.
 It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.
 
 These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
@@ -844,6 +848,14 @@ A consistency proof relates two states, so a verifier carries the tree size and 
 A verifier that records a size the ledger never had records a state the ledger never had.
 The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
 A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.
+
+## Protected header encoding
+
+The protected header is signed as a byte string, and tree-size-2 is read from it by label.
+Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
+Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
+Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
+Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.
 
 # IANA Considerations
 
@@ -862,23 +874,16 @@ Editors note: Hash agility. This document defines a single SHA-256-based identif
 
 ### COSE Header Parameters
 
-IANA is requested to add the following entries to the "COSE Header Parameters" registry established by {{-COSE}}, in the Specification Required range:
-
-- Name: tree-size-1
-- Label: TBD_2
-- Value Type: uint
-- Value Registry: none
-- Description: The tree size from which a receipt of consistency proves consistency
-- Reference: RFCthis
+IANA is requested to add the following entry to the "COSE Header Parameters" registry established by {{-COSE}}, in the Specification Required range:
 
 - Name: tree-size-2
-- Label: TBD_3
+- Label: TBD_2
 - Value Type: uint
 - Value Registry: none
 - Description: The tree size to which a receipt of consistency proves consistency, and whose accumulator is its payload
 - Reference: RFCthis
 
-Until these labels are assigned, implementations use the private use values -65932 for tree-size-1 and -65933 for tree-size-2, as stated in [COSE Receipt of Consistency](#cose-receipt-of-consistency).
+Until this label is assigned, implementations use the private use value -65933 for tree-size-2, as stated in [COSE Receipt of Consistency](#cose-receipt-of-consistency).
 
 ## New Registries
 
