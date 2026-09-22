@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-20T00:37:20.936070+00:00",
+  "timestamp": "2026-09-22T00:33:40.958798+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -989,26 +989,28 @@
     {
       "number": 39,
       "id": "PR_kwDOO_kfWc8AAAABEQRFLw",
-      "title": "Sign the tree sizes in the receipt of consistency; shape checks become MUSTs",
+      "title": "Sign tree-size-2 in the receipt of consistency; deterministic protected header; shape checks become MUSTs",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/39",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "The receipt of consistency carried `tree-size-1` / `tree-size-2` only in the unprotected `consistency-proof`, so the signature covered the accumulator but not the size it is the accumulator of. When no origin peak is carried into a new peak of `tree-size-2` (a proof from the empty tree, or one where every origin peak is also a target peak) every path is empty, and the same signature verifies at every larger size that adds peaks of the same heights. The presenter, not the signer, then chooses the size a relying party records.\n\nChanges:\n\n- **COSE Receipt of Consistency**: protected header gains `tree-size-1` (`TBD_2`) and `tree-size-2` (`TBD_3`), both REQUIRED, `uint`; interim private use values `-65932` / `-65933`. The unprotected `consistency-proof` structure is unchanged (RFC 9942 compatibility).\n- **Verifying the Receipt of consistency**: rewritten as MUSTs \u2014 `tree-size-1` from trusted state, never from the receipt; protected sizes equal the first proof's `tree-size-1` and the last proof's `tree-size-2`; each proof's `tree-size-1` equals the running size; fold by `consistent_roots_for_sizes`; `right-peaks` count fixed by the sizes; the path-length SHOULD is a MUST for consistency proofs. The inclusion-receipt SHOULD is unchanged (no declared size there).\n- **`consistent_roots_for_sizes`**: new normative procedure, ported from the reference (robinbryce/merkle-mountain-range-proofs#1). `consistent_roots` is retained as the unconstrained primitive and MUST NOT be used alone. `leaf_count` and `mmr_size_for_leaf_count` added under supporting algorithms.\n- **Security Considerations**: new \"Declared tree sizes\".\n- **IANA Considerations**: two COSE Header Parameter registrations (Specification Required range) with the interim values; \"no new registries\" stands, since these are additions to an existing registry.\n\nVerification: the draft's pseudo-code (with its `-> ERROR` comments turned into raises) was run against `consistent_roots_for_sizes` from the reference repo on all 231 complete size pairs up to 39 and on the negative shapes (non-growing, incomplete target, wrong proof count, wrong path length, differing roots under one target peak); every result agrees. `make` (kramdown-rfc, xml2rfc txt/html) builds clean.\n\nContext: forestrie ADR-0066 (forestrie/devdocs#194), label registry (forestrie/protocol#9), Linear FOR-568. The draft still cites the I-D name for what is now RFC 9942; updating that reference is out of scope here.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n",
+      "body": "A receipt of consistency signs the accumulator for `tree-size-2`, but the tree sizes themselves travel only in the unprotected `consistency-proof`. When no origin peak is carried into a new peak of `tree-size-2` (a proof from the empty tree, or one in which every origin peak is also a target peak) every consistency path is empty, and the same signature verifies at every larger size that adds peaks of the same heights. The party presenting the receipt, not the signer, then chooses the size a relying party records; the ledger's next receipt fails against that recorded state, which looks like misbehaviour by a correct ledger.\n\n**What the draft now requires.**\n- The protected header of a receipt of consistency carries `tree-size-2` under a new header parameter (`TBD_2`; private-use `-65933` until assigned) as an unsigned integer, and a verifier compares it with `tree-size-2` of the last consistency proof. `tree-size-1` stays in the proof as prover context: the verifier takes the origin from state it already trusts, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.\n- The protected header must be deterministic CBOR (RFC 8949 \u00a74.2.1); a verifier rejects a header that is not, that has duplicate labels, or that has bytes beyond the map, and ignores labels it does not recognise.\n- The verification procedure is restated as MUSTs: the origin from trusted state, each proof's base equal to the running size, the target a complete MMR size, each path exactly the length the two sizes imply, one root per target peak, the right-peak count fixed by the sizes. The path-length check was a SHOULD; for consistency proofs it is now a MUST. The inclusion-receipt SHOULD is unchanged, since an inclusion receipt declares no size.\n- A new normative procedure, `consistent_roots_for_sizes`, performs the fold with those checks built in (ported from the reference in [merkle-mountain-range-proofs #1](https://github.com/robinbryce/merkle-mountain-range-proofs/pull/1)). The earlier `consistent_roots` is retained with the equivalent checks listed as MUSTs around it and is marked as not usable alone. `leaf_count` and `mmr_size_for_leaf_count` are added to the supporting algorithms.\n- Security Considerations gains \"Declared tree sizes\" (why the size must be signed, and that this applies to every verifier, not only split-view detection) and \"Protected header encoding\" (why two conformant verifiers must agree on which headers are valid).\n- IANA Considerations registers the one new COSE header parameter (Specification Required range); RFC 8949 becomes a normative reference.\n\n**Verification.** The pseudo-code, with its `-> ERROR` comments turned into raises, was run against the reference implementation on all 231 complete size pairs up to 39 and on the negative shapes (non-growing sizes, incomplete target, wrong proof count, wrong path length, surplus right peak, two paths under one target peak proving different roots). The standalone procedure and the retained `consistent_roots` with its checks accept and reject exactly the same inputs. `make` (kramdown-rfc, xml2rfc text and HTML) builds clean.\n\n**Context.** This is the wire change behind Forestrie's [ADR-0066](https://github.com/forestrie/devdocs/blob/main/adr/adr-0066-sec-signed-checkpoint-size.md) and [forestrie/protocol #9](https://github.com/forestrie/protocol/pull/9). The draft still cites the Internet-Draft name for what is now RFC 9942; updating that reference is out of scope here.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n",
       "createdAt": "2026-09-19T20:49:47Z",
-      "updatedAt": "2026-09-19T21:08:45Z",
+      "updatedAt": "2026-09-20T10:58:55Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "54b1b33a5b0f63ae263067a2111584eec732d3cb",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/for-568-signed-tree-sizes",
-      "headRefOid": "be19fdc7273a6fd0f5ff23d21d6a7a008ddf9c1b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "3a89c71576cf5456213b57d0375f158cebd5f331",
+      "closedAt": "2026-09-20T10:58:54Z",
+      "mergedAt": "2026-09-20T10:58:54Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "c7ea5480dd930213ac7ced827b5dd6f58bc03476"
+      },
       "comments": [],
       "reviews": []
     }
