@@ -773,7 +773,7 @@ Similarly, consistency proofs MUST be the basis for proving the unequivocal hist
 The signed statement of a receipt of consistency is the accumulator for tree-size-2.
 If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.
 
-Checking the shape of the proof against the tree sizes does not bind tree-size-2.
+Checking the shape of the proof against the tree sizes binds tree-size-2 only when there are no right-peaks, since the rightmost peak then lies on a path that commits it to its position, and the position of the rightmost peak is the tree size.
 A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.
 
 This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.
