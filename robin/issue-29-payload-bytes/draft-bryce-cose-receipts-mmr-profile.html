@@ -11,23 +11,23 @@
        This document defines a new verifiable data structure type for COSE Receipts   specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage. 
        Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges. 
     " name="description">
-<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="xml2rfc 3.34.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-bryce-cose-receipts-mmr-profile-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.34.0
+  xml2rfc 3.34.1
     Python 3.14.7
-    ConfigArgParse 1.7.5
+    ConfigArgParse 1.7.7
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.11.3
+    platformdirs 4.11.10
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.2
+    wcwidth 0.8.4
 -->
 <link href="draft-bryce-cose-receipts-mmr-profile.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1043,11 +1043,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">COSE Receipts for MMRs</td>
-<td class="right">August 2026</td>
+<td class="right">September 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Bryce &amp; Geater</td>
-<td class="center">Expires 27 February 2027</td>
+<td class="center">Expires 30 March 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1060,12 +1060,12 @@ svg {
 <dd class="internet-draft">draft-bryce-cose-receipts-mmr-profile-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-08-26" class="published">26 August 2026</time>
+<time datetime="2026-09-26" class="published">26 September 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-02-27">27 February 2027</time></dd>
+<dd class="expires"><time datetime="2027-03-30">30 March 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1102,7 +1102,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 February 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1174,7 +1174,10 @@ svg {
                 <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-verifying-the-receipt-of-co" class="internal xref">Verifying the Receipt of consistency</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
-                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-consistent_roots" class="internal xref">consistent_roots</a></p>
+                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-consistent_roots_for_sizes" class="internal xref">consistent_roots_for_sizes</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
+                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-consistent_roots" class="internal xref">consistent_roots</a></p>
 </li>
                 </ul>
 </li>
@@ -1205,6 +1208,12 @@ svg {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
                 <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-peaks" class="internal xref">peaks</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-leaf_count" class="internal xref">leaf_count</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
+                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-mmr_size_for_leaf_count" class="internal xref">mmr_size_for_leaf_count</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
@@ -1219,6 +1228,12 @@ svg {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
                 <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-misbehaving-ledgers" class="internal xref">Misbehaving Ledgers</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
@@ -1229,6 +1244,9 @@ svg {
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1.2.1">
                     <p id="section-toc.1-1.12.2.1.2.1.1"><a href="#section-12.1.1" class="auto internal xref">12.1.1</a>.  <a href="#name-cose-verifiable-data-struct" class="internal xref">COSE Verifiable Data Structure Algorithms</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1.2.2">
+                    <p id="section-toc.1-1.12.2.1.2.2.1"><a href="#section-12.1.2" class="auto internal xref">12.1.2</a>.  <a href="#name-cose-header-parameters" class="internal xref">COSE Header Parameters</a></p>
 </li>
                 </ul>
 </li>
@@ -1515,7 +1533,7 @@ this protects against implementation errors where the signature is verified but 
 <p id="section-5.1-1">The inclusion proof and signature are verified in order.
 First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
 The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload <span class="bcp14">MUST</span> be set to this value.
+The COSE Sign1 payload <span class="bcp14">MUST</span> be set to the bytes of this node value.
 Second the verifier checks the signature of the COSE Sign1.
 If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
 If the resulting signature does not verify, the signature may have been tampered with.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
@@ -1600,7 +1618,8 @@ If the resulting signature does not verify, the signature may have been tampered
       </h2>
 <p id="section-6-1">A consistency proof shows that the accumulator, defined in <span>[<a href="#ReyzinYakoubov" class="cite xref">ReyzinYakoubov</a>]</span>,
 for tree-size-1 is a prefix of the accumulator for tree-size-2.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of <code>right-peaks</code> which complete the accumulator for tree-size-2.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-2">The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of <code>right-peaks</code> which complete the accumulator for tree-size-2.
+The detached payload is the node values of that accumulator concatenated in descending height order.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">The receipt of consistency is defined so that a chain of cumulative consistency proofs can be verified together.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">The cbor representation of a consistency proof is:<a href="#section-6-4" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-6-5">
@@ -1679,12 +1698,13 @@ consistency-proof =  bstr .cbor [
       <h2 id="name-cose-receipt-of-consistency">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-cose-receipt-of-consistency" class="section-name selfRef">COSE Receipt of Consistency</a>
       </h2>
-<p id="section-7-1">The cbor representation of an inclusion proof is:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">The cbor representation of the protected header of a receipt of consistency is:<a href="#section-7-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-7-2">
 <pre>
 protected-header-map = {
   &amp;(alg: 1) =&gt; int
   &amp;(vds: 395) =&gt; TBD_1
+  &amp;(tree-size-2: TBD_2) =&gt; uint
   * cose-label =&gt; cose-value
 }
 </pre><a href="#section-7-2" class="pilcrow">¶</a>
@@ -1696,9 +1716,21 @@ protected-header-map = {
         <li class="normal" id="section-7-3.2">
           <p id="section-7-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier. Value type: int.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
 </li>
+        <li class="normal" id="section-7-3.3">
+          <p id="section-7-3.3.1">tree-size-2 (label: TBD_2): <span class="bcp14">REQUIRED</span>. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
+</li>
       </ul>
-<p id="section-7-4">The unprotected header for an inclusion proof signature is:<a href="#section-7-4" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="section-7-5">
+<p id="section-7-4">Until TBD_2 is assigned, implementations of this profile use the private use label -65933 for tree-size-2.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-5">tree-size-2 is carried in the protected header so that the signature covers the size the signed accumulator belongs to.
+tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.
+The consistency-proof structure in the unprotected header is unchanged from <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> and continues to carry both sizes each proof relates.
+A receipt of consistency under this profile that omits the protected tree-size-2 <span class="bcp14">MUST</span> be rejected.<a href="#section-7-5" class="pilcrow">¶</a></p>
+<p id="section-7-6">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+The protected header map <span class="bcp14">MUST</span> occupy the whole of the protected header byte string.
+A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.<a href="#section-7-6" class="pilcrow">¶</a></p>
+<p id="section-7-7">The unprotected header for a consistency proof signature is:<a href="#section-7-7" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="section-7-8">
 <pre>
 consistency-proofs = [ + consistency-proof ]
 
@@ -1710,66 +1742,90 @@ unprotected-header-map = {
   &amp;(vdp: 396) =&gt; verifiable-proofs
   * cose-label =&gt; cose-value
 }
-</pre><a href="#section-7-5" class="pilcrow">¶</a>
+</pre><a href="#section-7-8" class="pilcrow">¶</a>
 </div>
-<p id="section-7-6">The payload <span class="bcp14">MUST</span> be detached.
+<p id="section-7-9">The payload <span class="bcp14">MUST</span> be detached.
 Detaching the payload forces verifiers to recompute the roots from the consistency proofs.
-This protects against implementation errors where the signature is verified but the payload is not genuinely produced by the included proof.<a href="#section-7-6" class="pilcrow">¶</a></p>
+This protects against implementation errors where the signature is verified but the payload is not genuinely produced by the included proof.<a href="#section-7-9" class="pilcrow">¶</a></p>
 <div id="verifying-the-receipt-of-consistency">
 <section id="section-7.1">
         <h3 id="name-verifying-the-receipt-of-co">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-verifying-the-receipt-of-co" class="section-name selfRef">Verifying the Receipt of consistency</a>
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">Perform the following for each consistency-proof in the list, verifying the signature with the output of the last.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7.1-3">
-<li id="section-7.1-3.1">
-            <p id="section-7.1-3.1.1">Initialize current proof as the first consistency-proof.<a href="#section-7.1-3.1.1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
+Typically this is its own record of the last state it verified.
+These are referred to below as the trusted tree size and the trusted accumulator.
+The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they <span class="bcp14">MUST NOT</span> be used in its place.
+A verifier that takes tree-size-1 from the receipt is verifying a statement the prover chose, and the checks below do not constrain it.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Perform the following, in order.
+Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-4">
+<li id="section-7.1-4.1">
+            <p id="section-7.1-4.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; tree-size-2 <span class="bcp14">MUST</span> be present and <span class="bcp14">MUST</span> be an unsigned integer. Labels the verifier does not recognise are skipped.<a href="#section-7.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.2">
-            <p id="section-7.1-3.2.1">Initialize accumulatorfrom to the peaks of tree-size-1 in the current proof.<a href="#section-7.1-3.2.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-4.2">
+            <p id="section-7.1-4.2.1">The protected tree-size-2 <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof.<a href="#section-7.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.3">
-            <p id="section-7.1-3.3.1">Initialize ifrom to tree-size-1 - 1 from the current proof.<a href="#section-7.1-3.3.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-4.3">
+            <p id="section-7.1-4.3.1">tree-size-1 of the first consistency-proof <span class="bcp14">MUST</span> equal the trusted tree size.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.4">
-            <p id="section-7.1-3.4.1">Initialize proofs to the consistency-paths from the current proof.<a href="#section-7.1-3.4.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-4.4">
+            <p id="section-7.1-4.4.1">Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.5">
-            <p id="section-7.1-3.5.1">Apply the algorithm <span><a href="#consistentroots" class="internal xref">consistent_roots</a> (<a href="#consistentroots" class="auto internal xref">Section 7.1.1</a>)</span><a href="#section-7.1-3.5.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-4.5">
+            <p id="section-7.1-4.5.1">For each consistency-proof, in order:<a href="#section-7.1-4.5.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-4.5.2">
+<li id="section-7.1-4.5.2.1">
+                <p id="section-7.1-4.5.2.1.1">tree-size-1 of the proof <span class="bcp14">MUST</span> equal sizefrom.<a href="#section-7.1-4.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.6">
-            <p id="section-7.1-3.6.1">Apply the peaks algorithm to obtain the accumulator for tree-size-2<a href="#section-7.1-3.6.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-4.5.2.2">
+                <p id="section-7.1-4.5.2.2.1">Apply <span><a href="#consistentrootsforsizes" class="internal xref">consistent_roots_for_sizes</a> (<a href="#consistentrootsforsizes" class="auto internal xref">Section 7.1.1</a>)</span> to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.<a href="#section-7.1-4.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.7">
-            <p id="section-7.1-3.7.1">From the peaks for tres-size-2, discard from the left the number of roots returned by consistent_roots.<a href="#section-7.1-3.7.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-4.5.2.3">
+                <p id="section-7.1-4.5.2.3.1">The length of right-peaks <span class="bcp14">MUST</span> equal nright.<a href="#section-7.1-4.5.2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.8">
-            <p id="section-7.1-3.8.1">Create the consistent accumulator by appending the remaining peaks to the consistent roots.<a href="#section-7.1-3.8.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-4.5.2.4">
+                <p id="section-7.1-4.5.2.4.1">Set accumulatorfrom to roots followed by right-peaks, and sizefrom to tree-size-2 of the proof.<a href="#section-7.1-4.5.2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-3.9">
-            <p id="section-7.1-3.9.1">If there are no remaining proofs, use the consistent accumulator as the detached payload and verify the signature of the COSE Sign1.<a href="#section-7.1-3.9.1" class="pilcrow">¶</a></p>
+            </ol>
+</li>
+          <li id="section-7.1-4.6">
+            <p id="section-7.1-4.6.1">Use the final accumulatorfrom as the detached payload and verify the signature of the COSE Sign1.<a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-7.1-4">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
-<p id="section-7.1-5">As the proof must be processed prior to signature verification the implementation <span class="bcp14">SHOULD</span> check the lengths of the proof paths are appropriate for the provided tree sizes.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
-<div id="consistentroots">
+<p id="section-7.1-5"><code>consistent_roots_for_sizes</code> requires the proof to have exactly the shape the two sizes imply: tree-size-2 <span class="bcp14">MUST</span> be a complete MMR size; each consistency path <span class="bcp14">MUST</span> have exactly the length that <span><a href="#inclusionproofpath" class="internal xref">inclusion_proof_path</a> (<a href="#inclusionproofpath" class="auto internal xref">Section 4.1</a>)</span> produces for its peak; and every path leading to the same peak of tree-size-2 <span class="bcp14">MUST</span> produce the same value.
+The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
+<p id="section-7.1-7">As the proof is processed before the signature is verified, the lengths of the consistency paths <span class="bcp14">MUST</span> be checked against the tree sizes, as <code>consistent_roots_for_sizes</code> does.
+A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
+See <span><a href="#declared-tree-sizes" class="internal xref">Declared tree sizes</a> (<a href="#declared-tree-sizes" class="auto internal xref">Section 11.3</a>)</span>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
+<div id="consistentrootsforsizes">
 <section id="section-7.1.1">
-          <h4 id="name-consistent_roots">
-<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-consistent_roots" class="section-name selfRef">consistent_roots</a>
+          <h4 id="name-consistent_roots_for_sizes">
+<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-consistent_roots_for_sizes" class="section-name selfRef">consistent_roots_for_sizes</a>
           </h4>
-<p id="section-7.1.1-1"><code>consistent_roots</code> returns the descending height ordered list of elements from the accumulator for the consistent future state.<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1.1-2">Implementations <span class="bcp14">MUST</span> require that the number of peaks returned by <a href="#peaks" class="auto internal xref">Section 9.2</a><code>(ifrom)</code> equals the number of entries in <code>accumulatorfrom</code>.<a href="#section-7.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1.1-1"><code>consistent_roots_for_sizes</code> returns the peaks of the accumulator for tree-size-2 that the proof proves from the accumulator for tree-size-1, in descending height order, together with the number of right-peaks the prover must supply to complete that accumulator.
+It requires the proof to have exactly the shape the two tree sizes imply.<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.1-2">For a complete MMR the set bits of <span><a href="#leafcount" class="internal xref">leaf_count</a> (<a href="#leafcount" class="auto internal xref">Section 9.3</a>)</span><code>(size - 1)</code> are the heights of the accumulator peaks, from the highest bit to the lowest, which is accumulator order.
+Let <code>split</code> be the highest bit on which the leaf counts of the two sizes differ.
+Because tree-size-2 is greater than tree-size-1, the target has that bit set and the origin does not.
+An origin peak above <code>split</code> is also a peak of the target: its path is empty and its value is returned unchanged.
+Every origin peak below <code>split</code> is committed by the target peak of height <code>split</code>: its path has length <code>split - h</code>, and every such path <span class="bcp14">MUST</span> produce the same value.
+The remaining peaks of the target are below every origin peak, so no path reaches them; the prover supplies them as right-peaks and their number is returned.<a href="#section-7.1.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1.1-3">Given:<a href="#section-7.1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1.1-4.1">
-              <p id="section-7.1.1-4.1.1"><code>ifrom</code> the last index in the complete MMR from which consistency was proven.<a href="#section-7.1.1-4.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-4.1.1"><code>sizefrom</code> the trusted tree size, tree-size-1.<a href="#section-7.1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.1.1-4.2">
-              <p id="section-7.1.1-4.2.1"><code>accumulatorfrom</code> the node values corresponding to the peaks of the accumulator for tree-size-1<a href="#section-7.1.1-4.2.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-4.2.1"><code>sizeto</code> the tree size consistency is proven to, tree-size-2.<a href="#section-7.1.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.1.1-4.3">
-              <p id="section-7.1.1-4.3.1"><code>proofs</code> the inclusion proofs for each node in <code>accumulatorfrom</code> for tree-size-2<a href="#section-7.1.1-4.3.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-4.3.1"><code>accumulatorfrom</code> the node values of the accumulator for <code>sizefrom</code>.<a href="#section-7.1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-4.4">
+              <p id="section-7.1.1-4.4.1"><code>proofs</code> the consistency-paths, one for each entry in <code>accumulatorfrom</code>.<a href="#section-7.1.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-7.1.1-5">And the methods:<a href="#section-7.1.1-5" class="pilcrow">¶</a></p>
@@ -1778,11 +1834,155 @@ This protects against implementation errors where the signature is verified but 
               <p id="section-7.1.1-6.1.1"><span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span><a href="#section-7.1.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.1.1-6.2">
-              <p id="section-7.1.1-6.2.1"><a href="#peaks" class="auto internal xref">Section 9.2</a><a href="#section-7.1.1-6.2.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-6.2.1"><span><a href="#leafcount" class="internal xref">leaf_count</a> (<a href="#leafcount" class="auto internal xref">Section 9.3</a>)</span><a href="#section-7.1.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-6.3">
+              <p id="section-7.1.1-6.3.1"><span><a href="#mmrsizeforleafcount" class="internal xref">mmr_size_for_leaf_count</a> (<a href="#mmrsizeforleafcount" class="auto internal xref">Section 9.4</a>)</span><a href="#section-7.1.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-6.4">
+              <p id="section-7.1.1-6.4.1"><span><a href="#bitlength" class="internal xref">bit_length</a> (<a href="#bitlength" class="auto internal xref">Appendix A.3</a>)</span><a href="#section-7.1.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-6.5">
+              <p id="section-7.1.1-6.5.1"><span><a href="#onescount" class="internal xref">ones_count</a> (<a href="#onescount" class="auto internal xref">Appendix A.5</a>)</span><a href="#section-7.1.1-6.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-7.1.1-7">We define <code>consistent_roots</code> as<a href="#section-7.1.1-7" class="pilcrow">¶</a></p>
-<div class="lang-python sourcecode" id="section-7.1.1-8">
+<p id="section-7.1.1-7">And the constraints:<a href="#section-7.1.1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.1-8.1">
+              <p id="section-7.1.1-8.1.1"><code>sizefrom &lt; sizeto</code><a href="#section-7.1.1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-8.2">
+              <p id="section-7.1.1-8.2.1"><code>sizeto</code> is a complete MMR size.<a href="#section-7.1.1-8.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-8.3">
+              <p id="section-7.1.1-8.3.1"><code>sizefrom</code> is a complete MMR size, or 0. This is not checked: every trusted size was itself a checked tree-size-2.<a href="#section-7.1.1-8.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.1-9">We define <code>consistent_roots_for_sizes</code> as<a href="#section-7.1.1-9" class="pilcrow">¶</a></p>
+<div class="breakable lang-python sourcecode" id="section-7.1.1-10">
+<pre>
+  def consistent_roots_for_sizes(
+      sizefrom, sizeto, accumulatorfrom, proofs):
+
+    # if sizeto &lt;= sizefrom -&gt; ERROR
+
+    leavesto = leaf_count(sizeto - 1)
+    # if mmr_size_for_leaf_count(leavesto) != sizeto -&gt; ERROR
+
+    if sizefrom &gt; 0:
+      leavesfrom = leaf_count(sizefrom - 1)
+    else:
+      leavesfrom = 0
+
+    n = ones_count(leavesfrom)
+    # if length(accumulatorfrom) != n -&gt; ERROR
+    # if length(proofs) != n -&gt; ERROR
+
+    nto = ones_count(leavesto)
+    if n == 0:
+      return [], nto
+
+    # The highest bit on which the leaf counts differ.
+    split = bit_length(leavesfrom ^ leavesto) - 1
+
+    roots = []
+
+    # The number of nodes preceding the sub tree of the
+    # current origin peak. A peak of height h is at
+    # offset + 2^(h+1) - 2, and its sub tree has 2^(h+1) - 1 nodes.
+    offset = 0
+    i = 0
+
+    # Origin peaks above the split are peaks of the target.
+    # The path is not read; requiring it to be empty
+    # rejects unused material.
+    for h in range(bit_length(leavesfrom) - 1, split, -1):
+      if not (leavesfrom &gt;&gt; h) &amp; 1:
+        continue
+      # if length(proofs[i]) != 0 -&gt; ERROR
+      roots.append(accumulatorfrom[i])
+      offset += (1 &lt;&lt; (h + 1)) - 1
+      i += 1
+
+    # Origin peaks below the split are all committed by the
+    # target peak of height split, so each path has length
+    # split - h and every path must produce the same value.
+    above = len(roots)
+    root = None
+    for h in range(split - 1, -1, -1):
+      if not (leavesfrom &gt;&gt; h) &amp; 1:
+        continue
+      # if length(proofs[i]) != split - h -&gt; ERROR
+      subtree = (1 &lt;&lt; (h + 1)) - 1
+      proven = included_root(
+          offset + subtree - 1, accumulatorfrom[i], proofs[i])
+      if i == above:
+        root = proven
+      # elif proven != root -&gt; ERROR
+      offset += subtree
+      i += 1
+
+    if n &gt; above:
+      roots.append(root)
+
+    return roots, nto - len(roots)
+</pre><a href="#section-7.1.1-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="consistentroots">
+<section id="section-7.1.2">
+          <h4 id="name-consistent_roots">
+<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-consistent_roots" class="section-name selfRef">consistent_roots</a>
+          </h4>
+<p id="section-7.1.2-1"><code>consistent_roots</code> is the fold defined by earlier versions of this document.
+It applies each consistency path to its origin peak and de-duplicates consecutive equal results, but it does not check that the paths have the lengths the tree sizes imply, and it does not determine how many right-peaks complete the accumulator.
+<code>consistent_roots_for_sizes</code> does not call it.<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-2"><code>consistent_roots</code> <span class="bcp14">MUST NOT</span> be used on its own to verify a receipt of consistency.
+An implementation that retains it <span class="bcp14">MUST</span> apply the following checks around it, which make it accept exactly the proofs <code>consistent_roots_for_sizes</code> accepts.
+With <code>leavesfrom</code> and <code>leavesto</code> the leaf counts of the two sizes, <code>n</code> the number of set bits of <code>leavesfrom</code>, <code>nto</code> the number of set bits of <code>leavesto</code>, <code>split</code> the highest bit on which they differ, and <code>nabove</code> the number of set bits of <code>leavesfrom</code> above <code>split</code>:<a href="#section-7.1.2-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1.2-3">
+<li id="section-7.1.2-3.1">
+              <p id="section-7.1.2-3.1.1">tree-size-2 <span class="bcp14">MUST</span> be greater than tree-size-1 and <span class="bcp14">MUST</span> be a complete MMR size.<a href="#section-7.1.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.2-3.2">
+              <p id="section-7.1.2-3.2.1">The number of entries in <code>accumulatorfrom</code> and the number of consistency-paths <span class="bcp14">MUST</span> both equal <code>n</code>.<a href="#section-7.1.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.2-3.3">
+              <p id="section-7.1.2-3.3.1">The path for an origin peak of height <code>h</code> <span class="bcp14">MUST</span> have length 0 if <code>h</code> is above <code>split</code>, and <code>split - h</code> otherwise.<a href="#section-7.1.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.2-3.4">
+              <p id="section-7.1.2-3.4.1">The number of roots returned <span class="bcp14">MUST</span> equal <code>nabove</code>, plus one if <code>n</code> exceeds <code>nabove</code>. Because <code>consistent_roots</code> de-duplicates consecutive equal roots, this is the check that every path below <code>split</code> produced the same value.<a href="#section-7.1.2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.2-3.5">
+              <p id="section-7.1.2-3.5.1">The number of right-peaks <span class="bcp14">MUST</span> equal <code>nto</code> minus the number of roots returned.<a href="#section-7.1.2-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-7.1.2-4"><code>consistent_roots</code> returns the descending height ordered list of elements from the accumulator for the consistent future state.<a href="#section-7.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-5">Implementations <span class="bcp14">MUST</span> require that the number of peaks returned by <a href="#peaks" class="auto internal xref">Section 9.2</a><code>(ifrom)</code> equals the number of entries in <code>accumulatorfrom</code>.<a href="#section-7.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-6">Given:<a href="#section-7.1.2-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-7.1">
+              <p id="section-7.1.2-7.1.1"><code>ifrom</code> the last index in the complete MMR from which consistency was proven.<a href="#section-7.1.2-7.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-7.2">
+              <p id="section-7.1.2-7.2.1"><code>accumulatorfrom</code> the node values corresponding to the peaks of the accumulator for tree-size-1<a href="#section-7.1.2-7.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-7.3">
+              <p id="section-7.1.2-7.3.1"><code>proofs</code> the inclusion proofs for each node in <code>accumulatorfrom</code> for tree-size-2<a href="#section-7.1.2-7.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-8">And the methods:<a href="#section-7.1.2-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-9.1">
+              <p id="section-7.1.2-9.1.1"><span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span><a href="#section-7.1.2-9.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-9.2">
+              <p id="section-7.1.2-9.2.1"><a href="#peaks" class="auto internal xref">Section 9.2</a><a href="#section-7.1.2-9.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-10">We define <code>consistent_roots</code> as<a href="#section-7.1.2-10" class="pilcrow">¶</a></p>
+<div class="lang-python sourcecode" id="section-7.1.2-11">
 <pre>
   def consistent_roots(ifrom, accumulatorfrom, proofs):
 
@@ -1800,7 +2000,7 @@ This protects against implementation errors where the signature is verified but 
       roots.append(root)
 
     return roots
-</pre><a href="#section-7.1.1-8" class="pilcrow">¶</a>
+</pre><a href="#section-7.1.2-11" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1998,6 +2198,75 @@ testing the height of i+1<a href="#section-9.2-2" class="pilcrow">¶</a></p>
 </div>
 </section>
 </div>
+<div id="leafcount">
+<section id="section-9.3">
+        <h3 id="name-leaf_count">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-leaf_count" class="section-name selfRef">leaf_count</a>
+        </h3>
+<p id="section-9.3-1"><code>leaf_count(i)</code> returns the number of leaves in <code>MMR(i+1)</code>.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.3-2">The bits of the count also form a mask with a single bit set for each peak in the accumulator, where the bit position is the height of the peak.
+Read from the highest bit to the lowest, the set bits give the accumulator peaks in order.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
+<p id="section-9.3-3">Given:<a href="#section-9.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.3-4.1">
+            <p id="section-9.3-4.1.1"><code>i</code> the index of any mmr node.<a href="#section-9.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.3-5">And the methods:<a href="#section-9.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.3-6.1">
+            <p id="section-9.3-6.1.1"><span><a href="#bitlength" class="internal xref">bit_length</a> (<a href="#bitlength" class="auto internal xref">Appendix A.3</a>)</span><a href="#section-9.3-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.3-7">We define <code>leaf_count</code> as<a href="#section-9.3-7" class="pilcrow">¶</a></p>
+<div class="lang-python sourcecode" id="section-9.3-8">
+<pre>
+  def leaf_count(i):
+    s = i + 1
+
+    peaksize = (1 &lt;&lt; bit_length(s)) - 1
+    peakmap = 0
+    while peaksize &gt; 0:
+      peakmap &lt;&lt;= 1
+      if s &gt;= peaksize:
+        s -= peaksize
+        peakmap |= 1
+      peaksize &gt;&gt;= 1
+
+    return peakmap
+</pre><a href="#section-9.3-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="mmrsizeforleafcount">
+<section id="section-9.4">
+        <h3 id="name-mmr_size_for_leaf_count">
+<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-mmr_size_for_leaf_count" class="section-name selfRef">mmr_size_for_leaf_count</a>
+        </h3>
+<p id="section-9.4-1"><code>mmr_size_for_leaf_count(leaves)</code> returns the number of nodes in the complete MMR with <code>leaves</code> leaves.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">Every leaf adds itself and one interior node for each binary carry, and each peak is a carry that has not happened.
+Because <code>leaf_count</code> rounds an incomplete size down to the largest complete MMR below it, <code>mmr_size_for_leaf_count(leaf_count(size - 1)) == size</code> holds exactly when <code>size</code> is a complete MMR size.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
+<p id="section-9.4-3">Given:<a href="#section-9.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.4-4.1">
+            <p id="section-9.4-4.1.1"><code>leaves</code> a leaf count.<a href="#section-9.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.4-5">And the methods:<a href="#section-9.4-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.4-6.1">
+            <p id="section-9.4-6.1.1"><span><a href="#onescount" class="internal xref">ones_count</a> (<a href="#onescount" class="auto internal xref">Appendix A.5</a>)</span><a href="#section-9.4-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.4-7">We define <code>mmr_size_for_leaf_count</code> as<a href="#section-9.4-7" class="pilcrow">¶</a></p>
+<div class="lang-python sourcecode" id="section-9.4-8">
+<pre>
+  def mmr_size_for_leaf_count(leaves):
+    return 2 * leaves - ones_count(leaves)
+</pre><a href="#section-9.4-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="privacy-considerations">
@@ -2035,6 +2304,39 @@ this document.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
 Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for proving the unequivocal history of additions.<a href="#section-11.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="declared-tree-sizes">
+<section id="section-11.3">
+        <h3 id="name-declared-tree-sizes">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
+        </h3>
+<p id="section-11.3-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
+The tree sizes are what give that accumulator its meaning: the same list of node values is the accumulator of every tree size whose peaks have those heights, and a relying party that records the accumulator records it at a size.
+If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-2">Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
+It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
+A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
+<p id="section-11.3-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
+It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second; for the same reason tree-size-1 is not signed, since a signed origin would only restate what the verifier must already hold, and would prevent a relying party from presenting a chain of proofs, or a re-based proof, under one signature.
+It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+<p id="section-11.3-4">These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
+A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
+A verifier that records a size the ledger never had records a state the ledger never had.
+The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
+A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="protected-header-encoding">
+<section id="section-11.4">
+        <h3 id="name-protected-header-encoding">
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+        </h3>
+<p id="section-11.4-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
+Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
+Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
+Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
+Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="iana-considerations">
@@ -2068,6 +2370,35 @@ Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for p
 </li>
           </ul>
 <p id="section-12.1.1-3">Editors note: Hash agility. This document defines a single SHA-256-based identifier, MMR_SHA256, following the convention of binding the hash function into the algorithm identifier. Additional identifiers (for example using BLAKE2b-256, SHA3-256, or SHA3-512, both of which are used by existing implementations) are expected to be registered as separate values in a future revision, rather than negotiated within a single identifier.<a href="#section-12.1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cose-header-parameters">
+<section id="section-12.1.2">
+          <h4 id="name-cose-header-parameters">
+<a href="#section-12.1.2" class="section-number selfRef">12.1.2. </a><a href="#name-cose-header-parameters" class="section-name selfRef">COSE Header Parameters</a>
+          </h4>
+<p id="section-12.1.2-1">IANA is requested to add the following entry to the "COSE Header Parameters" registry established by <span>[<a href="#RFC9053" class="cite xref">RFC9053</a>]</span>, in the Specification Required range:<a href="#section-12.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-12.1.2-2.1">
+              <p id="section-12.1.2-2.1.1">Name: tree-size-2<a href="#section-12.1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12.1.2-2.2">
+              <p id="section-12.1.2-2.2.1">Label: TBD_2<a href="#section-12.1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12.1.2-2.3">
+              <p id="section-12.1.2-2.3.1">Value Type: uint<a href="#section-12.1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12.1.2-2.4">
+              <p id="section-12.1.2-2.4.1">Value Registry: none<a href="#section-12.1.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12.1.2-2.5">
+              <p id="section-12.1.2-2.5.1">Description: The tree size to which a receipt of consistency proves consistency, and whose accumulator is its payload<a href="#section-12.1.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12.1.2-2.6">
+              <p id="section-12.1.2-2.6.1">Reference: RFCthis<a href="#section-12.1.2-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-12.1.2-3">Until this label is assigned, implementations use the private use value -65933 for tree-size-2, as stated in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>.<a href="#section-12.1.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2104,6 +2435,10 @@ Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for p
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8949">[RFC8949]</dt>
+        <dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9053">[RFC9053]</dt>
       <dd>
@@ -2246,7 +2581,7 @@ For example <code>ones_count(b101)</code> is 2<a href="#appendix-A.5-1" class="p
         <div dir="auto" class="left"><span class="fn nameRole">Robin Bryce</span></div>
 <div class="email">
 <span>Email:</span>
-<a href="mailto:robinbryce@gmail.com" class="email">robinbryce@gmail.com</a>
+<a href="mailto:robinbryce@proton.me" class="email">robinbryce@proton.me</a>
 </div>
 </address>
 <address class="vcard">
