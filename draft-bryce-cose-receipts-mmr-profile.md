@@ -247,7 +247,7 @@ If the resulting signature does not verify, the signature may have been tampered
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.
 
-As the proof must be processed prior to signature verification the implementation SHOULD check the lengths of the proof paths are appropriate for the provided tree sizes.
+A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.
 
 ## included_root
 
@@ -818,6 +818,11 @@ The security considerations of {{-cose-receipts}} apply. See also the security c
 
 A receipt of inclusion shows only that the element is included in the ledger.
 Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.
+
+## Tree size of a receipt of inclusion
+
+Each interior node value is computed over the position of the node, so the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
+A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
 
 ## Misbehaving Ledgers
 
