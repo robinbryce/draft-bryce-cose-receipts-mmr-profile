@@ -1226,10 +1226,10 @@ svg {
                 <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-detection-of-improper-inclu" class="internal xref">Detection of improper inclusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-tree-size-of-a-receipt-of-i" class="internal xref">Tree size of a receipt of inclusion</a></p>
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-misbehaving-ledgers" class="internal xref">Misbehaving Ledgers</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-misbehaving-ledgers" class="internal xref">Misbehaving Ledgers</a></p>
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-tree-size-of-a-receipt-of-i" class="internal xref">Tree size of a receipt of inclusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
                 <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
@@ -2294,25 +2294,27 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
 Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="tree-size-of-a-receipt-of-inclusion">
+<div id="misbehaving-ledgers">
 <section id="section-11.2">
-        <h3 id="name-tree-size-of-a-receipt-of-i">
-<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
+        <h3 id="name-misbehaving-ledgers">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-misbehaving-ledgers" class="section-name selfRef">Misbehaving Ledgers</a>
         </h3>
-<p id="section-11.2-1">Each interior node value is computed over the position of the node, so the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
-A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1">A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-2">Detection of a failure to include items in the first place is out of scope for
+this document.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
+<p id="section-11.2-3">Having included an element, ledger implementations using this draft <span class="bcp14">MUST</span> use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
+Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for proving the unequivocal history of additions.<a href="#section-11.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="misbehaving-ledgers">
+<div id="tree-size-of-a-receipt-of-inclusion">
 <section id="section-11.3">
-        <h3 id="name-misbehaving-ledgers">
-<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-misbehaving-ledgers" class="section-name selfRef">Misbehaving Ledgers</a>
+        <h3 id="name-tree-size-of-a-receipt-of-i">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
         </h3>
-<p id="section-11.3-1">A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
-<p id="section-11.3-2">Detection of a failure to include items in the first place is out of scope for
-this document.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
-<p id="section-11.3-3">Having included an element, ledger implementations using this draft <span class="bcp14">MUST</span> use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
-Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for proving the unequivocal history of additions.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
+A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
+A receipt of inclusion verified without reference to a trusted accumulator shows that the ledger signed the proven node at its position, not that the node is in the history the verifier has established by receipts of consistency.
+The same position binding is what a signed tree size supplies for the peaks a consistency proof leaves bare; see Declared tree sizes.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="declared-tree-sizes">
