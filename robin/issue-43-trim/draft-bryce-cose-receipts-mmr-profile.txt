@@ -938,10 +938,12 @@ Table of Contents
    party presenting the receipt chooses the size trusted as tree-size-1
    for the subsequent verification.
 
-   Checking the shape of the proof against the tree sizes does not bind
-   tree-size-2.  A right-peak carries no height, so the same paths and
-   right-peaks complete the accumulator of every tree size that adds the
-   same number of new peaks.
+   Checking the shape of the proof against the tree sizes binds tree-
+   size-2 only when there are no right-peaks, since the rightmost peak
+   then lies on a path that commits it to its position, and the position
+   of the rightmost peak is the tree size.  A right-peak carries no
+   height, so the same paths and right-peaks complete the accumulator of
+   every tree size that adds the same number of new peaks.
 
    This profile therefore carries tree-size-2 in the protected header
    and requires verifiers to compare it with the corresponding size in
