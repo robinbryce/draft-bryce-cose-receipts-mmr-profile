@@ -437,23 +437,23 @@ Verification fails if any step fails.
 1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
 1. For each consistency-proof, in order:
    1. tree-size-1 of the proof MUST equal sizefrom.
-   1. Apply [consistent_roots_for_sizes](#consistentrootsforsizes) to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.
+   1. Apply [consistent_roots](#consistentroots) to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.
    1. The length of right-peaks MUST equal nright.
    1. Set accumulatorfrom to roots followed by right-peaks, and sizefrom to tree-size-2 of the proof.
 1. Use the final accumulatorfrom as the detached payload and verify the signature of the COSE Sign1.
 
-`consistent_roots_for_sizes` requires the proof to have exactly the shape the two sizes imply: tree-size-2 MUST be a complete MMR size; each consistency path MUST have exactly the length that [inclusion_proof_path](#inclusionproofpath) produces for its peak; and every path leading to the same peak of tree-size-2 MUST produce the same value.
+`consistent_roots` requires the proof to have exactly the shape the two sizes imply: tree-size-2 MUST be a complete MMR size; each consistency path MUST have exactly the length that [inclusion_proof_path](#inclusionproofpath) produces for its peak; and every path leading to the same peak of tree-size-2 MUST produce the same value.
 The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.
 
-As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked against the tree sizes, as `consistent_roots_for_sizes` does.
+As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked against the tree sizes, as `consistent_roots` does.
 A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
 See [Declared tree sizes](#declared-tree-sizes).
 
-### consistent_roots_for_sizes
+### consistent_roots
 
-`consistent_roots_for_sizes` returns the peaks of the accumulator for tree-size-2 that the proof proves from the accumulator for tree-size-1, in descending height order, together with the number of right-peaks the prover must supply to complete that accumulator.
+`consistent_roots` returns the peaks of the accumulator for tree-size-2 that the proof proves from the accumulator for tree-size-1, in descending height order, together with the number of right-peaks the prover must supply to complete that accumulator.
 It requires the proof to have exactly the shape the two tree sizes imply.
 
 For a complete MMR the set bits of [leaf_count](#leafcount)`(size - 1)` are the heights of the accumulator peaks, from the highest bit to the lowest, which is accumulator order.
@@ -484,10 +484,10 @@ And the constraints:
 - `sizeto` is a complete MMR size.
 - `sizefrom` is a complete MMR size, or 0. This is not checked: every trusted size was itself a checked tree-size-2.
 
-We define `consistent_roots_for_sizes` as
+We define `consistent_roots` as
 
 ~~~~ python
-  def consistent_roots_for_sizes(
+  def consistent_roots(
       sizefrom, sizeto, accumulatorfrom, proofs):
 
     # if sizeto <= sizefrom -> ERROR
@@ -552,58 +552,6 @@ We define `consistent_roots_for_sizes` as
       roots.append(root)
 
     return roots, nto - len(roots)
-~~~~
-
-### consistent_roots
-
-`consistent_roots` is the fold defined by earlier versions of this document.
-It applies each consistency path to its origin peak and de-duplicates consecutive equal results, but it does not check that the paths have the lengths the tree sizes imply, and it does not determine how many right-peaks complete the accumulator.
-`consistent_roots_for_sizes` does not call it.
-
-`consistent_roots` MUST NOT be used on its own to verify a receipt of consistency.
-An implementation that retains it MUST apply the following checks around it, which make it accept exactly the proofs `consistent_roots_for_sizes` accepts.
-With `leavesfrom` and `leavesto` the leaf counts of the two sizes, `n` the number of set bits of `leavesfrom`, `nto` the number of set bits of `leavesto`, `split` the highest bit on which they differ, and `nabove` the number of set bits of `leavesfrom` above `split`:
-
-1. tree-size-2 MUST be greater than tree-size-1 and MUST be a complete MMR size.
-1. The number of entries in `accumulatorfrom` and the number of consistency-paths MUST both equal `n`.
-1. The path for an origin peak of height `h` MUST have length 0 if `h` is above `split`, and `split - h` otherwise.
-1. The number of roots returned MUST equal `nabove`, plus one if `n` exceeds `nabove`. Because `consistent_roots` de-duplicates consecutive equal roots, this is the check that every path below `split` produced the same value.
-1. The number of right-peaks MUST equal `nto` minus the number of roots returned.
-
-`consistent_roots` returns the descending height ordered list of elements from the accumulator for the consistent future state.
-
-Implementations MUST require that the number of peaks returned by [peaks](#peaks)`(ifrom)` equals the number of entries in `accumulatorfrom`.
-
-Given:
-
-- `ifrom` the last index in the complete MMR from which consistency was proven.
-- `accumulatorfrom` the node values corresponding to the peaks of the accumulator for tree-size-1
-- `proofs` the inclusion proofs for each node in `accumulatorfrom` for tree-size-2
-
-And the methods:
-
-- [included_root](#includedroot)
-- [peaks](#peaks)
-
-We define `consistent_roots` as
-
-~~~~ python
-  def consistent_roots(ifrom, accumulatorfrom, proofs):
-
-    frompeaks = peaks(ifrom)
-
-    # if length(frompeaks) != length(proofs) -> ERROR
-
-    roots = []
-    for i in range(len(accumulatorfrom)):
-      root = included_root(
-          frompeaks[i], accumulatorfrom[i], proofs[i])
-
-      if roots and roots[-1] == root:
-          continue
-      roots.append(root)
-
-    return roots
 ~~~~
 
 # Appending a leaf
