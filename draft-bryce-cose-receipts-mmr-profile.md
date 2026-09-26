@@ -387,11 +387,7 @@ protected-header-map = {
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
 - tree-size-2 (label: TBD_2): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).
 
-Until TBD_2 is assigned, implementations of this profile use the private use label -65933 for tree-size-2.
-
-tree-size-2 is carried in the protected header so that the signature covers the size the signed accumulator belongs to.
 tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
-The consistency-proof structure in the unprotected header is unchanged from {{-cose-receipts}} and continues to carry both sizes each proof relates.
 A receipt of consistency under this profile that omits the protected tree-size-2 MUST be rejected.
 
 The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
@@ -426,7 +422,6 @@ The verifier MUST hold, from a source it already trusts, the tree size and the a
 Typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
 The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
-A verifier that takes tree-size-1 from the receipt is verifying a statement the prover chose, and the checks below do not constrain it.
 
 Perform the following, in order.
 Verification fails if any step fails.
@@ -447,8 +442,7 @@ The number of roots it returns and the number of right-peaks it requires are fix
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.
 
-As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked against the tree sizes, as `consistent_roots` does.
-A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
+As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked for consistency against `tree-size-2`.
 See [Declared tree sizes](#declared-tree-sizes).
 
 ### consistent_roots
@@ -780,22 +774,15 @@ Similarly, consistency proofs MUST be the basis for proving the unequivocal hist
 ## Declared tree sizes
 
 The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-The tree sizes are what give that accumulator its meaning: the same list of node values is the accumulator of every tree size whose peaks have those heights, and a relying party that records the accumulator records it at a size.
-If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.
+If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.
 
-Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
-It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
-A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.
+Checking the shape of the proof against the tree sizes does not bind tree-size-2.
+A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.
 
-This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
-It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second; for the same reason tree-size-1 is not signed, since a signed origin would only restate what the verifier must already hold, and would prevent a relying party from presenting a chain of proofs, or a re-based proof, under one signature.
-It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.
-
-These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
-A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
-A verifier that records a size the ledger never had records a state the ledger never had.
-The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
-A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.
+This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.
+tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
+A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt.
+One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.
 
 ## Protected header encoding
 
@@ -831,7 +818,7 @@ IANA is requested to add the following entry to the "COSE Header Parameters" reg
 - Description: The tree size to which a receipt of consistency proves consistency, and whose accumulator is its payload
 - Reference: RFCthis
 
-Until this label is assigned, implementations use the private use value -65933 for tree-size-2, as stated in [COSE Receipt of Consistency](#cose-receipt-of-consistency).
+Until this label is assigned, implementations use the private use value -65933 for tree-size-2.
 
 ## New Registries
 
