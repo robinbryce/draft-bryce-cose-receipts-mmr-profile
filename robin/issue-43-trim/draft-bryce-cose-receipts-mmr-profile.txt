@@ -570,10 +570,6 @@ Table of Contents
    for Receipt verification operations, to reduce the chance of
    accepting a valid signature over an invalid consistency proof.
 
-   As the proof is processed before the signature is verified, the
-   lengths of the consistency paths MUST be checked for consistency
-   against tree-size-2.  See Declared tree sizes (Section 11.3).
-
 7.1.1.  consistent_roots
 
    consistent_roots returns the peaks of the accumulator for tree-size-2

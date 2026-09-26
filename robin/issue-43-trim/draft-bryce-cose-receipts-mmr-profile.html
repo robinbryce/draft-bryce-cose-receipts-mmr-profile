@@ -1789,8 +1789,6 @@ Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶
 <p id="section-7.1-5"><code>consistent_roots</code> requires the proof to have exactly the shape the two sizes imply: tree-size-2 <span class="bcp14">MUST</span> be a complete MMR size; each consistency path <span class="bcp14">MUST</span> have exactly the length that <span><a href="#inclusionproofpath" class="internal xref">inclusion_proof_path</a> (<a href="#inclusionproofpath" class="auto internal xref">Section 4.1</a>)</span> produces for its peak; and every path leading to the same peak of tree-size-2 <span class="bcp14">MUST</span> produce the same value.
 The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
 <p id="section-7.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
-<p id="section-7.1-7">As the proof is processed before the signature is verified, the lengths of the consistency paths <span class="bcp14">MUST</span> be checked for consistency against <code>tree-size-2</code>.
-See <span><a href="#declared-tree-sizes" class="internal xref">Declared tree sizes</a> (<a href="#declared-tree-sizes" class="auto internal xref">Section 11.3</a>)</span>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
 <div id="consistentroots">
 <section id="section-7.1.1">
           <h4 id="name-consistent_roots">
