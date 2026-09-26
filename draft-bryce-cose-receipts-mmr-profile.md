@@ -442,9 +442,6 @@ The number of roots it returns and the number of right-peaks it requires are fix
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.
 
-As the proof is processed before the signature is verified, the lengths of the consistency paths MUST be checked for consistency against `tree-size-2`.
-See [Declared tree sizes](#declared-tree-sizes).
-
 ### consistent_roots
 
 `consistent_roots` returns the peaks of the accumulator for tree-size-2 that the proof proves from the accumulator for tree-size-1, in descending height order, together with the number of right-peaks the prover must supply to complete that accumulator.
