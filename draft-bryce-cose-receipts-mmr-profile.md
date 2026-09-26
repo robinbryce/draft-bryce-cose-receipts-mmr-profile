@@ -819,11 +819,6 @@ The security considerations of {{-cose-receipts}} apply. See also the security c
 A receipt of inclusion shows only that the element is included in the ledger.
 Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.
 
-## Tree size of a receipt of inclusion
-
-Each interior node value is computed over the position of the node, so the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
-A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
-
 ## Misbehaving Ledgers
 
 A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.
@@ -833,6 +828,13 @@ this document.
 
 Having included an element, ledger implementations using this draft MUST use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
 Similarly, consistency proofs MUST be the basis for proving the unequivocal history of additions.
+
+## Tree size of a receipt of inclusion
+
+Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
+A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
+A receipt of inclusion verified without reference to a trusted accumulator shows that the ledger signed the proven node at its position, not that the node is in the history the verifier has established by receipts of consistency.
+The same position binding is what a signed tree size supplies for the peaks a consistency proof leaves bare; see Declared tree sizes.
 
 ## Declared tree sizes
 
