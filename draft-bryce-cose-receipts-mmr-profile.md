@@ -802,7 +802,7 @@ A verifier that keeps the accumulator but not the size cannot check the shape of
 ## The empty tree as trusted state
 
 Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots_for_sizes returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
 What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.
 
