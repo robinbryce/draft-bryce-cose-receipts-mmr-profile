@@ -2335,13 +2335,14 @@ A verifier that keeps the accumulator but not the size cannot check the shape of
 <a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
         </h3>
 <p id="section-11.4-1">Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots_for_sizes returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, and the signature over the protected tree-size-2 and those peaks.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots_for_sizes returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
 What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
-<p id="section-11.4-2">A verifier <span class="bcp14">MAY</span> hold the empty tree as its trusted state only while it holds no verified state for the ledger.
-A verifier that holds a verified tree size <span class="bcp14">MUST NOT</span> replace it with the empty tree.
-The requirement that tree-size-1 of the first consistency-proof equal the trusted tree size already rejects a receipt from the empty tree at such a verifier; a verifier that resets its state in order to accept one discards the history the ledger is accountable for, and cannot afterwards distinguish a ledger that has rolled back from one that has behaved correctly.
-Whether a receipt from the empty tree begins a new ledger or restarts one the verifier already tracks is answered by the verifier's own record of which ledger the signing key attests; this profile does not identify the ledger in the receipt.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">A tree state verification is a verification of monotonically increasing tree sizes starting with the empty tree.
+This verification <span class="bcp14">MUST</span> fail any attempt to rewind the tree size, including setting the verification state back to the empty tree.
+Verifiers <span class="bcp14">MAY</span> choose to treat presenting a consistency proof with tree-size-1 of 0 as initialising a new verification attempt.
+Verifiers <span class="bcp14">MAY</span> choose to accept rewinds, consistency proofs starting from earlier tree-sizes (forks).
+In both these circumstances the current verification attempt <span class="bcp14">MUST</span> fail and the operation <span class="bcp14">MUST</span> be represented as a new verification attempt.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protected-header-encoding">
