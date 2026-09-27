@@ -328,7 +328,8 @@ consistency-proof =  bstr .cbor [
 
   ; the inclusion path from each accumulator peak in
   ; tree-size-1 to its new peak in tree-size-2.
-  consistency-paths: [ + consistency-path ]
+  ; empty when tree-size-1 is 0: the empty tree has no peaks
+  consistency-paths: [ * consistency-path ]
 
   ; the additional peaks that
   ; complete the accumulator for tree-size-2,
@@ -423,6 +424,7 @@ This protects against implementation errors where the signature is verified but 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
 The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it, and the first consistency-proof then carries tree-size-1 = 0 and an empty consistency-paths.
 Typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
 The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
