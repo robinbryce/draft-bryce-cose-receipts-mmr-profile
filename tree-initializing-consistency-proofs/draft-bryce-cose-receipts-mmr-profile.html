@@ -1232,7 +1232,10 @@ svg {
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
 </li>
             </ul>
 </li>
@@ -2326,16 +2329,31 @@ The ledger's next receipt then fails to verify against that state, which the ver
 A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="protected-header-encoding">
+<div id="the-empty-tree-as-trusted-state">
 <section id="section-11.4">
-        <h3 id="name-protected-header-encoding">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+        <h3 id="name-the-empty-tree-as-trusted-s">
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
         </h3>
-<p id="section-11.4-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
+<p id="section-11.4-1">Every accumulator is consistent with the empty tree.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots_for_sizes returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, and the signature over the protected tree-size-2 and those peaks.
+What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">A verifier <span class="bcp14">MAY</span> hold the empty tree as its trusted state only while it holds no verified state for the ledger.
+A verifier that holds a verified tree size <span class="bcp14">MUST NOT</span> replace it with the empty tree.
+The requirement that tree-size-1 of the first consistency-proof equal the trusted tree size already rejects a receipt from the empty tree at such a verifier; a verifier that resets its state in order to accept one discards the history the ledger is accountable for, and cannot afterwards distinguish a ledger that has rolled back from one that has behaved correctly.
+Whether a receipt from the empty tree begins a new ledger or restarts one the verifier already tracks is answered by the verifier's own record of which ledger the signing key attests; this profile does not identify the ledger in the receipt.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="protected-header-encoding">
+<section id="section-11.5">
+        <h3 id="name-protected-header-encoding">
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+        </h3>
+<p id="section-11.5-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
 Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
 Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
 Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
-Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
