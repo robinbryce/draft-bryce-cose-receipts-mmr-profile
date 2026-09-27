@@ -240,7 +240,7 @@ this protects against implementation errors where the signature is verified but 
 The inclusion proof and signature are verified in order.
 First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
 The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload MUST be set to this value.
+The COSE Sign1 payload MUST be set to the bytes of this node value.
 Second the verifier checks the signature of the COSE Sign1.
 If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
 If the resulting signature does not verify, the signature may have been tampered with.
@@ -309,6 +309,7 @@ A consistency proof shows that the accumulator, defined in {{ReyzinYakoubov}},
 for tree-size-1 is a prefix of the accumulator for tree-size-2.
 
 The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of `right-peaks` which complete the accumulator for tree-size-2.
+The detached payload is the node values of that accumulator concatenated in descending height order.
 
 The receipt of consistency is defined so that a chain of cumulative consistency proofs can be verified together.
 
