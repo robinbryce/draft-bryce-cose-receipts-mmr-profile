@@ -1533,7 +1533,7 @@ this protects against implementation errors where the signature is verified but 
 <p id="section-5.1-1">The inclusion proof and signature are verified in order.
 First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
 The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload <span class="bcp14">MUST</span> be set to this value.
+The COSE Sign1 payload <span class="bcp14">MUST</span> be set to the bytes of this node value.
 Second the verifier checks the signature of the COSE Sign1.
 If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
 If the resulting signature does not verify, the signature may have been tampered with.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
@@ -1618,7 +1618,8 @@ If the resulting signature does not verify, the signature may have been tampered
       </h2>
 <p id="section-6-1">A consistency proof shows that the accumulator, defined in <span>[<a href="#ReyzinYakoubov" class="cite xref">ReyzinYakoubov</a>]</span>,
 for tree-size-1 is a prefix of the accumulator for tree-size-2.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of <code>right-peaks</code> which complete the accumulator for tree-size-2.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-2">The signature is over the complete accumulator for tree-size-2 obtained using the proof and the, supplied, possibly empty, list of <code>right-peaks</code> which complete the accumulator for tree-size-2.
+The detached payload is the node values of that accumulator concatenated in descending height order.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">The receipt of consistency is defined so that a chain of cumulative consistency proofs can be verified together.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">The cbor representation of a consistency proof is:<a href="#section-6-4" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-6-5">
