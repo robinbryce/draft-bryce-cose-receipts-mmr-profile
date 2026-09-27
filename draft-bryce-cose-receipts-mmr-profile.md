@@ -851,6 +851,18 @@ A verifier that records a size the ledger never had records a state the ledger n
 The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
 A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.
 
+## The empty tree as trusted state
+
+Every accumulator is consistent with the empty tree.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots_for_sizes returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, and the signature over the protected tree-size-2 and those peaks.
+What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.
+
+A verifier MAY hold the empty tree as its trusted state only while it holds no verified state for the ledger.
+A verifier that holds a verified tree size MUST NOT replace it with the empty tree.
+The requirement that tree-size-1 of the first consistency-proof equal the trusted tree size already rejects a receipt from the empty tree at such a verifier; a verifier that resets its state in order to accept one discards the history the ledger is accountable for, and cannot afterwards distinguish a ledger that has rolled back from one that has behaved correctly.
+Whether a receipt from the empty tree begins a new ledger or restarts one the verifier already tracks is answered by the verifier's own record of which ledger the signing key attests; this profile does not identify the ledger in the receipt.
+
 ## Protected header encoding
 
 The protected header is signed as a byte string, and tree-size-2 is read from it by label.
