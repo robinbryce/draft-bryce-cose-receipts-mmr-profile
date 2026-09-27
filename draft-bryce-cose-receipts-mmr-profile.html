@@ -1229,10 +1229,13 @@ svg {
                 <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-misbehaving-ledgers" class="internal xref">Misbehaving Ledgers</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-tree-size-of-a-receipt-of-i" class="internal xref">Tree size of a receipt of inclusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
 </li>
             </ul>
 </li>
@@ -1538,7 +1541,7 @@ Second the verifier checks the signature of the COSE Sign1.
 If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
 If the resulting signature does not verify, the signature may have been tampered with.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">As the proof must be processed prior to signature verification the implementation <span class="bcp14">SHOULD</span> check the lengths of the proof paths are appropriate for the provided tree sizes.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="includedroot">
@@ -1799,7 +1802,7 @@ The number of roots it returns and the number of right-peaks it requires are fix
 <p id="section-7.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
 <p id="section-7.1-7">As the proof is processed before the signature is verified, the lengths of the consistency paths <span class="bcp14">MUST</span> be checked against the tree sizes, as <code>consistent_roots_for_sizes</code> does.
 A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
-See <span><a href="#declared-tree-sizes" class="internal xref">Declared tree sizes</a> (<a href="#declared-tree-sizes" class="auto internal xref">Section 11.3</a>)</span>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
+See <span><a href="#declared-tree-sizes" class="internal xref">Declared tree sizes</a> (<a href="#declared-tree-sizes" class="auto internal xref">Section 11.4</a>)</span>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
 <div id="consistentrootsforsizes">
 <section id="section-7.1.1">
           <h4 id="name-consistent_roots_for_sizes">
@@ -2304,37 +2307,48 @@ this document.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
 Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for proving the unequivocal history of additions.<a href="#section-11.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="declared-tree-sizes">
+<div id="tree-size-of-a-receipt-of-inclusion">
 <section id="section-11.3">
-        <h3 id="name-declared-tree-sizes">
-<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
+        <h3 id="name-tree-size-of-a-receipt-of-i">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
         </h3>
-<p id="section-11.3-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
+<p id="section-11.3-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
+A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
+A receipt of inclusion verified without reference to a trusted accumulator shows that the ledger signed the proven node at its position, not that the node is in the history the verifier has established by receipts of consistency.
+The same position binding is what a signed tree size supplies for the peaks a consistency proof leaves bare; see Declared tree sizes.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="declared-tree-sizes">
+<section id="section-11.4">
+        <h3 id="name-declared-tree-sizes">
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
+        </h3>
+<p id="section-11.4-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
 The tree sizes are what give that accumulator its meaning: the same list of node values is the accumulator of every tree size whose peaks have those heights, and a relying party that records the accumulator records it at a size.
-If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
-<p id="section-11.3-2">Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
+If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
 It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
-A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
-<p id="section-11.3-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
+A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
 It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second; for the same reason tree-size-1 is not signed, since a signed origin would only restate what the verifier must already hold, and would prevent a relying party from presenting a chain of proofs, or a re-based proof, under one signature.
-It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
-<p id="section-11.3-4">These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
+It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
+<p id="section-11.4-4">These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
 A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
 A verifier that records a size the ledger never had records a state the ledger never had.
 The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
-A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.3-4" class="pilcrow">¶</a></p>
+A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protected-header-encoding">
-<section id="section-11.4">
+<section id="section-11.5">
         <h3 id="name-protected-header-encoding">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
         </h3>
-<p id="section-11.4-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
+<p id="section-11.5-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
 Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
 Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
 Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
-Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

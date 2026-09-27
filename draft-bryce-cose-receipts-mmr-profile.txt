@@ -82,8 +82,9 @@ Table of Contents
    11. Security Considerations
      11.1.  Detection of improper inclusion
      11.2.  Misbehaving Ledgers
-     11.3.  Declared tree sizes
-     11.4.  Protected header encoding
+     11.3.  Tree size of a receipt of inclusion
+     11.4.  Declared tree sizes
+     11.5.  Protected header encoding
    12. IANA Considerations
      12.1.  Additions to Existing Registries
        12.1.1.  COSE Verifiable Data Structure Algorithms
@@ -321,9 +322,10 @@ Table of Contents
    for Receipt verification operations, to reduce the chance of
    accepting a valid signature over an invalid inclusion proof.
 
-   As the proof must be processed prior to signature verification the
-   implementation SHOULD check the lengths of the proof paths are
-   appropriate for the provided tree sizes.
+   A verifier that holds a trusted tree size and accumulator can
+   additionally check that the proven node is the accumulator peak for
+   the index at that size, which also fixes the length of the inclusion
+   path.
 
 5.2.  included_root
 
@@ -587,7 +589,7 @@ Table of Contents
    sizes, as consistent_roots_for_sizes does.  A verifier that omits
    this check, or that omits the comparison of the protected tree sizes
    with the values in the proof, accepts the same signature at more than
-   one declared tree-size-2.  See Declared tree sizes (Section 11.3).
+   one declared tree-size-2.  See Declared tree sizes (Section 11.4).
 
 7.1.1.  consistent_roots_for_sizes
 
@@ -1028,7 +1030,22 @@ Table of Contents
    consistency proofs MUST be the basis for proving the unequivocal
    history of additions.
 
-11.3.  Declared tree sizes
+11.3.  Tree size of a receipt of inclusion
+
+   Each interior node value is computed over the position of the node,
+   so when the inclusion path is not empty the node a receipt of
+   inclusion proves commits to its position and to the index and height
+   of every node on the path.  A receipt of inclusion carries no tree
+   size: it is valid in every tree size in which the proven node exists,
+   which is every size from the one that created it.  A receipt of
+   inclusion verified without reference to a trusted accumulator shows
+   that the ledger signed the proven node at its position, not that the
+   node is in the history the verifier has established by receipts of
+   consistency.  The same position binding is what a signed tree size
+   supplies for the peaks a consistency proof leaves bare; see Declared
+   tree sizes.
+
+11.4.  Declared tree sizes
 
    The signed statement of a receipt of consistency is the accumulator
    for tree-size-2.  The tree sizes are what give that accumulator its
@@ -1081,7 +1098,7 @@ Table of Contents
    accumulator but not the size cannot check the shape of any later
    proof, since every check above is a function of the two sizes.
 
-11.4.  Protected header encoding
+11.5.  Protected header encoding
 
    The protected header is signed as a byte string, and tree-size-2 is
    read from it by label.  Two verifiers agree on the signed size only
