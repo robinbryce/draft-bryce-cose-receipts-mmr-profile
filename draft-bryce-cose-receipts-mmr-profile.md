@@ -341,7 +341,7 @@ consistency-proof =  bstr .cbor [
 
 Produces the verification paths for inclusion of the peaks of tree-size-1 under the peaks of tree-size-2.
 
-right-peaks are obtained by invoking `peaks(tree-size-2 - 1)`, and discarding length(proofs) from the left.
+right-peaks are the node values of the peaks of tree-size-2 that no consistency path leads to, in descending height order.
 
 Given:
 
