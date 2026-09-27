@@ -329,7 +329,8 @@ consistency-proof =  bstr .cbor [
 
   ; the inclusion path from each accumulator peak in
   ; tree-size-1 to its new peak in tree-size-2.
-  consistency-paths: [ + consistency-path ]
+  ; empty when tree-size-1 is 0: the empty tree has no peaks
+  consistency-paths: [ * consistency-path ]
 
   ; the additional peaks that
   ; complete the accumulator for tree-size-2,
@@ -420,6 +421,8 @@ This protects against implementation errors where the signature is verified but 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
 The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it.
+Such an initialising consistency-proof has the form `[0, tree-size-2, [], right-peaks]`, its tree-size-2 is the signed protected tree-size-2, and it can be verified only against the empty tree: the rule that tree-size-1 of the first consistency-proof MUST equal the trusted tree size rejects it at any verifier that holds a larger size.
 Typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
 The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
@@ -788,6 +791,19 @@ This profile therefore carries tree-size-2 in the protected header and requires 
 tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
 A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt.
 One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.
+
+## The empty tree as trusted state
+
+Every accumulator is consistent with the empty tree.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
+What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.
+
+A tree state verification is a verification of monotonically increasing tree sizes starting with the empty tree.
+This verification MUST fail any attempt to rewind the tree size, including setting the verification state back to the empty tree.
+Verifiers MAY choose to treat presenting a consistency proof with tree-size-1 of 0 as initialising a new verification attempt.
+Verifiers MAY choose to accept rewinds, consistency proofs starting from earlier tree-sizes (forks).
+In both these circumstances the current verification attempt MUST fail and the operation MUST be represented as a new verification attempt.
 
 ## Protected header encoding
 
