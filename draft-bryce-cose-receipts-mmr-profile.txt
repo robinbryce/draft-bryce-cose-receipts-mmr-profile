@@ -5,7 +5,7 @@
 TBD                                                             R. Bryce
 Internet-Draft                                                          
 Intended status: Standards Track                               J. Geater
-Expires: 24 March 2027                                 20 September 2026
+Expires: 31 March 2027                                 27 September 2026
 
 
                          COSE Receipts for MMRs
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 March 2027.
+   This Internet-Draft will expire on 31 March 2027.
 
 Copyright Notice
 
@@ -423,8 +423,8 @@ Table of Contents
    Produces the verification paths for inclusion of the peaks of tree-
    size-1 under the peaks of tree-size-2.
 
-   right-peaks are obtained by invoking peaks(tree-size-2 - 1), and
-   discarding length(proofs) from the left.
+   right-peaks are the node values of the peaks of tree-size-2 that no
+   consistency path leads to, in descending height order.
 
    Given:
 
