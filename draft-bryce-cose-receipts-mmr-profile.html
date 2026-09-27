@@ -1720,17 +1720,14 @@ protected-header-map = {
           <p id="section-7-3.3.1">tree-size-2 (label: TBD_2): <span class="bcp14">REQUIRED</span>. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-7-4">Until TBD_2 is assigned, implementations of this profile use the private use label -65933 for tree-size-2.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">tree-size-2 is carried in the protected header so that the signature covers the size the signed accumulator belongs to.
-tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.
-The consistency-proof structure in the unprotected header is unchanged from <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> and continues to carry both sizes each proof relates.
-A receipt of consistency under this profile that omits the protected tree-size-2 <span class="bcp14">MUST</span> be rejected.<a href="#section-7-5" class="pilcrow">¶</a></p>
-<p id="section-7-6">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+<p id="section-7-4">tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.
+A receipt of consistency under this profile that omits the protected tree-size-2 <span class="bcp14">MUST</span> be rejected.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-5">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
 The protected header map <span class="bcp14">MUST</span> occupy the whole of the protected header byte string.
 A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
-A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.<a href="#section-7-6" class="pilcrow">¶</a></p>
-<p id="section-7-7">The unprotected header for a consistency proof signature is:<a href="#section-7-7" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="section-7-8">
+A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.<a href="#section-7-5" class="pilcrow">¶</a></p>
+<p id="section-7-6">The unprotected header for a consistency proof signature is:<a href="#section-7-6" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="section-7-7">
 <pre>
 consistency-proofs = [ + consistency-proof ]
 
@@ -1742,11 +1739,11 @@ unprotected-header-map = {
   &amp;(vdp: 396) =&gt; verifiable-proofs
   * cose-label =&gt; cose-value
 }
-</pre><a href="#section-7-8" class="pilcrow">¶</a>
+</pre><a href="#section-7-7" class="pilcrow">¶</a>
 </div>
-<p id="section-7-9">The payload <span class="bcp14">MUST</span> be detached.
+<p id="section-7-8">The payload <span class="bcp14">MUST</span> be detached.
 Detaching the payload forces verifiers to recompute the roots from the consistency proofs.
-This protects against implementation errors where the signature is verified but the payload is not genuinely produced by the included proof.<a href="#section-7-9" class="pilcrow">¶</a></p>
+This protects against implementation errors where the signature is verified but the payload is not genuinely produced by the included proof.<a href="#section-7-8" class="pilcrow">¶</a></p>
 <div id="verifying-the-receipt-of-consistency">
 <section id="section-7.1">
         <h3 id="name-verifying-the-receipt-of-co">
@@ -1756,8 +1753,7 @@ This protects against implementation errors where the signature is verified but 
 <p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
 Typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
-The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they <span class="bcp14">MUST NOT</span> be used in its place.
-A verifier that takes tree-size-1 from the receipt is verifying a statement the prover chose, and the checks below do not constrain it.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they <span class="bcp14">MUST NOT</span> be used in its place.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Perform the following, in order.
 Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-4">
@@ -1797,9 +1793,6 @@ Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶
 <p id="section-7.1-5"><code>consistent_roots</code> requires the proof to have exactly the shape the two sizes imply: tree-size-2 <span class="bcp14">MUST</span> be a complete MMR size; each consistency path <span class="bcp14">MUST</span> have exactly the length that <span><a href="#inclusionproofpath" class="internal xref">inclusion_proof_path</a> (<a href="#inclusionproofpath" class="auto internal xref">Section 4.1</a>)</span> produces for its peak; and every path leading to the same peak of tree-size-2 <span class="bcp14">MUST</span> produce the same value.
 The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
 <p id="section-7.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
-<p id="section-7.1-7">As the proof is processed before the signature is verified, the lengths of the consistency paths <span class="bcp14">MUST</span> be checked against the tree sizes, as <code>consistent_roots</code> does.
-A verifier that omits this check, or that omits the comparison of the protected tree sizes with the values in the proof, accepts the same signature at more than one declared tree-size-2.
-See <span><a href="#declared-tree-sizes" class="internal xref">Declared tree sizes</a> (<a href="#declared-tree-sizes" class="auto internal xref">Section 11.4</a>)</span>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
 <div id="consistentroots">
 <section id="section-7.1.1">
           <h4 id="name-consistent_roots">
@@ -2247,19 +2240,13 @@ The same position binding is what a signed tree size supplies for the peaks a co
 <a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
         </h3>
 <p id="section-11.4-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-The tree sizes are what give that accumulator its meaning: the same list of node values is the accumulator of every tree size whose peaks have those heights, and a relying party that records the accumulator records it at a size.
-If the sizes are not covered by the signature, the party presenting the receipt chooses the size at which the signed accumulator is read.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
-<p id="section-11.4-2">Checking the lengths of the consistency paths against the declared sizes binds the sizes whenever at least one origin peak is carried into a new peak of tree-size-2, because the path length is then part of the hash chain the signature covers.
-It does not bind them when no origin peak is carried: a consistency proof from an empty tree, and any proof in which every origin peak is also a peak of tree-size-2, has only empty paths and right-peaks, and the same right-peaks complete the accumulator of every larger tree size that adds peaks of the same heights.
-A verifier that stores the accumulator at the declared size can then be made to record a state the ledger never had, with a genuine signature, by anyone able to alter the unprotected header, with the consequence that later receipts from the ledger no longer verify against the recorded state.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
-<p id="section-11.4-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with tree-size-2 of the consistency proof, so that, for a given trusted origin, a signature verifies for exactly one target size.
-It requires tree-size-1 to be taken from state the verifier already trusts, because a consistency proof relates two states and a verifier that accepts the prover's statement of the first has no basis for the second; for the same reason tree-size-1 is not signed, since a signed origin would only restate what the verifier must already hold, and would prevent a relying party from presenting a chain of proofs, or a re-based proof, under one signature.
-It requires the proof to have exactly the shape the two sizes imply, because a verifier that accepts a shorter path, or an incomplete tree-size-2, is accepting a signature over a value read at a different height than the one it records.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
-<p id="section-11.4-4">These requirements apply to every verifier of a receipt of consistency, not only to a verifier checking for conflicting views of the ledger.
-A consistency proof relates two states, so a verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt; there is no stateless verification of consistency beyond a single receipt.
-A verifier that records a size the ledger never had records a state the ledger never had.
-The ledger's next receipt then fails to verify against that state, which the verifier can only read as the ledger having presented conflicting views: a false finding of misbehaviour against a ledger that has behaved correctly.
-A verifier that keeps the accumulator but not the size cannot check the shape of any later proof, since every check above is a function of the two sizes.<a href="#section-11.4-4" class="pilcrow">¶</a></p>
+If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">Checking the shape of the proof against the tree sizes binds tree-size-2 only when there are no right-peaks, since the rightmost peak then lies on a path that commits it to its position, and the position of the rightmost peak is the tree size.
+A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.
+tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
+A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt.
+One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protected-header-encoding">
@@ -2335,7 +2322,7 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
               <p id="section-12.1.2-2.6.1">Reference: RFCthis<a href="#section-12.1.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-12.1.2-3">Until this label is assigned, implementations use the private use value -65933 for tree-size-2, as stated in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>.<a href="#section-12.1.2-3" class="pilcrow">¶</a></p>
+<p id="section-12.1.2-3">Until this label is assigned, implementations use the private use value -65933 for tree-size-2.<a href="#section-12.1.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
