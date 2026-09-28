@@ -1754,9 +1754,8 @@ This protects against implementation errors where the signature is verified but 
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-verifying-the-receipt-of-co" class="section-name selfRef">Verifying the Receipt of consistency</a>
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; typically this is its own record of the last state it verified.
-These are referred to below as the trusted tree size and the trusted accumulator.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key <span class="bcp14">MAY</span> verify a log's first receipt of consistency from it.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted tree size and the trusted accumulator.
+The empty tree is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.5</a>)</span>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Perform the following, in order.
 Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-4">

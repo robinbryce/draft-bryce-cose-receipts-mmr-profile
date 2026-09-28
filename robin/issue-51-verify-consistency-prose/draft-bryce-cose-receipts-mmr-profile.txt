@@ -525,11 +525,9 @@ Table of Contents
 
    The verifier MUST hold, from a source it already trusts, the tree
    size and the accumulator of the state it is verifying consistency
-   from; typically this is its own record of the last state it verified.
-   These are referred to below as the trusted tree size and the trusted
-   accumulator.  The empty tree, with tree size 0 and an empty
-   accumulator, is a valid trusted state: a verifier that holds only the
-   signing key MAY verify a log's first receipt of consistency from it.
+   from; these are referred to below as the trusted tree size and the
+   trusted accumulator.  The empty tree is a valid trusted state; see
+   The empty tree as trusted state (Section 11.5).
 
    Perform the following, in order.  Verification fails if any step
    fails.
