@@ -482,12 +482,11 @@ Table of Contents
       proof in the unprotected header.  Value type: uint (CBOR major
       type 0).
 
-   tree-size-1 is not carried in the protected header: a verifier holds
-   the tree size and accumulator it verifies consistency from, and a
-   consistency proof need only be consistent with them, as described in
-   Verifying the Receipt of consistency (Section 7.1).  A receipt of
-   consistency under this profile that omits the protected tree-size-2
-   MUST be rejected.
+   tree-size-1 is not carried in the protected header: the verifier
+   holds the tree size and accumulator it verifies consistency from, as
+   described in Verifying the Receipt of consistency (Section 7.1).  A
+   receipt of consistency under this profile that omits the protected
+   tree-size-2 MUST be rejected.
 
    The protected header MUST be encoded as deterministic CBOR
    ([RFC8949], Section 4.2.1): arguments in shortest form, definite
