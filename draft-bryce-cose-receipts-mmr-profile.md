@@ -420,12 +420,9 @@ This protects against implementation errors where the signature is verified but 
 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
-The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it.
-Such an initialising consistency-proof has the form `[0, tree-size-2, [], right-peaks]`, its tree-size-2 is the signed protected tree-size-2, and it can be verified only against the empty tree: the rule that tree-size-1 of the first consistency-proof MUST equal the trusted tree size rejects it at any verifier that holds a larger size.
-Typically this is its own record of the last state it verified.
+The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; typically this is its own record of the last state it verified.
 These are referred to below as the trusted tree size and the trusted accumulator.
-The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it.
 
 Perform the following, in order.
 Verification fails if any step fails.
