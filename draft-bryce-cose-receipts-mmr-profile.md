@@ -339,7 +339,7 @@ consistency-proof =  bstr .cbor [
 ]
 ~~~~
 
-## consistency_proof_path
+## consistency_proof_paths
 
 Produces the verification paths for inclusion of the peaks of tree-size-1 under the peaks of tree-size-2.
 
@@ -586,7 +586,7 @@ We define `add_leaf_hash` as
 
       ileft = i - (2 << g)
 
-      # Set iright to the index of the the right child of i,
+      # Set iright to the index of the right child of i,
       # which is i - 1
 
       iright = i - 1
@@ -856,7 +856,7 @@ Returns the floor of log base 2 x
 
 ## most_sig_bit
 
-Returns the mask for the the most significant bit in pos
+Returns the mask for the most significant bit in pos
 
 ~~~~ python
   def most_sig_bit(pos) -> int:
