@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-27T00:39:03.407997+00:00",
+  "timestamp": "2026-09-29T00:35:42.189993+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -135,15 +135,15 @@
       "id": "I_kwDOO_kfWc8AAAABSHQ5Lg",
       "title": "Pseudocode defects - right-peaks rule discards the wrong number of peaks",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/17",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\nThe generation rule at [line 343](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L343) says right-peaks are obtained by taking `peaks(tree-size-2 - 1)` and \"discarding length(proofs) from the left\". That is wrong whenever two or more old peaks land on the same new peak.\n\nSmallest counterexample, MMR(4) to MMR(8): old peaks are `[2, 3]`, new peaks are `[6, 7]`. Both consistency paths (`[5]` for node 2 and `[4, 2]` for node 3) terminate at new peak 6, so right-peaks must be `[node 7]`. Discarding `len(proofs) = 2` from `[6, 7]` yields an empty list. Anton reports the printed rule fails for 1,272 of the 2,080 state pairs in the first 64 complete MMR sizes.\n\nThe verifier side already has it right: step 7 at [line 418](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L418) discards \"the number of roots returned by consistent_roots\". Only the generator text is wrong.\n\n**Reference implementation**\n\nThere is no right-peaks generator in algorithms.py to compare against; this is draft-only text.\n\n**Raised by**\n\n[Anton Sokolov, 28 Aug 2026](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 1.2).\n\n**Suggested fix**\n\nChange [line 343](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L343) to discard the number of **distinct destination peaks**, which is the length of the list `consistent_roots` returns. Also say that right-peaks are the node **values** at those indices (a `db.get` step), not the indices themselves.\n\n---\nRaised from the SCITT list reviews of the -03 text (main at 54b1b33). Line links are permalinks to that commit so they stay valid as fixes land.",
       "createdAt": "2026-09-19T13:34:40Z",
-      "updatedAt": "2026-09-19T13:34:40Z",
-      "closedAt": null,
+      "updatedAt": "2026-09-27T17:24:48Z",
+      "closedAt": "2026-09-27T17:24:48Z",
       "comments": []
     },
     {
@@ -151,15 +151,15 @@
       "id": "I_kwDOO_kfWc8AAAABSHQ5Yw",
       "title": "Pseudocode defects - consistent_roots deduplicates by value instead of position",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/18",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\nTwo adjacent old peaks can legitimately map to a single new peak, so `consistent_roots` ([lines 446 to 462](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L446-L462)) needs to skip duplicates. It does so by comparing hash values: if the newly computed root equals the previous one, it is dropped. Value equality is the wrong test.\n\nBecause leaves are not domain separated (separate issue), a leaf peak can have the same value as an interior peak. Anton's construction: MMR(4) with leaves `a`, `b`, `X` where `X = BE64(3) || a || b`. The valid MMR has distinct peaks at indices 2 and 3 with equal values `[u, u]`. For a same-state proof both paths are empty, the true accumulator is `[u, u]`, and `consistent_roots` returns `[u]`, deleting a real peak.\n\n**Reference implementation**\n\nThe same value-based comparison is in [algorithms.py line 183](https://github.com/robinbryce/merkle-mountain-range-proofs/blob/8c013b9777ceacb70873172ad142042f01294d41/algorithms.py#L183) (`if roots and roots[-1] == root`), so the reference implementation needs the same fix.\n\n**Raised by**\n\n[Anton Sokolov, 28 Aug 2026](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 1.4).\n\n**Suggested fix**\n\nHave `included_root` also return the index at which the path terminated (the stale `Tuple[bool, int]` annotation in [included_root](https://github.com/robinbryce/merkle-mountain-range-proofs/blob/8c013b9777ceacb70873172ad142042f01294d41/algorithms.py#L94-L140) suggests this was once intended), and skip a root only when its terminal index equals the previous one. This also makes it possible to check that every path ends at a peak of tree-size-2 (separate issue).\n\n---\nRaised from the SCITT list reviews of the -03 text (main at 54b1b33). Line links are permalinks to that commit so they stay valid as fixes land.",
       "createdAt": "2026-09-19T13:34:41Z",
-      "updatedAt": "2026-09-19T13:34:41Z",
-      "closedAt": null,
+      "updatedAt": "2026-09-27T17:25:13Z",
+      "closedAt": "2026-09-27T17:25:13Z",
       "comments": []
     },
     {
@@ -295,15 +295,15 @@
       "id": "I_kwDOO_kfWc8AAAABSHQ8sA",
       "title": "Verification procedure - path-length check against provided tree sizes is unsatisfiable for inclusion proofs",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/27",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\n[line 249](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L249) says the implementation SHOULD check that proof path lengths are \"appropriate for the provided tree sizes\". An inclusion proof ([lines 124 to 133](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L124-L133)) carries no tree size, so there is nothing to check against. The identical sentence at [line 424](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L424) is fine, because a consistency proof carries both sizes.\n\n**Raised by**\n\n[Michael Msebenzi, 25 Aug 2026](https://mailarchive.ietf.org/arch/msg/scitt/HWPYQ8jQmXGF2Jrl-ZOBQARf08w/) (item 4), [Anton Sokolov, 28 Aug 2026](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 2.2).\n\n**Suggested fix**\n\nFor inclusion, reword to a bound derivable from the index alone, for example `len(path) <= 63 - index_height(index)`, or drop the sentence.\n\n---\nRaised from the SCITT list reviews of the -03 text (main at 54b1b33). Line links are permalinks to that commit so they stay valid as fixes land.",
       "createdAt": "2026-09-19T13:34:49Z",
-      "updatedAt": "2026-09-26T12:55:38Z",
-      "closedAt": null,
+      "updatedAt": "2026-09-27T17:24:54Z",
+      "closedAt": "2026-09-27T17:24:54Z",
       "comments": [
         {
           "author": "robinbryce",
@@ -335,15 +335,15 @@
       "id": "I_kwDOO_kfWc8AAAABSHQ9Yw",
       "title": "Wire format - detached payload bytes for a receipt of consistency are undefined",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\n[line 310](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L310) says the signature is over \"the complete accumulator for tree-size-2\". [line 420](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L420) says to verify the signature over the consistent accumulator. The accumulator is a **list** of hashes, but COSE_Sign1 signs exactly one byte string. The draft never chooses an encoding: raw concatenation, deterministic CBOR of the array, a hash of the list, or something else. Each choice produces different Sig_structure bytes, so two conforming implementations cannot interoperate.\n\nFor inclusion, [line 242](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/54b1b33a5b0f63ae263067a2111584eec732d3cb/draft-bryce-cose-receipts-mmr-profile.md#L242) says the payload is \"this value\" (the peak) but does not say explicitly that it is the raw 32 bytes.\n\n**Raised by**\n\n[Anton Sokolov, 28 Aug 2026](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 2.1.4).\n\n**Suggested fix**\n\nSpecify the detached payload bytes exactly for both receipt types. This must match what existing implementations already sign, so the author needs to make the call. For example: consistency payload is the deterministic CBOR encoding of `[ + bstr .size 32 ]`; inclusion payload is the raw 32-byte peak value.\n\n---\nRaised from the SCITT list reviews of the -03 text (main at 54b1b33). Line links are permalinks to that commit so they stay valid as fixes land.",
       "createdAt": "2026-09-19T13:34:52Z",
-      "updatedAt": "2026-09-19T13:34:52Z",
-      "closedAt": null,
+      "updatedAt": "2026-09-27T17:24:51Z",
+      "closedAt": "2026-09-27T17:24:51Z",
       "comments": []
     },
     {
@@ -543,15 +543,15 @@
       "id": "I_kwDOO_kfWc8AAAABTWZHEw",
       "title": "Verification procedure - consistent_roots_for_sizes should replace consistent_roots, not sit beside it",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/42",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\nAfter #39 the draft defines two folds. `consistent_roots_for_sizes` ([lines 454 to 556](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L454-L556)) is the one the verification procedure uses. `consistent_roots` ([lines 557 to 608](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L557-L608)) is kept, introduced as \"the fold defined by earlier versions of this document\", marked MUST NOT be used on its own, and wrapped in five checks that restate the new algorithm. A specification should define one algorithm and not describe its own history, and the retained fold still de-duplicates roots by value (#18).\n\n**Suggested fix**\n\nDelete the `consistent_roots` section ([lines 557 to 608](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L557-L608)). Rename `consistent_roots_for_sizes` to `consistent_roots`: the heading at [line 454](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L454), the definition at [lines 487 to 490](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L487-L490), and the references at [line 440](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L440), [line 445](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L445) and [line 450](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L450). Remove every reference to earlier versions of the document. The reference implementation keeps both names; the draft's `consistent_roots` corresponds to [`consistent_roots_for_sizes`](https://github.com/robinbryce/merkle-mountain-range-proofs/blob/80e8c04bfdc3bec627cf902a847f88006ce21bde/algorithms.py#L203-L294) there.\n\nAlso resolves #18.\n\n---\nRaised from the author's review of #39 ([commit comments](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/commit/be19fdc7273a6fd0f5ff23d21d6a7a008ddf9c1b)). Line links are permalinks to c7ea548.\n",
       "createdAt": "2026-09-26T11:09:32Z",
-      "updatedAt": "2026-09-26T11:09:32Z",
-      "closedAt": null,
+      "updatedAt": "2026-09-27T17:25:13Z",
+      "closedAt": "2026-09-27T17:25:13Z",
       "comments": []
     },
     {
@@ -559,14 +559,46 @@
       "id": "I_kwDOO_kfWc8AAAABTWZHYQ",
       "title": "Editorial - reduce the text added for the signed tree-size-2",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/43",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "**Problem**\n\n#39 explains the signed size more than once and in more words than the surrounding text uses. The requirement is a header label, a comparison and a fixed proof shape; the rationale belongs in Security Considerations, once.\n\n**Changes**\n\nCOSE Receipt of Consistency:\n\n- Delete [line 391](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L391) (\"Until TBD_2 is assigned ...\"). The private-use value is already stated in the IANA section ([line 886](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L886)); drop that line's trailing \"as stated in ...\" clause.\n- Delete [line 393](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L393) (\"tree-size-2 is carried in the protected header so that ...\").\n- Delete [line 395](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L395) (\"The consistency-proof structure in the unprotected header is unchanged from ...\").\n\nVerifying the Receipt of consistency:\n\n- Delete [line 429](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L429) (\"A verifier that takes tree-size-1 from the receipt ...\").\n- Delete [lines 450 to 452](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L450-L452) (\"As the proof is processed before the signature is verified ...\" through \"See Declared tree sizes.\"). The sentence descends from the SHOULD that guarded against oversized proofs; the path lengths are now a MUST of the fold, stated in the preceding paragraph, so the remark adds nothing.\n\nSecurity Considerations, Declared tree sizes ([lines 832 to 850](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L832-L850)), reduce to the following. The claim at [lines 836 to 837](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L836-L837) that path lengths bind the size whenever an origin peak is carried is inaccurate: the path length fixes the split height and the number of right-peaks, not their heights, so 7 to 16, 7 to 18 and 7 to 22 share one shape. The replacement corrects this.\n\n> The signed statement of a receipt of consistency is the accumulator for tree-size-2.\n> If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.\n>\n> Checking the shape of the proof against the tree sizes does not bind tree-size-2. A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.\n>\n> This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.\n> tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.\n> A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt. One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.\n\n---\nRaised from the author's review of #39 ([commit comments](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/commit/2131d32c3540714e057b2031d427b442b7ddcdff#comments)). Line links are permalinks to c7ea548.\n",
       "createdAt": "2026-09-26T11:09:33Z",
-      "updatedAt": "2026-09-26T12:32:48Z",
+      "updatedAt": "2026-09-27T17:25:52Z",
+      "closedAt": "2026-09-27T17:25:52Z",
+      "comments": []
+    },
+    {
+      "number": 49,
+      "id": "I_kwDOO_kfWc8AAAABTd8OlQ",
+      "title": "Allow for tree initializing consistency proofs",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/49",
+      "state": "CLOSED",
+      "author": "robinbryce",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The CDDL for a consistency proof requires at least one `consistency-path`:\n\n    consistency-paths: [ + consistency-path ]\n\nA proof from tree-size-1 = 0 \u2014 the very first receipt of consistency a log\nissues, proving from the empty tree \u2014 has no accumulator peaks in\ntree-size-1 to carry paths from, so `consistency-paths` is encoded as the\nempty array `[]`. A strict CDDL validator rejects every such first receipt.\n\nThe verification procedure in \"Verifying the Receipt of consistency\"\nalready handles this case when the verifier's trusted state is the empty\ntree (tree size 0, empty accumulator): it folds zero paths and the\nright-peaks alone form the accumulator for tree-size-2. But the text does\nnot say the empty tree is a valid trusted state.\n\nProposed fix: change the CDDL to `[ * consistency-path ]`, and add a\nsentence to the verification section stating that the empty tree (size 0,\nempty accumulator) is a valid trusted state.\n",
+      "createdAt": "2026-09-27T09:12:40Z",
+      "updatedAt": "2026-09-27T17:26:38Z",
+      "closedAt": "2026-09-27T17:26:38Z",
+      "comments": []
+    },
+    {
+      "number": 51,
+      "id": "I_kwDOO_kfWc8AAAABToX0Og",
+      "title": "Re-draft section 7.1 - remove redundancy and simplify",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/51",
+      "state": "OPEN",
+      "author": "robinbryce",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 7.1, [Verifying the Receipt of consistency](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/main/draft-bryce-cose-receipts-mmr-profile.md#verifying-the-receipt-of-consistency), opens with a run of prose paragraphs that largely restate requirements the numbered verification steps already enforce.\n\nAssessment of the prose preceding the steps, sentence by sentence:\n\n- **Trusted source requirement** (the verifier MUST hold the tree size and accumulator from a source it already trusts). Not covered by the steps; the steps initialise from the trusted values but never say where they come from. Keep.\n- **Empty tree as a valid trusted state.** Not covered; the steps handle size 0 mechanically but nothing grants permission to start there. Keep, shortened.\n- **Initialising proof form and why a larger trusted size rejects it.** Fully redundant with step 3. The form follows from the CDDL comment on consistency-paths. The clause \"its tree-size-2 is the signed protected tree-size-2\" is also only true for a single-proof receipt: step 2 binds the protected size to the *last* proof, so a receipt chaining forward from 0 contradicts it. Drop.\n- **\"Typically this is its own record of the last state it verified.\"** Informative, and its antecedent is separated from it by unrelated sentences. Fold into the first sentence.\n- **Naming of trusted tree size / trusted accumulator.** Needed, the steps use those names. Fold into the first sentence.\n- **tree-size-1 MUST NOT be used in place of the trusted size.** Redundant. Step 4 fixes the initialisation source and steps 3 and 5.1 are the comparisons; a conforming implementation of the steps cannot do what it prohibits. Drop, or move a short warning to the implementation guidance after the steps alongside the single-boolean recommendation.\n\nProposed replacement for the six sentences:\n\n```\nThe verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; typically this is its own record of the last state it verified.\nThese are referred to below as the trusted tree size and the trusted accumulator.\nThe empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it.\n```\n\nThe numbered steps are unchanged.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
+      "createdAt": "2026-09-28T09:29:46Z",
+      "updatedAt": "2026-09-28T09:29:46Z",
       "closedAt": null,
       "comments": []
     }
@@ -1107,130 +1139,352 @@
       "id": "PR_kwDOO_kfWc8AAAABFPmfZw",
       "title": "Right-peaks are the peaks of tree-size-2 that no consistency path leads to",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/44",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The prover-side rule for producing `right-peaks` now says they are the node values of the peaks of tree-size-2 that no consistency path leads to, in descending height order. Before, it said to take the peaks of tree-size-2 and discard `length(proofs)` of them from the left, which is wrong whenever two or more origin peaks are carried into the same new peak: for MMR(4) to MMR(8) both paths end at node 6, so right-peaks must be `[7]`, but discarding two from `[6, 7]` leaves nothing.\n\nFixes [#17](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/17), raised from [Anton Sokolov's review on the SCITT list](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 1.2). One line changes, at [line 344](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L344) of the current text. The verifier side was already correct: since [#39](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/39) the fold returns exactly this count as `nright`, and the new wording describes the same set of peaks without naming the fold.\n\nIndependent of the companion PRs for [#29](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/29) (detached payload bytes) and [#42](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/42) (fold rename); any merge order works.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
       "createdAt": "2026-09-26T11:56:30Z",
-      "updatedAt": "2026-09-26T11:56:30Z",
+      "updatedAt": "2026-09-27T17:24:47Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "c7ea5480dd930213ac7ced827b5dd6f58bc03476",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/issue-17-right-peaks",
       "headRefOid": "9c4e7fb8e50f7eea0cc37f3020b251e33bea487e",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-09-27T17:24:47Z",
+      "mergedAt": "2026-09-27T17:24:47Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "88ffa5dcc73eff52606db121dc6287472ab5ea72"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb5QpQ",
+          "commit": {
+            "abbreviatedOid": "9c4e7fb"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-27T15:16:27Z",
+          "updatedAt": "2026-09-27T15:16:27Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 45,
       "id": "PR_kwDOO_kfWc8AAAABFPmgVQ",
       "title": "Define the detached payload bytes for receipts of inclusion and consistency",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/45",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The draft now states what bytes the COSE Sign1 detached payload is. For a receipt of consistency it is the node values of the accumulator for tree-size-2, concatenated in descending height order. For a receipt of inclusion it is the bytes of the node value the inclusion path produces. Before, the text said the signature is over \"the accumulator\" or \"this value\" without choosing an encoding, and an accumulator is a list of hashes while COSE_Sign1 signs one byte string, so two conforming implementations could disagree.\n\nFixes [#29](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/29), raised from [Anton Sokolov's review on the SCITT list](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 2.1.4). Two edits: one sentence added after [line 310](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L310) in the Consistency Proof section, and [line 242](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L242) in Verifying the Receipt of inclusion made explicit. The chosen encoding is the one the existing implementations and the cross-language test vectors already sign; see the payload construction in the [reference KAT generator](https://github.com/robinbryce/merkle-mountain-range-proofs/blob/80e8c04bfdc3bec627cf902a847f88006ce21bde/scripts/gen_checkpoint_receipt_kat39.py#L380).\n\nIndependent of the companion PRs for [#17](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/17) (right-peaks rule) and [#42](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/42) (fold rename); any merge order works.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
       "createdAt": "2026-09-26T11:56:33Z",
-      "updatedAt": "2026-09-26T11:56:34Z",
+      "updatedAt": "2026-09-27T17:24:50Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "c7ea5480dd930213ac7ced827b5dd6f58bc03476",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/issue-29-payload-bytes",
       "headRefOid": "1556bb572309b7054d2acf9837748425f7dddb9a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-09-27T17:24:50Z",
+      "mergedAt": "2026-09-27T17:24:50Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "413cc157bd7659a882c1bc648979b3a4a10bc136"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb53Ug",
+          "commit": {
+            "abbreviatedOid": "1556bb5"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "I wonder if \"the bytes of this node value\" really make it much better without also specifying a serialization scheme but I think it's fine, the obvious octet stream interpretation should apply. ",
+          "createdAt": "2026-09-27T15:18:35Z",
+          "updatedAt": "2026-09-27T15:18:35Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 46,
       "id": "PR_kwDOO_kfWc8AAAABFPmhRQ",
       "title": "consistent_roots is the size-checked fold; remove the superseded fold",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/46",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The draft now defines one consistency fold, `consistent_roots`, and it is the size-checked algorithm that [#39](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/39) introduced under the name `consistent_roots_for_sizes`. The section that kept the earlier fold, described it as \"the fold defined by earlier versions of this document\", forbade its standalone use and listed five wrapper checks is removed. A specification should define one algorithm and not describe its own history.\n\nFixes [#42](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/42). Also resolves [#18](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/18): the value-based de-duplication that issue reports lived only in the removed fold.\n\nEdits, against the [current text](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md):\n\n- Delete the `consistent_roots` section at [lines 557 to 608](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L557-L608).\n- Rename the heading at [line 454](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L454), the definition at [lines 487 to 490](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L487-L490), and the references at [line 440](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L440), [line 445](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L445) and [line 450](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L450). The anchor becomes `#consistentroots`, which is the anchor the -03 text used.\n\nNo pseudocode changes beyond the function name. The reference implementation in [algorithms.py](https://github.com/robinbryce/merkle-mountain-range-proofs/blob/80e8c04bfdc3bec627cf902a847f88006ce21bde/algorithms.py#L203-L294) keeps the longer name; the draft's `consistent_roots` corresponds to it.\n\nCompanion PRs: [#17](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/17) (right-peaks rule) and [#29](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/29) (payload bytes) are independent. The editorial trim for [#43](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/43) should follow this PR, since it rewrites [line 450](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L450), which this PR renames.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
       "createdAt": "2026-09-26T11:56:37Z",
-      "updatedAt": "2026-09-26T11:56:37Z",
+      "updatedAt": "2026-09-27T17:25:12Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "c7ea5480dd930213ac7ced827b5dd6f58bc03476",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/issue-42-consistent-roots",
       "headRefOid": "5353cb4129f10c373c995d683ceef33fcc4f61d8",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-09-27T17:25:12Z",
+      "mergedAt": "2026-09-27T17:25:12Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "a21ee87ebfdb02ab76948c561bc7c801f88ca542"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb411g",
+          "commit": {
+            "abbreviatedOid": "5353cb4"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-27T15:14:55Z",
+          "updatedAt": "2026-09-27T15:14:55Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 47,
       "id": "PR_kwDOO_kfWc8AAAABFPp7aA",
       "title": "Reduce the text added for the signed tree-size-2",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/47",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The text that [#39](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/39) added for the signed tree-size-2 is cut back to the requirement and one statement of the rationale. Sentences that restated the rule are removed, the private-use label value is stated once in the IANA section, and the Security Considerations subsection Declared tree sizes is rewritten in six sentences. Net change is 9 lines added, 22 removed.\n\nFixes [#43](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/43), which lists every edit with a link. The one substantive correction: the previous rationale said that checking path lengths binds tree-size-2 whenever an origin peak is carried into a new peak. It binds it only when there are no right-peaks. A consistency path commits the peak it reaches to its position, and the rightmost peak is at the tree size, so the size is bound exactly when a path reaches the rightmost peak, as in 7 to 15. A right-peak is a node value with no height, so a proof from 7 to 16 nodes, with one path of length one and one right-peak, has the same shape as 7 to 18 and 7 to 22. The rewritten subsection says exactly that, which is a shorter and stronger reason for signing tree-size-2.\n\n**Stacked on [#46](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/46)** (renames the fold to `consistent_roots`), because this PR rewrites the sentence at [line 450](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L450) that #46 renames. The base is #46's branch so the diff shown here is only this change; once #46 merges GitHub retargets this PR to main, and it will be rebased if needed. Independent of [#44](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/44) and [#45](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/45).\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n",
       "createdAt": "2026-09-26T12:08:33Z",
-      "updatedAt": "2026-09-26T14:38:40Z",
+      "updatedAt": "2026-09-27T17:25:51Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
-      "baseRefName": "robin/issue-42-consistent-roots",
-      "baseRefOid": "5353cb4129f10c373c995d683ceef33fcc4f61d8",
+      "baseRefName": "main",
+      "baseRefOid": "a21ee87ebfdb02ab76948c561bc7c801f88ca542",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/issue-43-trim",
       "headRefOid": "eb99a89eb55545700642af0d59ce6866944124b3",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-09-27T17:25:51Z",
+      "mergedAt": "2026-09-27T17:25:51Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "9b74c8c3cbbf168ad4a23c67e9f63dd1346f9f09"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb6yPg",
+          "commit": {
+            "abbreviatedOid": "eb99a89"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-27T15:21:01Z",
+          "updatedAt": "2026-09-27T15:21:01Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 48,
       "id": "PR_kwDOO_kfWc8AAAABFP23fQ",
       "title": "Receipts of inclusion carry no tree size; drop the path-length remark",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/48",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "robinbryce",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The sentence asking verifiers of a receipt of inclusion to check path lengths \"against the provided tree sizes\" is removed, and a short Security Considerations subsection states why no tree size is needed. The reviewers were right that there is nothing to check against; the fix is removal rather than adding a size.\n\nFixes [#27](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/27), raised by [Michael Msebenzi](https://mailarchive.ietf.org/arch/msg/scitt/HWPYQ8jQmXGF2Jrl-ZOBQARf08w/) (item 4) and [Anton Sokolov](https://mailarchive.ietf.org/arch/msg/scitt/Jyy9yI2uTtB4RrDaGGi6E1YCUR0/) (section 2.2).\n\n**Why no size is needed.** Every step of `included_root` hashes the parent's one-based position ([hash_pospair64](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L675-L704)), so the node a receipt proves commits to its own position, and through the path to the index and the height of every parent. Nodes are permanent, so the receipt is a fixed fact, valid in every tree size from the one that created the node. This is the opposite of the situation that led to signing tree-size-2 for receipts of consistency ([#40](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/40)): a right-peak is a bare value whose height the verifier assigns from the declared size, whereas a proven inclusion node carries its position in its hash. A signed size could add only \"the log had at least this many nodes when I signed\", which the bound position already implies, and it would pin a receipt that is designed to remain valid as the tree grows.\n\n**What the sentence was for.** Its origin was bounding path length against oversized proofs. That bound follows from the index alone (a path is at most `63 - index_height(index)` long, given the maximum height of 64) and belongs with the position-overflow issue [#21](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/21), not with tree sizes.\n\n**Residues that a size would not fix either.** When the path is empty the proven node is the entry itself and commits to no position; that is [#14](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/14). Presenting an interior node as an entry is the domain-separation question [#13](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/13).\n\nEdits, against the [current text](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md):\n\n- [Line 250](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L250) replaced with a non-normative note that a verifier holding a trusted tree size and accumulator can check the proven node is the accumulator peak for the index at that size, which fixes the path length. Written as \"can\", not SHOULD, so inclusion verification is not coupled to holding a receipt of consistency; a stateless verifier still receives a position-bound statement.\n- New subsection \"Tree size of a receipt of inclusion\" before [Declared tree sizes](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/c7ea5480dd930213ac7ced827b5dd6f58bc03476/draft-bryce-cose-receipts-mmr-profile.md#L832), four sentences: the position claim, stated for a non-empty path so the empty-path residue (#14) is visible; that the receipt carries no size; that without a trusted accumulator the receipt shows the ledger signed the node at its position, not that the node is in the history the verifier established by receipts of consistency; and that the same position binding is what the signed tree-size-2 supplies for the peaks a consistency proof leaves bare, with a reference to Declared tree sizes.\n\nIndependent of the open PRs [#44](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/44), [#45](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/45), [#46](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/46) and [#47](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/47); #45 edits the same section eight lines earlier and merges cleanly either way.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n",
       "createdAt": "2026-09-26T12:55:21Z",
-      "updatedAt": "2026-09-26T14:47:29Z",
+      "updatedAt": "2026-09-27T17:24:54Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
       "baseRefOid": "c7ea5480dd930213ac7ced827b5dd6f58bc03476",
       "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "robin/issue-27-inclusion-size",
       "headRefOid": "1ed5010ba8f564b2258b0b847304597a7af0a183",
+      "closedAt": "2026-09-27T17:24:53Z",
+      "mergedAt": "2026-09-27T17:24:53Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "52ca8329fd483a07a2c126e49b9ac3824d502cae"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb6_TQ",
+          "commit": {
+            "abbreviatedOid": "1ed5010"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-27T15:21:37Z",
+          "updatedAt": "2026-09-27T15:21:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "id": "PR_kwDOO_kfWc8AAAABFVV09A",
+      "title": "Allow tree-initializing consistency proofs",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/50",
+      "state": "MERGED",
+      "author": "robinbryce",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "**Stacked on #46.** This PR is based on `robin/issue-42-consistent-roots` and uses its `consistent_roots` naming; merge #46 first. GitHub retargets this PR to `main` when #46's branch is deleted on merge.\n\nThe CDDL for a consistency proof requires at least one `consistency-path`, but a proof from tree-size-1 = 0 \u2014 the very first receipt of consistency a log issues, proving from the empty tree \u2014 has no accumulator peaks to carry paths from, so `consistency-paths` is encoded as the empty array. A strict CDDL validator rejects every such first receipt, even though the verification procedure already handles it when the verifier's trusted state is the empty tree.\n\nThis changes the CDDL to `[ * consistency-path ]` (permitting zero paths), with a comment noting when the array is empty, and adds a sentence to \"Verifying the Receipt of consistency\" stating that the empty tree (size 0, empty accumulator) is a valid trusted state that a verifier may start from.\n\n**Security Considerations** gains a subsection, \"The empty tree as trusted state\": every accumulator is consistent with the empty tree, so a receipt from tree-size-1 = 0 proves nothing about prior state and is the signer's assertion of an accumulator at a signed size; a verifier MAY hold the empty tree as trusted state only while it has no verified state, and MUST NOT replace a verified size with it (the first-proof tree-size-1 rule already rejects such a receipt at a verifier with history; the new text names the reset hazard).\n\nCloses #49\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n\n",
+      "createdAt": "2026-09-27T09:13:28Z",
+      "updatedAt": "2026-09-27T17:26:38Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "a21ee87ebfdb02ab76948c561bc7c801f88ca542",
+      "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "tree-initializing-consistency-proofs",
+      "headRefOid": "1e0415acf52808ba7099b25917f921207f945495",
+      "closedAt": "2026-09-27T17:26:37Z",
+      "mergedAt": "2026-09-27T17:26:37Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "a06c94c9e48ebdd8cefaa6f8bb22a98d7e3a2eb7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPa1Q9Q",
+          "commit": {
+            "abbreviatedOid": "a77da06"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-27T09:28:36Z",
+          "updatedAt": "2026-09-27T09:28:36Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "I think the draft now uses `consistent_roots` rather than `consistent_roots_for_sizes` throughout. please check for consistency and change accordingly.\n\nThis scentence\n\n\"is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, and the signature over the protected tree-size-2 and those peaks\" could imply the peaks are signed. instead how about\n\n\"is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2",
+              "createdAt": "2026-09-27T09:28:36Z",
+              "updatedAt": "2026-09-27T09:28:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPa7RXA",
+          "commit": {
+            "abbreviatedOid": "a77da06"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-27T09:58:30Z",
+          "updatedAt": "2026-09-27T09:58:30Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "Lines 861-864 seem overly complex for what they are attempting to express.\n\nPlease consider the following replacement:\n\nA tree state verification is a verification of monotonically increasing tree sizes starting with the empty tree.\nThis verification MUST fail any attempt to re-wind the tree size, including setting the verification state back to the empty tree.\nVerifiers MAY chose to treat presenting a consistency proof with tree-size-1 of 0 as initialising a new verification attempt.\nVerifiers MAY chose to accept re-winds, consistency proofs starting from earlier tree-sizes (forks).\nIn both these circumstances the current verification attempt MUST fail and the operation MUST be represented as a new verification attempt.\n\n",
+              "createdAt": "2026-09-27T09:58:30Z",
+              "updatedAt": "2026-09-27T09:58:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPb4enQ",
+          "commit": {
+            "abbreviatedOid": "1e0415a"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-27T15:13:30Z",
+          "updatedAt": "2026-09-27T15:13:30Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "id": "PR_kwDOO_kfWc8AAAABFd20og",
+      "title": "Re-draft section 7.1: remove prose redundant with the verification steps",
+      "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/52",
+      "state": "OPEN",
+      "author": "robinbryce",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Trims the prose that opens section 7.1, [Verifying the Receipt of consistency](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/blob/robin/issue-51-verify-consistency-prose/draft-bryce-cose-receipts-mmr-profile.md#verifying-the-receipt-of-consistency), from six sentences to three. The numbered verification steps are unchanged. Closes [#51](https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/issues/51), which records the sentence-by-sentence assessment.\n\nTwo sentences are removed as redundant with the steps:\n\n- The description of the initialising consistency proof, the one whose tree-size-1 is 0, and the explanation that a verifier holding a larger trusted size rejects it. That rejection is exactly step 3. The sentence also claimed the proof's tree-size-2 is the signed protected tree-size-2, which is only true for a receipt carrying a single proof: step 2 binds the protected size to the last proof, so a receipt chaining forward from the empty tree contradicts it.\n- The prohibition on using the tree-size-1 values in the proofs in place of the trusted tree size. Step 4 initialises from the trusted size and steps 3 and 5.1 perform the comparisons, so a conforming implementation of the steps cannot do what the sentence prohibited.\n\nThe remaining sentences are merged: the requirement that the verifier hold the tree size and accumulator from a source it already trusts now carries the \"typically its own record of the last state it verified\" clause, whose antecedent was previously separated from it. The naming of the trusted tree size and trusted accumulator, and the permission to treat the empty tree as a valid trusted state, follow it.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n",
+      "createdAt": "2026-09-28T09:30:57Z",
+      "updatedAt": "2026-09-28T14:48:14Z",
+      "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "baseRefName": "main",
+      "baseRefOid": "a06c94c9e48ebdd8cefaa6f8bb22a98d7e3a2eb7",
+      "headRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
+      "headRefName": "robin/issue-51-verify-consistency-prose",
+      "headRefOid": "a74febc23373bfb1a930a0069a3aa397c3e4542a",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPih9Lw",
+          "commit": {
+            "abbreviatedOid": "6d13715"
+          },
+          "author": "robinbryce",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-28T11:21:17Z",
+          "updatedAt": "2026-09-28T11:21:17Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "are these two lines duplicated else where in the document, such as the security considerations. If this is still duplicative, considered relative to the related ccf COSE Receipts profile, is it still worth restating here or simply a terse reference to the appropriate definition ? ",
+              "createdAt": "2026-09-28T11:21:17Z",
+              "updatedAt": "2026-09-28T11:21:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOO_kfWc8AAAABPlAK7A",
+          "commit": {
+            "abbreviatedOid": "a74febc"
+          },
+          "author": "JAG-UK",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Simpler, good.",
+          "createdAt": "2026-09-28T14:48:14Z",
+          "updatedAt": "2026-09-28T14:48:14Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
