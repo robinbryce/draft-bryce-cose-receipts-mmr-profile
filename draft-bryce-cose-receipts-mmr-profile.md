@@ -389,7 +389,7 @@ protected-header-map = {
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
 - tree-size-2 (label: TBD_2): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).
 
-tree-size-1 is not carried in the protected header: a verifier holds the tree size and accumulator it verifies consistency from, and a consistency proof need only be consistent with them, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
+tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 A receipt of consistency under this profile that omits the protected tree-size-2 MUST be rejected.
 
 The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
@@ -420,12 +420,8 @@ This protects against implementation errors where the signature is verified but 
 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
-The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state: a verifier that holds only the signing key MAY verify a log's first receipt of consistency from it.
-Such an initialising consistency-proof has the form `[0, tree-size-2, [], right-peaks]`, its tree-size-2 is the signed protected tree-size-2, and it can be verified only against the empty tree: the rule that tree-size-1 of the first consistency-proof MUST equal the trusted tree size rejects it at any verifier that holds a larger size.
-Typically this is its own record of the last state it verified.
-These are referred to below as the trusted tree size and the trusted accumulator.
-The tree-size-1 values carried in the consistency proofs are compared with the trusted tree size; they MUST NOT be used in its place.
+The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted tree size and the trusted accumulator.
+The empty tree is a valid trusted state; see [The empty tree as trusted state](#the-empty-tree-as-trusted-state).
 
 Perform the following, in order.
 Verification fails if any step fails.
