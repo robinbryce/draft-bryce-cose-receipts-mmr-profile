@@ -28,9 +28,11 @@ normative:
   RFC8174:
   RFC8949:
   RFC9053: COSE
-  I-D.ietf-cose-merkle-tree-proofs: cose-receipts
+  RFC9942: cose-receipts
 
 informative:
+  RFC9162:
+  RFC9943:
   ReyzinYakoubov:
     title: "Efficient Asynchronous Accumulators for Distributed PKI"
     target: https://eprint.iacr.org/2015/718.pdf
@@ -249,6 +251,8 @@ It is recommended that implementations return a single boolean result for Receip
 
 A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.
 
+The index fixes the height of the proven node; a verifier that requires the proven node to be a leaf checks that [index_height](#indexheight) of the index is 0.
+
 ## included_root
 
 The algorithm `included_root` calculates the accumulator peak for the provided proof and node value.
@@ -421,7 +425,11 @@ This protects against implementation errors where the signature is verified but 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
 The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted tree size and the trusted accumulator.
-The empty tree is a valid trusted state; see [The empty tree as trusted state](#the-empty-tree-as-trusted-state).
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see [The empty tree as trusted state](#the-empty-tree-as-trusted-state) for what verification from it establishes.
+
+Trusted state advances only forwards.
+Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
+A verifier MAY nevertheless choose to accept such a receipt, for example after a ledger has re-issued receipts under new credentials following a key compromise ({{RFC9943}}, Section 9.4.2), but it MUST do so as a new verification from a trusted state at the size the receipt declares, discarding the state it previously held, and MUST NOT treat the receipt as a continuation of that state.
 
 Perform the following, in order.
 Verification fails if any step fails.
@@ -751,63 +759,36 @@ See the privacy considerations section of {{-cose-receipts}}.
 
 # Security Considerations
 
-The security considerations of {{-cose-receipts}} apply. See also the security considerations section of {{-COSE}}.
-
-## Detection of improper inclusion
-
-A receipt of inclusion shows only that the element is included in the ledger.
-Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.
-
-## Misbehaving Ledgers
-
-A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.
-
-Detection of a failure to include items in the first place is out of scope for
-this document.
-
-Having included an element, ledger implementations using this draft MUST use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
-Similarly, consistency proofs MUST be the basis for proving the unequivocal history of additions.
+The security considerations of {{-cose-receipts}} apply.
 
 ## Tree size of a receipt of inclusion
 
-Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
-A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
-A receipt of inclusion verified without reference to a trusted accumulator shows that the ledger signed the proven node at its position, not that the node is in the history the verifier has established by receipts of consistency.
-The same position binding is what a signed tree size supplies for the peaks a consistency proof leaves bare; see Declared tree sizes.
+Each interior node value is computed over the position of the node, so the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
+This position binding is also what separates leaves from interior nodes, so the leaf and node prefixes of {{RFC9162}} are not required: a leaf value chosen to equal an interior node value cannot be chained as that node, because a leaf and an interior node never share a parent, and the index of the proven node fixes its height, so a verifier expecting a leaf checks it (see [Verifying the Receipt of inclusion](#verifying-the-receipt-of-inclusion)).
+A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
+Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.
 
 ## Declared tree sizes
 
 The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.
-
-Checking the shape of the proof against the tree sizes binds tree-size-2 only when there are no right-peaks, since the rightmost peak then lies on a path that commits it to its position, and the position of the rightmost peak is the tree size.
-A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.
-
-This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.
+A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks; the shape of the proof binds tree-size-2 only when there are no right-peaks.
+If tree-size-2 were not covered by the signature, the party presenting the receipt would choose the size the verifier records as its trusted state.
+This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the size in the consistency proofs, so that a signature verifies for exactly one tree size.
 tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
-A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt.
-One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.
+A verifier that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.
 
 ## The empty tree as trusted state
 
 Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
-What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
-A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.
-
-A tree state verification is a verification of monotonically increasing tree sizes starting with the empty tree.
-This verification MUST fail any attempt to rewind the tree size, including setting the verification state back to the empty tree.
-Verifiers MAY choose to treat presenting a consistency proof with tree-size-1 of 0 as initialising a new verification attempt.
-Verifiers MAY choose to accept rewinds, consistency proofs starting from earlier tree-sizes (forks).
-In both these circumstances the current verification attempt MUST fail and the operation MUST be represented as a new verification attempt.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, those peaks, and the signature over the protected tree-size-2.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
+The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 
 ## Protected header encoding
 
-The protected header is signed as a byte string, and tree-size-2 is read from it by label.
-Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
-Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
-Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
-Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.
+The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
+Deterministic encoding is required because, without it, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map, and a relying party that accepts such a receipt records a state that others cannot re-verify.
+Requiring deterministic encoding, and rejecting anything else, means that any two conformant verifiers either read the same tree-size-2 or both reject the receipt; unrecognised labels are skipped so that a signer can add labels without making its receipts unverifiable, and their bytes are covered by the signature in any case.
 
 # IANA Considerations
 
