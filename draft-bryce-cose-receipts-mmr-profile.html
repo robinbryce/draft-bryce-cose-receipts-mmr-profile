@@ -1163,7 +1163,7 @@ svg {
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-consistency-proof" class="internal xref">Consistency Proof</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-consistency_proof_path" class="internal xref">consistency_proof_path</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-consistency_proof_paths" class="internal xref">consistency_proof_paths</a></p>
 </li>
             </ul>
 </li>
@@ -1649,10 +1649,10 @@ consistency-proof =  bstr .cbor [
 ]
 </pre><a href="#section-6-5" class="pilcrow">¶</a>
 </div>
-<div id="consistencyproofpath">
+<div id="consistencyproofpaths">
 <section id="section-6.1">
-        <h3 id="name-consistency_proof_path">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-consistency_proof_path" class="section-name selfRef">consistency_proof_path</a>
+        <h3 id="name-consistency_proof_paths">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-consistency_proof_paths" class="section-name selfRef">consistency_proof_paths</a>
         </h3>
 <p id="section-6.1-1">Produces the verification paths for inclusion of the peaks of tree-size-1 under the peaks of tree-size-2.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1-2">right-peaks are the node values of the peaks of tree-size-2 that no consistency path leads to, in descending height order.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
@@ -1981,7 +1981,7 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
 
       ileft = i - (2 &lt;&lt; g)
 
-      # Set iright to the index of the the right child of i,
+      # Set iright to the index of the right child of i,
       # which is i - 1
 
       iright = i - 1
@@ -2444,7 +2444,7 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
         <h3 id="name-most_sig_bit">
 <a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-most_sig_bit" class="section-name selfRef">most_sig_bit</a>
         </h3>
-<p id="appendix-A.2-1">Returns the mask for the the most significant bit in pos<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-1">Returns the mask for the most significant bit in pos<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
 <div class="lang-python sourcecode" id="appendix-A.2-2">
 <pre>
   def most_sig_bit(pos) -&gt; int:

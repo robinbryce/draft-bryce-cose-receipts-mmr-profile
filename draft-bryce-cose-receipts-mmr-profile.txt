@@ -64,7 +64,7 @@ Table of Contents
      5.1.  Verifying the Receipt of inclusion
      5.2.  included_root
    6.  Consistency Proof
-     6.1.  consistency_proof_path
+     6.1.  consistency_proof_paths
    7.  COSE Receipt of Consistency
      7.1.  Verifying the Receipt of consistency
        7.1.1.  consistent_roots
@@ -423,7 +423,7 @@ Table of Contents
      right-peaks: [ *bstr ]
    ]
 
-6.1.  consistency_proof_path
+6.1.  consistency_proof_paths
 
    Produces the verification paths for inclusion of the peaks of tree-
    size-1 under the peaks of tree-size-2.
@@ -741,7 +741,7 @@ Table of Contents
 
          ileft = i - (2 << g)
 
-         # Set iright to the index of the the right child of i,
+         # Set iright to the index of the right child of i,
          # which is i - 1
 
          iright = i - 1
@@ -1142,7 +1142,7 @@ A.1.  log2floor
 
 A.2.  most_sig_bit
 
-   Returns the mask for the the most significant bit in pos
+   Returns the mask for the most significant bit in pos
 
      def most_sig_bit(pos) -> int:
        return 1 << (pos.bit_length() - 1)
