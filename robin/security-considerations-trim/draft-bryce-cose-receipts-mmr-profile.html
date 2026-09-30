@@ -1532,7 +1532,7 @@ When the inclusion-path is not empty, the path binds the index to the signed pea
 When the inclusion-path is empty, the payload is the value itself: the signature proves the value is a peak, and the index is not bound.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">An entry is a stronger claim than a node: <code>x</code> is an entry only if <code>H(x)</code> is the node at a leaf index.
 A verifier of an entry <code>x</code> uses <code>H(x)</code> as the value and <span class="bcp14">MUST</span> reject an index whose <span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> is not 0.
-When the inclusion-path is empty it <span class="bcp14">MUST</span> additionally hold a trusted tree size and accumulator, and <span class="bcp14">MUST</span> reject an index that is not the peak index for that size.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+When the inclusion-path is empty it <span class="bcp14">MUST</span> additionally hold a trusted tree size and accumulator: the index <span class="bcp14">MUST</span> be a peak index for that size, and the payload <span class="bcp14">MUST</span> equal the accumulator's value at that peak.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">Then, in order:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
 <li id="section-5.1-4.1">

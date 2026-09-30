@@ -316,8 +316,9 @@ Table of Contents
    is the node at a leaf index.  A verifier of an entry x uses H(x) as
    the value and MUST reject an index whose index_height (Section 9.1)
    is not 0.  When the inclusion-path is empty it MUST additionally hold
-   a trusted tree size and accumulator, and MUST reject an index that is
-   not the peak index for that size.
+   a trusted tree size and accumulator: the index MUST be a peak index
+   for that size, and the payload MUST equal the accumulator's value at
+   that peak.
 
    Then, in order:
 
