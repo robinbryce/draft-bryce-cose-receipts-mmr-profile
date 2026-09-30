@@ -1336,7 +1336,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-2.2.1"><code>i</code> shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-2.3">
-          <p id="section-2-2.3.1"><code>pos</code> shall be the one-based position of a node, <code>pos = i + 1</code>. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree, guaranteeing uniqueness in the tree without imposing constraints on inputs.<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-2.3.1"><code>pos</code> shall be the one-based position of a node, <code>pos = i + 1</code>. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-2.4">
           <p id="section-2-2.4.1">g shall be the zero-based height of a node in the tree.<a href="#section-2-2.4.1" class="pilcrow">¶</a></p>
@@ -1527,16 +1527,28 @@ this protects against implementation errors where the signature is verified but 
         <h3 id="name-verifying-the-receipt-of-in">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-verifying-the-receipt-of-in" class="section-name selfRef">Verifying the Receipt of inclusion</a>
         </h3>
-<p id="section-5.1-1">The inclusion proof and signature are verified in order.
-First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
-The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload <span class="bcp14">MUST</span> be set to the bytes of this node value.
-Second the verifier checks the signature of the COSE Sign1.
-If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
-If the resulting signature does not verify, the signature may have been tampered with.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4">The index fixes the height of the proven node; a verifier that requires the proven node to be a leaf checks that <span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> of the index is 0.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">A receipt of inclusion proves a node value at an index.
+The verifier <span class="bcp14">MUST</span> know, from something other than the receipt, which of two things it is verifying:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-2.1">
+            <p id="section-5.1-2.1.1">an entry <code>x</code>, in which case the node value is <code>H(x)</code> and the index <span class="bcp14">MUST</span> be a leaf index, that is, <span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> of the index <span class="bcp14">MUST</span> be 0; or<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-2.2">
+            <p id="section-5.1-2.2.1">a node value it already holds, such as a peak of a trusted accumulator, in which case the index <span class="bcp14">MUST</span> be the index at which it holds that value.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-3">Then, in order:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.1-4">
+<li id="section-5.1-4.1">
+            <p id="section-5.1-4.1.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the node value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-4.2">
+            <p id="section-5.1-4.2.1">Set the COSE Sign1 payload to the bytes of that peak and verify the signature.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-5.1-5">Verification fails if any step fails.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-7">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="includedroot">
@@ -2209,7 +2221,8 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
         </h3>
 <p id="section-11.1-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
 When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry, or obtains a proof against a later tree state in which the node is no longer a peak.
-This position binding is also what separates leaves from interior nodes, so the leaf and node prefixes of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> are not required: a leaf value chosen to equal an interior node value cannot be chained as that node, because a leaf and an interior node never share a parent, and the index of the proven node fixes its height, so a verifier expecting a leaf checks it (see <span><a href="#verifying-the-receipt-of-inclusion" class="internal xref">Verifying the Receipt of inclusion</a> (<a href="#verifying-the-receipt-of-inclusion" class="auto internal xref">Section 5.1</a>)</span>).
+Leaf values are not domain separated from interior node values as they are in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>: an entry chosen as <code>pos || left || right</code> hashes to the interior node value at <code>pos</code>.
+The index fixes the height of the proven node, so the requirement in <span><a href="#verifying-the-receipt-of-inclusion" class="internal xref">Verifying the Receipt of inclusion</a> (<a href="#verifying-the-receipt-of-inclusion" class="auto internal xref">Section 5.1</a>)</span> that the verifier know the height it expects prevents such an entry, or any interior node value, from being verified as something it is not.
 A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
 Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 </section>
