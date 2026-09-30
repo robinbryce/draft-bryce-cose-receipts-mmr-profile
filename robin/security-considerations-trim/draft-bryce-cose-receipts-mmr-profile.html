@@ -1527,20 +1527,16 @@ this protects against implementation errors where the signature is verified but 
         <h3 id="name-verifying-the-receipt-of-in">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-verifying-the-receipt-of-in" class="section-name selfRef">Verifying the Receipt of inclusion</a>
         </h3>
-<p id="section-5.1-1">A receipt of inclusion proves a node value at an index.
-The verifier <span class="bcp14">MUST</span> know, from something other than the receipt, which of two things it is verifying:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.1-2.1">
-            <p id="section-5.1-2.1.1">an entry <code>x</code>, in which case the node value is <code>H(x)</code> and the index <span class="bcp14">MUST</span> be a leaf index, that is, <span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> of the index <span class="bcp14">MUST</span> be 0; or<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.1-2.2">
-            <p id="section-5.1-2.2.1">a node value it already holds, such as a peak of a trusted accumulator, in which case the index <span class="bcp14">MUST</span> be the index at which it holds that value.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
+<p id="section-5.1-1">A receipt of inclusion answers one question: is this value the node at this index?
+When the inclusion-path is not empty, the path binds the index to the signed peak, and a verifying signature proves the value is the node at the index, whatever its height.
+When the inclusion-path is empty, the payload is the value itself: the signature proves the value is a peak, and the index is not bound.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">An entry is a stronger claim than a node: <code>x</code> is an entry only if <code>H(x)</code> is the node at a leaf index.
+A verifier of an entry <code>x</code> uses <code>H(x)</code> as the value and <span class="bcp14">MUST</span> reject an index whose <span><a href="#indexheight" class="internal xref">index_height</a> (<a href="#indexheight" class="auto internal xref">Section 9.1</a>)</span> is not 0.
+When the inclusion-path is empty it <span class="bcp14">MUST</span> additionally hold a trusted tree size and accumulator, and <span class="bcp14">MUST</span> reject an index that is not the peak index for that size.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">Then, in order:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
 <li id="section-5.1-4.1">
-            <p id="section-5.1-4.1.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the node value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-4.1.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-4.2">
             <p id="section-5.1-4.2.1">Set the COSE Sign1 payload to the bytes of that peak and verify the signature.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
@@ -2222,7 +2218,9 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
 <p id="section-11.1-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
 When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry, or obtains a proof against a later tree state in which the node is no longer a peak.
 Leaf values are not domain separated from interior node values as they are in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>: an entry chosen as <code>pos || left || right</code> hashes to the interior node value at <code>pos</code>.
-The index fixes the height of the proven node, so the requirement in <span><a href="#verifying-the-receipt-of-inclusion" class="internal xref">Verifying the Receipt of inclusion</a> (<a href="#verifying-the-receipt-of-inclusion" class="auto internal xref">Section 5.1</a>)</span> that the verifier know the height it expects prevents such an entry, or any interior node value, from being verified as something it is not.
+With a non-empty path such an entry cannot verify at a leaf index, because the real parent commits the real leaf, so the leaf index check in <span><a href="#verifying-the-receipt-of-inclusion" class="internal xref">Verifying the Receipt of inclusion</a> (<a href="#verifying-the-receipt-of-inclusion" class="auto internal xref">Section 5.1</a>)</span> suffices.
+With an empty path it does not: the entry presented at any leaf index with no path verifies against the signed peak, which is why the entry case then requires a trusted accumulator.
+<span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> avoids the case by prefixing leaf and interior inputs differently.
 A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
 Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 </section>
