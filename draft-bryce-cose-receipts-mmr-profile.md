@@ -103,7 +103,7 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 
 - A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.
 - `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
-- `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree, guaranteeing uniqueness in the tree without imposing constraints on inputs.
+- `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.
 - g shall be the zero-based height of a node in the tree.
 - `H(x)` shall be the SHA-256 digest of any value x
 - `||` shall mean concatenation of raw byte representations of the referenced values.
@@ -239,19 +239,22 @@ this protects against implementation errors where the signature is verified but 
 
 ## Verifying the Receipt of inclusion
 
-The inclusion proof and signature are verified in order.
-First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
-The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload MUST be set to the bytes of this node value.
-Second the verifier checks the signature of the COSE Sign1.
-If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
-If the resulting signature does not verify, the signature may have been tampered with.
+A receipt of inclusion proves that a value is a node of the tree.
+When the inclusion-path is not empty, the path also binds the index: each step hashes the position of the parent, so a verifying signature proves the value is the node at the index, whatever its height.
+When the inclusion-path is empty, the payload is the value itself: the signature proves the value is a peak of the tree, and the index is not bound.
+
+The value for an entry `x` is `H(x)`.
+Whether a node is a leaf, and what its entry commits to, are properties of the leaf commitment scheme, which this profile leaves to the application; see [Leaf commitment scheme](#leaf-commitment-scheme).
+
+Perform the following, in order.
+Verification fails if any step fails.
+
+1. Apply [included_root](#includedroot) to the index, the value and the inclusion-path. The result is the peak the path implies.
+1. Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.
 
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.
 
-A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.
-
-The index fixes the height of the proven node; a verifier that requires the proven node to be a leaf checks that [index_height](#indexheight) of the index is 0.
+A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which fixes the length of the inclusion path and binds the index when the path is empty.
 
 ## included_root
 
@@ -764,10 +767,21 @@ The security considerations of {{-cose-receipts}} apply.
 ## Tree size of a receipt of inclusion
 
 Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
-When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry, or obtains a proof against a later tree state in which the node is no longer a peak.
-This position binding is also what separates leaves from interior nodes, so the leaf and node prefixes of {{RFC9162}} are not required: a leaf value chosen to equal an interior node value cannot be chained as that node, because a leaf and an interior node never share a parent, and the index of the proven node fixes its height, so a verifier expecting a leaf checks it (see [Verifying the Receipt of inclusion](#verifying-the-receipt-of-inclusion)).
+When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry (see [Leaf commitment scheme](#leaf-commitment-scheme)), or obtains a proof against a later tree state in which the node is no longer a peak.
 A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
 Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.
+
+## Leaf commitment scheme
+
+Interior nodes are hashed as `H(pos || left || right)`; the leaf value `H(x)` is supplied by the application, which chooses what `x` commits to.
+A receipt of inclusion proves that a value is a node of the tree; it does not prove that the node is a leaf.
+Leaf values are not domain separated from interior values as they are in {{RFC9162}}: an `x` chosen as `pos || left || right` hashes to the interior node at `pos`, and with an empty inclusion-path that value verifies at any leaf index, so a verifier holding only the receipt cannot tell such an `x` from an entry.
+With a non-empty path the position binding prevents this, because the real parent commits the real leaf.
+
+Applications SHOULD choose a form for `x` that no interior pre-image can take, for example a leading domain byte, so that no `x` can collide with an interior node.
+An `x` that is itself an eight-byte position followed by two digests reproduces the interior pre-image and MUST be avoided.
+An `x` that also includes the position binds the position even when the path is empty.
+A verifier that holds a trusted tree size and accumulator can instead require that the index be a peak of that size and that the payload equal the accumulator's value at that peak.
 
 ## Declared tree sizes
 
