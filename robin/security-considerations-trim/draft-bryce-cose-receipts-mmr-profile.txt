@@ -80,9 +80,10 @@ Table of Contents
    10. Privacy Considerations
    11. Security Considerations
      11.1.  Tree size of a receipt of inclusion
-     11.2.  Declared tree sizes
-     11.3.  The empty tree as trusted state
-     11.4.  Protected header encoding
+     11.2.  Leaf commitment scheme
+     11.3.  Declared tree sizes
+     11.4.  The empty tree as trusted state
+     11.5.  Protected header encoding
    12. IANA Considerations
      12.1.  Additions to Existing Registries
        12.1.1.  COSE Verifiable Data Structure Algorithms
@@ -305,30 +306,27 @@ Table of Contents
 
 5.1.  Verifying the Receipt of inclusion
 
-   A receipt of inclusion answers one question: is this value the node
-   at this index?  When the inclusion-path is not empty, the path binds
-   the index to the signed peak, and a verifying signature proves the
-   value is the node at the index, whatever its height.  When the
-   inclusion-path is empty, the payload is the value itself: the
-   signature proves the value is a peak, and the index is not bound.
+   A receipt of inclusion proves that a value is a node of the tree.
+   When the inclusion-path is not empty, the path also binds the index:
+   each step hashes the position of the parent, so a verifying signature
+   proves the value is the node at the index, whatever its height.  When
+   the inclusion-path is empty, the payload is the value itself: the
+   signature proves the value is a peak of the tree, and the index is
+   not bound.
 
-   An entry is a stronger claim than a node: x is an entry only if H(x)
-   is the node at a leaf index.  A verifier of an entry x uses H(x) as
-   the value and MUST reject an index whose index_height (Section 9.1)
-   is not 0.  When the inclusion-path is empty it MUST additionally hold
-   a trusted tree size and accumulator: the index MUST be a peak index
-   for that size, and the payload MUST equal the accumulator's value at
-   that peak.
+   The value for an entry x is H(x).  Whether a node is a leaf, and what
+   its entry commits to, are properties of the leaf commitment scheme,
+   which this profile leaves to the application; see Leaf commitment
+   scheme (Section 11.2).
 
-   Then, in order:
+   Perform the following, in order.  Verification fails if any step
+   fails.
 
    1.  Apply included_root (Section 5.2) to the index, the value and the
        inclusion-path.  The result is the peak the path implies.
 
    2.  Set the COSE Sign1 payload to the bytes of that peak and verify
-       the signature.
-
-   Verification fails if any step fails.
+       the signature of the COSE Sign1.
 
    It is recommended that implementations return a single boolean result
    for Receipt verification operations, to reduce the chance of
@@ -336,8 +334,8 @@ Table of Contents
 
    A verifier that holds a trusted tree size and accumulator can
    additionally check that the proven node is the accumulator peak for
-   the index at that size, which also fixes the length of the inclusion
-   path.
+   the index at that size, which fixes the length of the inclusion path
+   and binds the index when the path is empty.
 
 5.2.  included_root
 
@@ -539,7 +537,7 @@ Table of Contents
    from; these are referred to below as the trusted tree size and the
    trusted accumulator.  The empty tree, with tree size 0 and an empty
    accumulator, is a valid trusted state; see The empty tree as trusted
-   state (Section 11.3) for what verification from it establishes.
+   state (Section 11.4) for what verification from it establishes.
 
    Trusted state advances only forwards.  Step 3 below rejects a receipt
    whose first consistency-proof starts from any size other than the
@@ -942,24 +940,38 @@ Table of Contents
    of every node on its path.  When the path is empty the payload is the
    node value itself and the index is not covered by the signature; an
    application that needs an authenticated position binds it into the
-   entry, or obtains a proof against a later tree state in which the
-   node is no longer a peak.  Leaf values are not domain separated from
-   interior node values as they are in [RFC9162]: an entry chosen as
-   pos || left || right hashes to the interior node value at pos.  With
-   a non-empty path such an entry cannot verify at a leaf index, because
-   the real parent commits the real leaf, so the leaf index check in
-   Verifying the Receipt of inclusion (Section 5.1) suffices.  With an
-   empty path it does not: the entry presented at any leaf index with no
-   path verifies against the signed peak, which is why the entry case
-   then requires a trusted accumulator.  [RFC9162] avoids the case by
-   prefixing leaf and interior inputs differently.  A receipt of
-   inclusion carries no tree size: it is valid in every tree size from
-   the one that created the proven node.  Verified without a trusted
-   accumulator, it shows that the ledger signed the proven node at its
-   position, not that the node is in a history the verifier has
+   entry (see Leaf commitment scheme (Section 11.2)), or obtains a proof
+   against a later tree state in which the node is no longer a peak.  A
+   receipt of inclusion carries no tree size: it is valid in every tree
+   size from the one that created the proven node.  Verified without a
+   trusted accumulator, it shows that the ledger signed the proven node
+   at its position, not that the node is in a history the verifier has
    established by receipts of consistency.
 
-11.2.  Declared tree sizes
+11.2.  Leaf commitment scheme
+
+   Interior nodes are hashed as H(pos || left || right); the leaf value
+   H(x) is supplied by the application, which chooses what x commits to.
+   A receipt of inclusion proves that a value is a node of the tree; it
+   does not prove that the node is a leaf.  Leaf values are not domain
+   separated from interior values as they are in [RFC9162]: an x chosen
+   as pos || left || right hashes to the interior node at pos, and with
+   an empty inclusion-path that value verifies at any leaf index, so a
+   verifier holding only the receipt cannot tell such an x from an
+   entry.  With a non-empty path the position binding prevents this,
+   because the real parent commits the real leaf.
+
+   Applications SHOULD choose a form for x that no interior pre-image
+   can take, for example a leading domain byte, so that no x can collide
+   with an interior node.  An x that is itself an eight-byte position
+   followed by two digests reproduces the interior pre-image and MUST be
+   avoided.  An x that also includes the position binds the position
+   even when the path is empty.  A verifier that holds a trusted tree
+   size and accumulator can instead require that the index be a peak of
+   that size and that the payload equal the accumulator's value at that
+   peak.
+
+11.3.  Declared tree sizes
 
    The signed statement of a receipt of consistency is the accumulator
    for tree-size-2.  A right-peak carries no height, so the same
@@ -978,7 +990,7 @@ Table of Contents
    find the ledger's next receipt fails to verify against it, a false
    finding of misbehaviour against a ledger that has behaved correctly.
 
-11.3.  The empty tree as trusted state
+11.4.  The empty tree as trusted state
 
    Every accumulator is consistent with the empty tree.  A receipt of
    consistency whose first consistency-proof has tree-size-1 of 0
@@ -993,7 +1005,7 @@ Table of Contents
    later state is held are given in Verifying the Receipt of consistency
    (Section 7.1).
 
-11.4.  Protected header encoding
+11.5.  Protected header encoding
 
    The protected header is signed as a byte string, and tree-size-2 is
    read from it by label, so two verifiers agree on the signed size only
