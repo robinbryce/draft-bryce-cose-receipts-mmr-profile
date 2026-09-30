@@ -560,7 +560,8 @@ This process MUST proceed until there are no more completable sub trees.
 Given:
 
 - `f` the leaf value resulting from `H(x)` for the caller defined leaf value `x`
-- `db` an interface supporting `append(entry) -> index` and `get(index) -> entry` methods.
+- `db` an interface supporting `append(entry) -> count` and `get(index) -> entry` methods.
+  `append` stores the entry and returns the number of nodes in the store after the append, which is the index at which the next node will be stored.
 
 And the methods:
 
@@ -575,10 +576,12 @@ We define `add_leaf_hash` as
     # Set g to 0, the height of the leaf item f
     g = 0
 
-    # Set i to the result of invoking Append(f)
+    # Set i to the index the next node will occupy, which is the
+    # number of nodes after appending f
     i = db.append(f)
 
-    # If index_height(i) is greater than g (#looptarget)
+    # While the node that would be stored at i is a parent, which
+    # is exactly when MMR(i) is not complete (#looptarget)
     while index_height(i) > g:
 
       # Set ileft to the index of the left child of i,
@@ -597,11 +600,15 @@ We define `add_leaf_hash` as
       i = db.append(
         hash_pospair64(i+1, db.get(ileft), db.get(iright)))
 
-      # Set g to the height of the new i, which is g + 1
+      # Set g to the height of the node just appended, which is g + 1
       g += 1
 
+    # i is the number of nodes, the MMR size after the append
     return i
 ~~~~
+
+`add_leaf_hash` returns the MMR size after the append, which is a complete MMR size.
+The index of the leaf itself is one less than the value of `i` immediately after the first append.
 
 ## Node values
 
