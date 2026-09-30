@@ -763,7 +763,8 @@ The security considerations of {{-cose-receipts}} apply.
 
 ## Tree size of a receipt of inclusion
 
-Each interior node value is computed over the position of the node, so the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
+Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
+When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry, or obtains a proof against a later tree state in which the node is no longer a peak.
 This position binding is also what separates leaves from interior nodes, so the leaf and node prefixes of {{RFC9162}} are not required: a leaf value chosen to equal an interior node value cannot be chained as that node, because a leaf and an interior node never share a parent, and the index of the proven node fixes its height, so a verifier expecting a leaf checks it (see [Verifying the Receipt of inclusion](#verifying-the-receipt-of-inclusion)).
 A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
 Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.
