@@ -31,6 +31,7 @@ normative:
   I-D.ietf-cose-merkle-tree-proofs: cose-receipts
 
 informative:
+  RFC9943:
   ReyzinYakoubov:
     title: "Efficient Asynchronous Accumulators for Distributed PKI"
     target: https://eprint.iacr.org/2015/718.pdf
@@ -748,6 +749,9 @@ We define `mmr_size_for_leaf_count` as
 # Privacy Considerations
 
 See the privacy considerations section of {{-cose-receipts}}.
+
+This profile does not define the leaf pre-image `x`.
+Confidentiality of entry contents, including resistance to guess-and-confirm of low-entropy entries, is the responsibility of the application that constructs `x` (for SCITT, see the privacy considerations of {{RFC9943}}).
 
 # Security Considerations
 
