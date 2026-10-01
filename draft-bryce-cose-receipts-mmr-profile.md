@@ -31,7 +31,10 @@ normative:
   RFC9942: cose-receipts
 
 informative:
+<<<<<<< HEAD
   RFC9162:
+=======
+>>>>>>> 69af983 (docs: reduce entry-value confirmation to a scope sentence (review feedback))
   RFC9943:
   ReyzinYakoubov:
     title: "Efficient Asynchronous Accumulators for Distributed PKI"
@@ -778,12 +781,8 @@ We define `mmr_size_for_leaf_count` as
 
 See the privacy considerations section of {{-cose-receipts}}.
 
-## Confirmation of entry values
-
-The leaf value is the hash `H(x)` of the caller's entry `x`, applied directly and without a per-leaf salt (see [add_leaf_hash](#addleafhash) and Node values).
-Verification recomputes the root from a candidate entry, so a holder of an inclusion Receipt can test whether any guessed value is the one proven, by recomputing the root and checking the signature.
-For entries drawn from a small or low-entropy domain this confirms the entry content.
-Callers that require entry values to remain confidential SHOULD ensure entries carry sufficient entropy, or blind them, for example by including a secret salt in `x`, before insertion.
+This profile does not define the leaf pre-image `x`.
+Confidentiality of entry contents, including resistance to guess-and-confirm of low-entropy entries, is the responsibility of the application that constructs `x` (for SCITT, see the privacy considerations of {{RFC9943}}).
 
 # Security Considerations
 
