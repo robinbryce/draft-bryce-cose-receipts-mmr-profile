@@ -1333,7 +1333,7 @@ described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</s
 appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2-2.1">
-          <p id="section-2-2.1.1">A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.<a href="#section-2-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-2-2.1.1">A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist. MMR(n) is complete if and only if <code>index_height(n)</code> is 0, that is, the node that would be stored at index n is a leaf.<a href="#section-2-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-2.2">
           <p id="section-2-2.2.1"><code>i</code> shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
@@ -1352,7 +1352,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 </li>
       </ul>
 <p id="section-2-3">In this specification, all numbers are unsigned 64 bit integers.
-The maximum height of a single tree is 64 (which will have <code>g=63</code> for its peak).<a href="#section-2-3" class="pilcrow">¶</a></p>
+The maximum height of a single tree is 63 (which will have <code>g=62</code> for its peak), so that every quantity the algorithms compute, in particular the sibling offset <code>2^(g+1)</code>, fits in 64 bits.
+A tree of that height has <code>2^63 - 1</code> nodes.<a href="#section-2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="description-of-the-verifiable-data-structure">
@@ -2106,8 +2107,8 @@ The index of the leaf itself is one less than the value of <code>i</code> immedi
 <a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-peaks" class="section-name selfRef">peaks</a>
         </h3>
 <p id="section-9.2-1"><code>peaks(i)</code> returns the peak indices for <code>MMR(i+1)</code>, which is also its accumulator.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
-<p id="section-9.2-2">Assumes MMR(i+1) is complete, implementations can check for this condition by
-testing the height of i+1<a href="#section-9.2-2" class="pilcrow">¶</a></p>
+<p id="section-9.2-2">Requires MMR(i+1) to be complete.
+MMR(i+1) is complete if and only if <code>index_height(i+1)</code> is 0, that is, the next node to be appended would be a leaf; see <span><a href="#conventions-and-definitions" class="internal xref">Conventions and Definitions</a> (<a href="#conventions-and-definitions" class="auto internal xref">Section 2</a>)</span>.<a href="#section-9.2-2" class="pilcrow">¶</a></p>
 <p id="section-9.2-3">Given:<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-9.2-4.1">
@@ -2484,8 +2485,9 @@ Requiring deterministic encoding, and rejecting anything else, means that any tw
 <div class="lang-python sourcecode" id="appendix-A.4-2">
 <pre>
   def all_ones(pos) -&gt; bool:
-    msb = most_sig_bit(pos)
-    mask = (1 &lt;&lt; (msb + 1)) - 1
+    # most_sig_bit returns a mask, so shifting it left by one
+    # and subtracting one sets every bit below and including it
+    mask = (most_sig_bit(pos) &lt;&lt; 1) - 1
     return pos == mask
 </pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
 </div>
