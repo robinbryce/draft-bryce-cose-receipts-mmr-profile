@@ -16,18 +16,18 @@
 <meta content="draft-bryce-cose-receipts-mmr-profile-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.34.1
-    Python 3.14.7
-    ConfigArgParse 1.7.7
+    Python 3.14.8
+    ConfigArgParse 1.8.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.11.10
+    platformdirs 4.12.2
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.4
+    wcwidth 0.9.1
 -->
 <link href="draft-bryce-cose-receipts-mmr-profile.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1043,11 +1043,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">COSE Receipts for MMRs</td>
-<td class="right">September 2026</td>
+<td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Bryce &amp; Geater</td>
-<td class="center">Expires 2 April 2027</td>
+<td class="center">Expires 7 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1060,12 +1060,12 @@ svg {
 <dd class="internet-draft">draft-bryce-cose-receipts-mmr-profile-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-09-29" class="published">29 September 2026</time>
+<time datetime="2026-10-04" class="published">4 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-02">2 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-07">7 April 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1080,7 +1080,7 @@ svg {
 <h1 id="title">COSE Receipts for MMRs</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a new verifiable data structure type for COSE Receipts <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a new verifiable data structure type for COSE Receipts <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> specifically for use with ledgers based on post-order traversal binary Merkle trees and which are designed for high throughput, ease of replication and compatibility with commodity cloud storage.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">Post-order traversal binary Merkle trees, also known as history trees, are more commonly known as Merkle Mountain Ranges.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
@@ -1102,7 +1102,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 2 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 7 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1220,22 +1220,19 @@ svg {
             <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-detection-of-improper-inclu" class="internal xref">Detection of improper inclusion</a></p>
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-tree-size-of-a-receipt-of-i" class="internal xref">Tree size of a receipt of inclusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-misbehaving-ledgers" class="internal xref">Misbehaving Ledgers</a></p>
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-tree-size-of-a-receipt-of-i" class="internal xref">Tree size of a receipt of inclusion</a></p>
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
-                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
 </li>
             </ul>
 </li>
@@ -1307,7 +1304,7 @@ svg {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">The COSE Receipts document <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> defines a common framework for defining different types of proofs, such as proof of inclusion, about verifiable data structures (VDS). For instance, inclusion proofs guarantee to a verifier that a given serializable element is recorded at a given state of the VDS, while consistency proofs are used to establish that an inclusion proof is still consistent with the new state of the VDS at a later time.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">The COSE Receipts document <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> defines a common framework for defining different types of proofs, such as proof of inclusion, about verifiable data structures (VDS). For instance, inclusion proofs guarantee to a verifier that a given serializable element is recorded at a given state of the VDS, while consistency proofs are used to establish that an inclusion proof is still consistent with the new state of the VDS at a later time.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">In this document, we define a new type of VDS: a post ordered binary merkle tree <span>[<a href="#KnuthTBT" class="cite xref">KnuthTBT</a>]</span> is, logically, the unique series of perfect binary merkle trees required to commit its leaves. Such structures are also commonly known as Merkle Mountain Ranges <span>[<a href="#PeterTodd" class="cite xref">PeterTodd</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">Example,<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1-4">
@@ -1342,7 +1339,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-2.2.1"><code>i</code> shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-2.3">
-          <p id="section-2-2.3.1"><code>pos</code> shall be the one-based position of a node, <code>pos = i + 1</code>. The position is included in the hash of each interior node (see hash_pospair64), binding the node's value to its location in the tree, guaranteeing uniqueness in the tree without imposing constraints on inputs.<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-2.3.1"><code>pos</code> shall be the one-based position of a node, <code>pos = i + 1</code>. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-2.4">
           <p id="section-2-2.4.1">g shall be the zero-based height of a node in the tree.<a href="#section-2-2.4.1" class="pilcrow">¶</a></p>
@@ -1363,7 +1360,7 @@ The maximum height of a single tree is 64 (which will have <code>g=63</code> for
       <h2 id="name-description-of-the-verifiab">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-description-of-the-verifiab" class="section-name selfRef">Description of the Verifiable Data Structure</a>
       </h2>
-<p id="section-3-1">This documents extends the verifiable data structure registry of <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> with the following value:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">This documents extends the verifiable data structure registry of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> with the following value:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <span id="name-verifiable-data-structure-a"></span><div id="verifiable-data-structure-values">
 <table class="left" id="table-1">
         <caption>
@@ -1533,15 +1530,23 @@ this protects against implementation errors where the signature is verified but 
         <h3 id="name-verifying-the-receipt-of-in">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-verifying-the-receipt-of-in" class="section-name selfRef">Verifying the Receipt of inclusion</a>
         </h3>
-<p id="section-5.1-1">The inclusion proof and signature are verified in order.
-First the verifiers applies the inclusion proof to a possible entry (set member) bytes.
-The result is the merkle root implied by the inclusion proof path for the candidate value.
-The COSE Sign1 payload <span class="bcp14">MUST</span> be set to the bytes of this node value.
-Second the verifier checks the signature of the COSE Sign1.
-If the resulting signature verifies, the Receipt has proved inclusion of the entry in the verifiable data structure.
-If the resulting signature does not verify, the signature may have been tampered with.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which also fixes the length of the inclusion path.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">A receipt of inclusion proves that a value is a node of the tree.
+When the inclusion-path is not empty, the path also binds the index: each step hashes the position of the parent, so a verifying signature proves the value is the node at the index, whatever its height.
+When the inclusion-path is empty, the payload is the value itself: the signature proves the value is a peak of the tree, and the index is not bound.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">The value for an entry <code>x</code> is <code>H(x)</code>.
+Whether a node is a leaf, and what its entry commits to, are properties of the leaf commitment scheme, which this profile leaves to the application; see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">Perform the following, in order.
+Verification fails if any step fails.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.1-4">
+<li id="section-5.1-4.1">
+            <p id="section-5.1-4.1.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-4.2">
+            <p id="section-5.1-4.2.1">Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-5.1-5">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which fixes the length of the inclusion path and binds the index when the path is empty.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="includedroot">
@@ -1755,46 +1760,49 @@ This protects against implementation errors where the signature is verified but 
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted tree size and the trusted accumulator.
-The empty tree is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.5</a>)</span>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<p id="section-7.1-3">Perform the following, in order.
-Verification fails if any step fails.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7.1-4">
-<li id="section-7.1-4.1">
-            <p id="section-7.1-4.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; tree-size-2 <span class="bcp14">MUST</span> be present and <span class="bcp14">MUST</span> be an unsigned integer. Labels the verifier does not recognise are skipped.<a href="#section-7.1-4.1.1" class="pilcrow">¶</a></p>
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.4</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Trusted state advances only forwards.
+Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
+A verifier <span class="bcp14">MAY</span> nevertheless choose to accept such a receipt, for example after a ledger has re-issued receipts under new credentials following a key compromise (<span>[<a href="#RFC9943" class="cite xref">RFC9943</a>]</span>, Section 9.4.2), but it <span class="bcp14">MUST</span> do so as a new verification from a trusted state at the size the receipt declares, discarding the state it previously held, and <span class="bcp14">MUST NOT</span> treat the receipt as a continuation of that state.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-4">Perform the following, in order.
+Verification fails if any step fails.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-5">
+<li id="section-7.1-5.1">
+            <p id="section-7.1-5.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; tree-size-2 <span class="bcp14">MUST</span> be present and <span class="bcp14">MUST</span> be an unsigned integer. Labels the verifier does not recognise are skipped.<a href="#section-7.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-4.2">
-            <p id="section-7.1-4.2.1">The protected tree-size-2 <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof.<a href="#section-7.1-4.2.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-5.2">
+            <p id="section-7.1-5.2.1">The protected tree-size-2 <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof.<a href="#section-7.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-4.3">
-            <p id="section-7.1-4.3.1">tree-size-1 of the first consistency-proof <span class="bcp14">MUST</span> equal the trusted tree size.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-5.3">
+            <p id="section-7.1-5.3.1">tree-size-1 of the first consistency-proof <span class="bcp14">MUST</span> equal the trusted tree size.<a href="#section-7.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-4.4">
-            <p id="section-7.1-4.4.1">Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-5.4">
+            <p id="section-7.1-5.4.1">Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.<a href="#section-7.1-5.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-4.5">
-            <p id="section-7.1-4.5.1">For each consistency-proof, in order:<a href="#section-7.1-4.5.1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7.1-4.5.2">
-<li id="section-7.1-4.5.2.1">
-                <p id="section-7.1-4.5.2.1.1">tree-size-1 of the proof <span class="bcp14">MUST</span> equal sizefrom.<a href="#section-7.1-4.5.2.1.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-5.5">
+            <p id="section-7.1-5.5.1">For each consistency-proof, in order:<a href="#section-7.1-5.5.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-5.5.2">
+<li id="section-7.1-5.5.2.1">
+                <p id="section-7.1-5.5.2.1.1">tree-size-1 of the proof <span class="bcp14">MUST</span> equal sizefrom.<a href="#section-7.1-5.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li id="section-7.1-4.5.2.2">
-                <p id="section-7.1-4.5.2.2.1">Apply <span><a href="#consistentroots" class="internal xref">consistent_roots</a> (<a href="#consistentroots" class="auto internal xref">Section 7.1.1</a>)</span> to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.<a href="#section-7.1-4.5.2.2.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-5.5.2.2">
+                <p id="section-7.1-5.5.2.2.1">Apply <span><a href="#consistentroots" class="internal xref">consistent_roots</a> (<a href="#consistentroots" class="auto internal xref">Section 7.1.1</a>)</span> to sizefrom, tree-size-2 of the proof, accumulatorfrom and the consistency-paths of the proof, obtaining roots and nright.<a href="#section-7.1-5.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li id="section-7.1-4.5.2.3">
-                <p id="section-7.1-4.5.2.3.1">The length of right-peaks <span class="bcp14">MUST</span> equal nright.<a href="#section-7.1-4.5.2.3.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-5.5.2.3">
+                <p id="section-7.1-5.5.2.3.1">The length of right-peaks <span class="bcp14">MUST</span> equal nright.<a href="#section-7.1-5.5.2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li id="section-7.1-4.5.2.4">
-                <p id="section-7.1-4.5.2.4.1">Set accumulatorfrom to roots followed by right-peaks, and sizefrom to tree-size-2 of the proof.<a href="#section-7.1-4.5.2.4.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-5.5.2.4">
+                <p id="section-7.1-5.5.2.4.1">Set accumulatorfrom to roots followed by right-peaks, and sizefrom to tree-size-2 of the proof.<a href="#section-7.1-5.5.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ol>
 </li>
-          <li id="section-7.1-4.6">
-            <p id="section-7.1-4.6.1">Use the final accumulatorfrom as the detached payload and verify the signature of the COSE Sign1.<a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-5.6">
+            <p id="section-7.1-5.6.1">Use the final accumulatorfrom as the detached payload and verify the signature of the COSE Sign1.<a href="#section-7.1-5.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-7.1-5"><code>consistent_roots</code> requires the proof to have exactly the shape the two sizes imply: tree-size-2 <span class="bcp14">MUST</span> be a complete MMR size; each consistency path <span class="bcp14">MUST</span> have exactly the length that <span><a href="#inclusionproofpath" class="internal xref">inclusion_proof_path</a> (<a href="#inclusionproofpath" class="auto internal xref">Section 4.1</a>)</span> produces for its peak; and every path leading to the same peak of tree-size-2 <span class="bcp14">MUST</span> produce the same value.
-The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
-<p id="section-7.1-6">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
+<p id="section-7.1-6"><code>consistent_roots</code> requires the proof to have exactly the shape the two sizes imply: tree-size-2 <span class="bcp14">MUST</span> be a complete MMR size; each consistency path <span class="bcp14">MUST</span> have exactly the length that <span><a href="#inclusionproofpath" class="internal xref">inclusion_proof_path</a> (<a href="#inclusionproofpath" class="auto internal xref">Section 4.1</a>)</span> produces for its peak; and every path leading to the same peak of tree-size-2 <span class="bcp14">MUST</span> produce the same value.
+The number of roots it returns and the number of right-peaks it requires are fixed by the two sizes.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
+<p id="section-7.1-7">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid consistency proof.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
 <div id="consistentroots">
 <section id="section-7.1.1">
           <h4 id="name-consistent_roots">
@@ -2195,7 +2203,7 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
       <h2 id="name-privacy-considerations">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-10-1">See the privacy considerations section of <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span>.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">See the privacy considerations section of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span>.<a href="#section-10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -2203,80 +2211,65 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
       <h2 id="name-security-considerations">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-11-1">The security considerations of <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span> apply. See also the security considerations section of <span>[<a href="#RFC9053" class="cite xref">RFC9053</a>]</span>.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<div id="detection-of-improper-inclusion">
-<section id="section-11.1">
-        <h3 id="name-detection-of-improper-inclu">
-<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-detection-of-improper-inclu" class="section-name selfRef">Detection of improper inclusion</a>
-        </h3>
-<p id="section-11.1-1">A receipt of inclusion shows only that the element is included in the ledger.
-Defining whether that inclusion was legitimate, or in some way valid,  is out of scope for this document.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="misbehaving-ledgers">
-<section id="section-11.2">
-        <h3 id="name-misbehaving-ledgers">
-<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-misbehaving-ledgers" class="section-name selfRef">Misbehaving Ledgers</a>
-        </h3>
-<p id="section-11.2-1">A ledger can misbehave in several ways. Examples include the following: failing to incorporate a leaf entry in the MMR; presenting different, conflicting views of the MMR at different times and/or to different parties.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
-<p id="section-11.2-2">Detection of a failure to include items in the first place is out of scope for
-this document.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
-<p id="section-11.2-3">Having included an element, ledger implementations using this draft <span class="bcp14">MUST</span> use consistency proofs as the basis for proving entries are not moved, modified or excluded in future states of the MMR.
-Similarly, consistency proofs <span class="bcp14">MUST</span> be the basis for proving the unequivocal history of additions.<a href="#section-11.2-3" class="pilcrow">¶</a></p>
-</section>
-</div>
+<p id="section-11-1">The security considerations of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> apply.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <div id="tree-size-of-a-receipt-of-inclusion">
-<section id="section-11.3">
+<section id="section-11.1">
         <h3 id="name-tree-size-of-a-receipt-of-i">
-<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
         </h3>
-<p id="section-11.3-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on the path.
-A receipt of inclusion carries no tree size: it is valid in every tree size in which the proven node exists, which is every size from the one that created it.
-A receipt of inclusion verified without reference to a trusted accumulator shows that the ledger signed the proven node at its position, not that the node is in the history the verifier has established by receipts of consistency.
-The same position binding is what a signed tree size supplies for the peaks a consistency proof leaves bare; see Declared tree sizes.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
+When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry (see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>), or obtains a proof against a later tree state in which the node is no longer a peak.
+A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
+Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="leaf-commitment-scheme">
+<section id="section-11.2">
+        <h3 id="name-leaf-commitment-scheme">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-leaf-commitment-scheme" class="section-name selfRef">Leaf commitment scheme</a>
+        </h3>
+<p id="section-11.2-1">Interior nodes are hashed as <code>H(pos || left || right)</code>; the leaf value <code>H(x)</code> is supplied by the application, which chooses what <code>x</code> commits to.
+A receipt of inclusion proves that a value is a node of the tree; it does not prove that the node is a leaf.
+Leaf values are not domain separated from interior values as they are in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>: an <code>x</code> chosen as <code>pos || left || right</code> hashes to the interior node at <code>pos</code>, and with an empty inclusion-path that value verifies at any leaf index, so a verifier holding only the receipt cannot tell such an <code>x</code> from an entry.
+With a non-empty path the position binding prevents this, because the real parent commits the real leaf.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-2">Applications <span class="bcp14">SHOULD</span> choose a form for <code>x</code> that no interior pre-image can take, for example a leading domain byte, so that no <code>x</code> can collide with an interior node.
+An <code>x</code> that is itself an eight-byte position followed by two digests reproduces the interior pre-image and <span class="bcp14">MUST</span> be avoided.
+An <code>x</code> that also includes the position binds the position even when the path is empty.
+A verifier that holds a trusted tree size and accumulator can instead require that the index be a peak of that size and that the payload equal the accumulator's value at that peak.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="declared-tree-sizes">
-<section id="section-11.4">
+<section id="section-11.3">
         <h3 id="name-declared-tree-sizes">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
         </h3>
-<p id="section-11.4-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-If tree-size-2 is not covered by the signature, the party presenting the receipt chooses the size trusted as tree-size-1 for the subsequent verification.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
-<p id="section-11.4-2">Checking the shape of the proof against the tree sizes binds tree-size-2 only when there are no right-peaks, since the rightmost peak then lies on a path that commits it to its position, and the position of the rightmost peak is the tree size.
-A right-peak carries no height, so the same paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
-<p id="section-11.4-3">This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the corresponding size in the consistency proofs, so that a signature verifies for exactly one tree size.
+<p id="section-11.3-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
+A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks; the shape of the proof binds tree-size-2 only when there are no right-peaks.
+If tree-size-2 were not covered by the signature, the party presenting the receipt would choose the size the verifier records as its trusted state.
+This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the size in the consistency proofs, so that a signature verifies for exactly one tree size.
 tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
-A verifier carries the tree size and accumulator it last verified forward as the trusted state for the next receipt.
-One that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
+A verifier that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-empty-tree-as-trusted-state">
-<section id="section-11.5">
+<section id="section-11.4">
         <h3 id="name-the-empty-tree-as-trusted-s">
-<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
         </h3>
-<p id="section-11.5-1">Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, the number of right-peaks, those peaks themselves, and the signature over the protected tree-size-2.
-What such a receipt establishes is that the signer asserts this accumulator at this size, and nothing more.
-A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state the verifier held.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
-<p id="section-11.5-2">A tree state verification is a verification of monotonically increasing tree sizes starting with the empty tree.
-This verification <span class="bcp14">MUST</span> fail any attempt to rewind the tree size, including setting the verification state back to the empty tree.
-Verifiers <span class="bcp14">MAY</span> choose to treat presenting a consistency proof with tree-size-1 of 0 as initialising a new verification attempt.
-Verifiers <span class="bcp14">MAY</span> choose to accept rewinds, consistency proofs starting from earlier tree-sizes (forks).
-In both these circumstances the current verification attempt <span class="bcp14">MUST</span> fail and the operation <span class="bcp14">MUST</span> be represented as a new verification attempt.<a href="#section-11.5-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-1">Every accumulator is consistent with the empty tree.
+A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, those peaks, and the signature over the protected tree-size-2.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
+The rules for accepting such a receipt once a later state is held are given in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protected-header-encoding">
-<section id="section-11.6">
+<section id="section-11.5">
         <h3 id="name-protected-header-encoding">
-<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
         </h3>
-<p id="section-11.6-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label.
-Two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
-Without the requirement that the header be deterministically encoded, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map; a relying party that accepts such a receipt records a state that other relying parties cannot re-verify.
-Requiring deterministic encoding and rejecting anything else means that any two conformant verifiers either read the same tree-size-2 from a protected header or both reject it.
-Unrecognised labels are skipped rather than rejected so that a signer can add labels without making its receipts unverifiable; their bytes are covered by the signature in any case.<a href="#section-11.6-1" class="pilcrow">¶</a></p>
+<p id="section-11.5-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
+Deterministic encoding is required because, without it, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map, and a relying party that accepts such a receipt records a state that others cannot re-verify.
+Requiring deterministic encoding, and rejecting anything else, means that any two conformant verifiers either read the same tree-size-2 or both reject the receipt; unrecognised labels are skipped so that a signer can add labels without making its receipts unverifiable, and their bytes are covered by the signature in any case.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2296,7 +2289,7 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
           <h4 id="name-cose-verifiable-data-struct">
 <a href="#section-12.1.1" class="section-number selfRef">12.1.1. </a><a href="#name-cose-verifiable-data-struct" class="section-name selfRef">COSE Verifiable Data Structure Algorithms</a>
           </h4>
-<p id="section-12.1.1-1">IANA is requested to add the following value to the "COSE Verifiable Data Structure Algorithms" registry established by <span>[<a href="#I-D.ietf-cose-merkle-tree-proofs" class="cite xref">I-D.ietf-cose-merkle-tree-proofs</a>]</span>:<a href="#section-12.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1.1-1">IANA is requested to add the following value to the "COSE Verifiable Data Structure Algorithms" registry established by <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span>:<a href="#section-12.1.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1.1-2.1">
               <p id="section-12.1.1-2.1.1">Name: MMR_SHA256<a href="#section-12.1.1-2.1.1" class="pilcrow">¶</a></p>
@@ -2366,10 +2359,6 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
 <a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
-<dt id="I-D.ietf-cose-merkle-tree-proofs">[I-D.ietf-cose-merkle-tree-proofs]</dt>
-        <dd>
-<span class="refAuthor">Steele, O.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, and <span class="refAuthor">C. Fournet</span>, <span class="refTitle">"COSE (CBOR Object Signing and Encryption) Receipts"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cose-merkle-tree-proofs-18</span>, <time datetime="2025-12-02" class="refDate">2 December 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-18">https://datatracker.ietf.org/doc/html/draft-ietf-cose-merkle-tree-proofs-18</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
@@ -2383,8 +2372,12 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
 <span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9053">[RFC9053]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Initial Algorithms"</span>, <span class="seriesInfo">RFC 9053</span>, <span class="seriesInfo">DOI 10.17487/RFC9053</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9053">https://www.rfc-editor.org/rfc/rfc9053</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9942">[RFC9942]</dt>
+      <dd>
+<span class="refAuthor">Steele, O.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, and <span class="refAuthor">C. Fournet</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE) Receipts"</span>, <span class="seriesInfo">RFC 9942</span>, <span class="seriesInfo">DOI 10.17487/RFC9942</span>, <time datetime="2026-06" class="refDate">June 2026</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9942">https://www.rfc-editor.org/rfc/rfc9942</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2412,8 +2405,16 @@ Unrecognised labels are skipped rather than rejected so that a signer can add la
 <span class="refAuthor">Cox, R.</span>, <span class="refTitle">"Transparent Logs for Skeptical Clients (Appendix A: Storing the Log)"</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://research.swtch.com/tlog#appendix_a">https://research.swtch.com/tlog#appendix_a</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="ReyzinYakoubov">[ReyzinYakoubov]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Reyzin, L.</span> and <span class="refAuthor">S. Yakoubov</span>, <span class="refTitle">"Efficient Asynchronous Accumulators for Distributed PKI"</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://eprint.iacr.org/2015/718.pdf">https://eprint.iacr.org/2015/718.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9162">[RFC9162]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Messeri, E.</span>, and <span class="refAuthor">R. Stradling</span>, <span class="refTitle">"Certificate Transparency Version 2.0"</span>, <span class="seriesInfo">RFC 9162</span>, <span class="seriesInfo">DOI 10.17487/RFC9162</span>, <time datetime="2021-12" class="refDate">December 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9162">https://www.rfc-editor.org/rfc/rfc9162</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9943">[RFC9943]</dt>
+      <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, <span class="refAuthor">Fournet, C.</span>, <span class="refAuthor">Deshpande, Y.</span>, and <span class="refAuthor">S. Lasker</span>, <span class="refTitle">"An Architecture for Trustworthy and Transparent Digital Supply Chains"</span>, <span class="seriesInfo">RFC 9943</span>, <span class="seriesInfo">DOI 10.17487/RFC9943</span>, <time datetime="2026-06" class="refDate">June 2026</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9943">https://www.rfc-editor.org/rfc/rfc9943</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
