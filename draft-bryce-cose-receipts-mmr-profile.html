@@ -1958,7 +1958,8 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
             <p id="section-8.1-4.1.1"><code>f</code> the leaf value resulting from <code>H(x)</code> for the caller defined leaf value <code>x</code><a href="#section-8.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-4.2">
-            <p id="section-8.1-4.2.1"><code>db</code> an interface supporting <code>append(entry) -&gt; index</code> and <code>get(index) -&gt; entry</code> methods.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-4.2.1"><code>db</code> an interface supporting <code>append(entry) -&gt; count</code> and <code>get(index) -&gt; entry</code> methods.
+<code>append</code> stores the entry and returns the number of nodes in the store after the append, which is the index at which the next node will be stored.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-8.1-5">And the methods:<a href="#section-8.1-5" class="pilcrow">¶</a></p>
@@ -1978,10 +1979,12 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
     # Set g to 0, the height of the leaf item f
     g = 0
 
-    # Set i to the result of invoking Append(f)
+    # Set i to the index the next node will occupy, which is the
+    # number of nodes after appending f
     i = db.append(f)
 
-    # If index_height(i) is greater than g (#looptarget)
+    # While the node that would be stored at i is a parent, which
+    # is exactly when MMR(i) is not complete (#looptarget)
     while index_height(i) &gt; g:
 
       # Set ileft to the index of the left child of i,
@@ -2000,12 +2003,15 @@ This process <span class="bcp14">MUST</span> proceed until there are no more com
       i = db.append(
         hash_pospair64(i+1, db.get(ileft), db.get(iright)))
 
-      # Set g to the height of the new i, which is g + 1
+      # Set g to the height of the node just appended, which is g + 1
       g += 1
 
+    # i is the number of nodes, the MMR size after the append
     return i
 </pre><a href="#section-8.1-8" class="pilcrow">¶</a>
 </div>
+<p id="section-8.1-9"><code>add_leaf_hash</code> returns the MMR size after the append, which is a complete MMR size.
+The index of the leaf itself is one less than the value of <code>i</code> immediately after the first append.<a href="#section-8.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="node-values">
