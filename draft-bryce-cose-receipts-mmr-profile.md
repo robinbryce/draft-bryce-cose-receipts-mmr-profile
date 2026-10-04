@@ -101,7 +101,7 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 
 {::boilerplate bcp14-tagged}
 
-- A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist.
+- A complete MMR(n) defines an mmr with n nodes where no equal height sibling trees exist. MMR(n) is complete if and only if `index_height(n)` is 0, that is, the node that would be stored at index n is a leaf.
 - `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
 - `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.
 - g shall be the zero-based height of a node in the tree.
@@ -109,7 +109,8 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 - `||` shall mean concatenation of raw byte representations of the referenced values.
 
 In this specification, all numbers are unsigned 64 bit integers.
-The maximum height of a single tree is 64 (which will have `g=63` for its peak).
+The maximum height of a single tree is 63 (which will have `g=62` for its peak), so that every quantity the algorithms compute, in particular the sibling offset `2^(g+1)`, fits in 64 bits.
+A tree of that height has `2^63 - 1` nodes.
 
 # Description of the Verifiable Data Structure
 
@@ -684,8 +685,8 @@ We define `index_height` as
 
 `peaks(i)` returns the peak indices for `MMR(i+1)`, which is also its accumulator.
 
-Assumes MMR(i+1) is complete, implementations can check for this condition by
-testing the height of i+1
+Requires MMR(i+1) to be complete.
+MMR(i+1) is complete if and only if `index_height(i+1)` is 0, that is, the next node to be appended would be a leaf; see [Conventions and Definitions](#conventions-and-definitions).
 
 Given:
 
@@ -883,8 +884,9 @@ Tests if all bits, from the most significant that is set, are 1, b0111 would be 
 
 ~~~~ python
   def all_ones(pos) -> bool:
-    msb = most_sig_bit(pos)
-    mask = (1 << (msb + 1)) - 1
+    # most_sig_bit returns a mask, so shifting it left by one
+    # and subtracting one sets every bit below and including it
+    mask = (most_sig_bit(pos) << 1) - 1
     return pos == mask
 ~~~~
 
