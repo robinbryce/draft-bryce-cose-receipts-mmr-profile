@@ -106,7 +106,7 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 - `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
 - `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.
 - g shall be the zero-based height of a node in the tree.
-- `H(x)` shall be the SHA-256 digest of any value x
+- `H(x)` shall be the digest of any value x using the declared hash algorithm, for example SHA-256.
 - `||` shall mean concatenation of raw byte representations of the referenced values.
 
 In this specification, all numbers are unsigned 64 bit integers.
@@ -659,14 +659,14 @@ Given:
 And the constraints:
 
 - `pos < 2^64`
-- `a` and `b` MUST be hashes produced by the appropriate hash algorithm.
+- `a` and `b` MUST be node values produced by the declared hash algorithm.
 
 We define `hash_pospair64` as
 
 ~~~~ python
   def hash_pospair64(pos, a, b):
 
-    # Note: Hash algorithm agility is tbd, this example uses SHA-256
+    # H is the declared hash algorithm, SHA-256 in this example
     h = hashlib.sha256()
 
     # Take the big endian representation of pos
