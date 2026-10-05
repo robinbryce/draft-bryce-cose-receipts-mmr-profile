@@ -1047,7 +1047,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Bryce &amp; Geater</td>
-<td class="center">Expires 7 April 2027</td>
+<td class="center">Expires 8 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1060,12 +1060,12 @@ svg {
 <dd class="internet-draft">draft-bryce-cose-receipts-mmr-profile-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-04" class="published">4 October 2026</time>
+<time datetime="2026-10-05" class="published">5 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-07">7 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-08">8 April 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1102,7 +1102,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 8 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1396,18 +1396,27 @@ A tree of that height has <code>2^63 - 1</code> nodes.<a href="#section-2-3" cla
 <p id="section-4-1">The CBOR representation of an inclusion proof is<a href="#section-4-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-4-2">
 <pre>
-inclusion-proof = bstr .cbor [
+; a node value: the output of H, 32 bytes for SHA-256
+hash = bstr .size 32
+
+inclusion-proof = bstr .cbor inclusion-proof-content
+
+inclusion-proof-content = [
 
   ; zero-based index of a tree node
   index: uint
 
-  ; path proving the node's inclusion
-  inclusion-path: [ + bstr ]
+  ; path proving the node's inclusion,
+  ; empty when the node is a peak
+  inclusion-path: [ * hash ]
 ]
 </pre><a href="#section-4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4-3">Note that the inclusion path for the index leads to a single permanent node in the tree.
-This node will initially be a peak in the accumulator, as the tree grows it will eventually be "buried" by a new peak.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-3">Every element of an inclusion-path, a consistency-path or right-peaks is a node value.
+A node value size is a constant specified by the hash algorithm.
+A verifier <span class="bcp14">MUST</span> reject a proof in which any such element does not match the hash algorithm value size.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">Note that the inclusion path for the index leads to a single permanent node in the tree.
+This node will initially be a peak in the accumulator, as the tree grows it will eventually be "buried" by a new peak.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <div id="inclusionproofpath">
 <section id="section-4.1">
         <h3 id="name-inclusion_proof_path">
@@ -1493,7 +1502,7 @@ This node will initially be a peak in the accumulator, as the tree grows it will
 <pre>
 protected-header-map = {
   &amp;(alg: 1) =&gt; int
-  &amp;(vds: 395) =&gt; TBD_1
+  &amp;(vds: 395) =&gt; int ; TBD_1, see IANA Considerations
   * cose-label =&gt; cose-value
 }
 </pre><a href="#section-5-2" class="pilcrow">¶</a>
@@ -1503,7 +1512,7 @@ protected-header-map = {
           <p id="section-5-3.1.1">alg (label: 1): <span class="bcp14">REQUIRED</span>. Signature algorithm identifier. Value type: int.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-5-3.2">
-          <p id="section-5-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier. Value type: int.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-5-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-5-4">The unprotected header for an inclusion proof signature is:<a href="#section-5-4" class="pilcrow">¶</a></p>
@@ -1633,9 +1642,11 @@ The detached payload is the node values of that accumulator concatenated in desc
 <p id="section-6-4">The cbor representation of a consistency proof is:<a href="#section-6-4" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-6-5">
 <pre>
-consistency-path = [ * bstr ]
+consistency-path = [ * hash ]
 
-consistency-proof =  bstr .cbor [
+consistency-proof = bstr .cbor consistency-proof-content
+
+consistency-proof-content = [
 
   ; previous tree size
   tree-size-1: uint
@@ -1651,7 +1662,7 @@ consistency-proof =  bstr .cbor [
   ; the additional peaks that
   ; complete the accumulator for tree-size-2,
   ; when appended to those produced by the consistency paths
-  right-peaks: [ *bstr ]
+  right-peaks: [ * hash ]
 ]
 </pre><a href="#section-6-5" class="pilcrow">¶</a>
 </div>
@@ -1713,8 +1724,8 @@ consistency-proof =  bstr .cbor [
 <pre>
 protected-header-map = {
   &amp;(alg: 1) =&gt; int
-  &amp;(vds: 395) =&gt; TBD_1
-  &amp;(tree-size-2: TBD_2) =&gt; uint
+  &amp;(vds: 395) =&gt; int ; TBD_1, see IANA Considerations
+  &amp;(tree-size-2: -65933) =&gt; uint ; TBD_2, private use until assigned
   * cose-label =&gt; cose-value
 }
 </pre><a href="#section-7-2" class="pilcrow">¶</a>
@@ -1724,7 +1735,7 @@ protected-header-map = {
           <p id="section-7-3.1.1">alg (label: 1): <span class="bcp14">REQUIRED</span>. Signature algorithm identifier. Value type: int.<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-3.2">
-          <p id="section-7-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier. Value type: int.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-3.3">
           <p id="section-7-3.3.1">tree-size-2 (label: TBD_2): <span class="bcp14">REQUIRED</span>. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
