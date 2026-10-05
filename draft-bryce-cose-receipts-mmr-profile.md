@@ -29,6 +29,23 @@ normative:
   RFC8949:
   RFC9053: COSE
   RFC9942: cose-receipts
+  RFC7693: BLAKE2
+  FIPS180-4:
+    title: "Secure Hash Standard (SHS)"
+    target: https://doi.org/10.6028/NIST.FIPS.180-4
+    date: 2015-08
+    author:
+      - org: National Institute of Standards and Technology
+    seriesinfo:
+      FIPS: PUB 180-4
+  FIPS202:
+    title: "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"
+    target: https://doi.org/10.6028/NIST.FIPS.202
+    date: 2015-08
+    author:
+      - org: National Institute of Standards and Technology
+    seriesinfo:
+      FIPS: PUB 202
 
 informative:
   RFC9162:
@@ -105,7 +122,7 @@ The technical advantages of post-order traversal binary Merkle trees are discuss
 - `i` shall be the zero-based index of any node, including leaf nodes, in the MMR. Nodes are assigned indices in the order they are appended to the linear array.
 - `pos` shall be the one-based position of a node, `pos = i + 1`. The position is included in the hash of each interior node (see hash_pospair64), binding each interior node's value to its location in the tree.
 - g shall be the zero-based height of a node in the tree.
-- `H(x)` shall be the digest of any value x using the declared hash algorithm, for example SHA-256.
+- `H(x)` shall be the digest of any value x using the hash algorithm identified by the `vds` value, for example SHA-256 for MMR_SHA256; see [Description of the Verifiable Data Structure](#description-of-the-verifiable-data-structure).
 - `||` shall mean concatenation of raw byte representations of the referenced values.
 
 In this specification, all numbers are unsigned 64 bit integers.
@@ -114,20 +131,30 @@ A tree of that height has `2^63 - 1` nodes.
 
 # Description of the Verifiable Data Structure
 
-This documents extends the verifiable data structure registry of {{-cose-receipts}} with the following value:
+This document extends the "COSE Verifiable Data Structure Algorithms" registry of {{-cose-receipts}} with the following values.
+Each value identifies the linearly addressed, position committing MMR defined in this document, instantiated with one hash algorithm, as Section 4.4.1 of {{-cose-receipts}} requires.
 
-| Name | Value | Description | Reference
+| Name | Value | Hash algorithm | Node value size (bytes)
 |---
-|MMR_SHA256 | TBD_1 (requested assignment 3) | Linearly addressed, position committing, MMR implementations, such as the MMR ledger | This document
+|MMR_SHA256 | TBD_1 (requested assignment 3) | SHA-256 {{FIPS180-4}} | 32
+|MMR_SHA3_256 | TBD_3 (requested assignment 4) | SHA3-256 {{FIPS202}} | 32
+|MMR_SHA3_512 | TBD_4 (requested assignment 5) | SHA3-512 {{FIPS202}} | 64
+|MMR_BLAKE2B_256 | TBD_5 (requested assignment 6) | BLAKE2b-256 {{-BLAKE2}}, unkeyed, with a 32 byte digest | 32
 {: #verifiable-data-structure-values align="left" title="Verifiable Data Structure Algorithms"}
+
+The `vds` value in the protected header of a receipt fixes `H` and the node value size.
+No other parameter of a receipt declares the hash algorithm.
+Apart from `H` and the node value size, the algorithms in this document are the same for every value.
+A verifier MUST reject a receipt whose `vds` value it does not support.
 
 # Inclusion Proofs
 
 The CBOR representation of an inclusion proof is
 
 ~~~~ cddl
-; a node value: the output of H, 32 bytes for SHA-256
-hash = bstr .size 32
+; a node value: the output of H, whose size is fixed by
+; the vds value, for example 32 bytes for MMR_SHA256
+hash = bstr
 
 inclusion-proof = bstr .cbor inclusion-proof-content
 
@@ -143,8 +170,8 @@ inclusion-proof-content = [
 ~~~~
 
 Every element of an inclusion-path, a consistency-path or right-peaks is a node value.
-A node value size is a constant specified by the hash algorithm.
-A verifier MUST reject a proof in which any such element does not match the hash algorithm value size.
+The size of a node value is fixed by the `vds` value, see [](#verifiable-data-structure-values).
+A verifier MUST reject a proof in which any such element is not of that size.
 
 Note that the inclusion path for the index leads to a single permanent node in the tree.
 This node will initially be a peak in the accumulator, as the tree grows it will eventually be "buried" by a new peak.
@@ -217,13 +244,13 @@ The cbor representation of an inclusion proof is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => int ; TBD_1, see IANA Considerations
+  &(vds: 395) => int ; a value registered by this document
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
-- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
+- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, one of the values registered by this document, see [](#verifiable-data-structure-values). It fixes the hash algorithm `H`. Value type: int.
 
 The unprotected header for an inclusion proof signature is:
 
@@ -399,14 +426,14 @@ The cbor representation of the protected header of a receipt of consistency is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => int ; TBD_1, see IANA Considerations
+  &(vds: 395) => int ; a value registered by this document
   &(tree-size-2: -65933) => uint ; TBD_2, private use until assigned
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
-- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
+- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, one of the values registered by this document, see [](#verifiable-data-structure-values). It fixes the hash algorithm `H`. Value type: int.
 - tree-size-2 (label: TBD_2): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).
 
 tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
@@ -440,7 +467,7 @@ This protects against implementation errors where the signature is verified but 
 
 Verification accommodates verifying the result of a cumulative series of consistency proofs.
 
-The verifier MUST hold, from a source it already trusts, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted tree size and the trusted accumulator.
+The verifier MUST hold, from a source it already trusts, the `vds` value, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted `vds` value, the trusted tree size and the trusted accumulator.
 The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see [The empty tree as trusted state](#the-empty-tree-as-trusted-state) for what verification from it establishes.
 
 Trusted state advances only forwards.
@@ -451,6 +478,7 @@ Perform the following, in order.
 Verification fails if any step fails.
 
 1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
+1. The protected `vds` value MUST equal the trusted `vds` value.
 1. The protected tree-size-2 MUST equal tree-size-2 of the last consistency-proof.
 1. tree-size-1 of the first consistency-proof MUST equal the trusted tree size.
 1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
@@ -655,14 +683,15 @@ Given:
 And the constraints:
 
 - `pos < 2^64`
-- `a` and `b` MUST be node values produced by the declared hash algorithm.
+- `a` and `b` MUST be node values produced by `H`.
 
 We define `hash_pospair64` as
 
 ~~~~ python
   def hash_pospair64(pos, a, b):
 
-    # H is the declared hash algorithm, SHA-256 in this example
+    # H is the hash algorithm identified by the vds value,
+    # SHA-256 (MMR_SHA256) in this example
     h = hashlib.sha256()
 
     # Take the big endian representation of pos
@@ -819,6 +848,14 @@ A receipt of consistency whose first consistency-proof has tree-size-1 of 0 ther
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 
+## Hash algorithm
+
+The hash algorithm is fixed by the `vds` value, which is carried in the protected header and covered by the signature, so it cannot be changed without invalidating the receipt, and there is no separate hash parameter that could be omitted or disagree with it.
+Every node of a tree is computed with the same `H`, so a log uses one `vds` value for its lifetime; moving to a different hash algorithm means starting a new log, as for {{RFC9162}} (Section 9).
+Verifying consistency does not always recompute a node value: an origin peak above the split is carried into the new accumulator unchanged, and right-peaks are supplied by the prover.
+A receipt of consistency under a different `vds` value could therefore verify against a trusted accumulator and leave the verifier holding peaks computed with two hash algorithms, which is why [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency) requires the protected `vds` value to equal the trusted one.
+Section 7.1 of {{-cose-receipts}} recommends choosing a signature algorithm that shares cryptographic components with the verifiable data structure, for example ES256 with MMR_SHA256.
+
 ## Protected header encoding
 
 The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
@@ -831,14 +868,33 @@ Requiring deterministic encoding, and rejecting anything else, means that any tw
 
 ### COSE Verifiable Data Structure Algorithms
 
-IANA is requested to add the following value to the "COSE Verifiable Data Structure Algorithms" registry established by {{-cose-receipts}}:
+IANA is requested to add the following values to the "COSE Verifiable Data Structure Algorithms" registry established by {{-cose-receipts}}.
+As Section 4.4.1 of {{-cose-receipts}} requires, each supported hash algorithm has its own value.
 
-- Name: MMR_SHA256
-- Value: TBD_1 (requested assignment 3)
-- Description: Linearly addressed, position-committing, append-only logs that are integrity-protected by a post-order traversal (Merkle Mountain Range) binary Merkle tree using SHA-256.
-- Reference: RFCthis
+| Name | Value | Description | Change Controller | Reference
+|---
+|MMR_SHA256 | TBD_1 (requested assignment 3) | Linearly addressed, position-committing, append-only logs that are integrity-protected by a post-order traversal (Merkle Mountain Range) binary Merkle tree using SHA-256 | IETF | RFCthis
+|MMR_SHA3_256 | TBD_3 (requested assignment 4) | As MMR_SHA256, using SHA3-256 | IETF | RFCthis
+|MMR_SHA3_512 | TBD_4 (requested assignment 5) | As MMR_SHA256, using SHA3-512 | IETF | RFCthis
+|MMR_BLAKE2B_256 | TBD_5 (requested assignment 6) | As MMR_SHA256, using unkeyed BLAKE2b with a 32 byte digest | IETF | RFCthis
+{: #iana-vds-algorithms align="left" title="Additions to the COSE Verifiable Data Structure Algorithms registry"}
 
-Editors note: Hash agility. This document defines a single SHA-256-based identifier, MMR_SHA256, following the convention of binding the hash function into the algorithm identifier. Additional identifiers (for example using BLAKE2b-256, SHA3-256, or SHA3-512, both of which are used by existing implementations) are expected to be registered as separate values in a future revision, rather than negotiated within a single identifier.
+### COSE Verifiable Data Structure Proofs
+
+Section 8.2.1 of {{-cose-receipts}} requires each entry in the "COSE Verifiable Data Structure Algorithms" registry to have corresponding entries in the "COSE Verifiable Data Structure Proofs" registry.
+IANA is requested to add the following entries to that registry:
+
+| Verifiable Data Structure | Name | Label | CBOR Type | Description | Change Controller | Reference
+|---
+|TBD_1 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | RFCthis, [](#inclusion-proofs)
+|TBD_1 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | RFCthis, [](#consistency-proof)
+|TBD_3 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | RFCthis, [](#inclusion-proofs)
+|TBD_3 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | RFCthis, [](#consistency-proof)
+|TBD_4 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | RFCthis, [](#inclusion-proofs)
+|TBD_4 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | RFCthis, [](#consistency-proof)
+|TBD_5 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | RFCthis, [](#inclusion-proofs)
+|TBD_5 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | RFCthis, [](#consistency-proof)
+{: #iana-vds-proofs align="left" title="Additions to the COSE Verifiable Data Structure Proofs registry"}
 
 ### COSE Header Parameters
 
