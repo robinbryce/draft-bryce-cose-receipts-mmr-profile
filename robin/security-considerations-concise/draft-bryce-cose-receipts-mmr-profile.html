@@ -2288,7 +2288,8 @@ On its own, it shows that the ledger signed the node at that position, not that 
 Unlike <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, this profile does not domain separate leaves from interior nodes.
 An <code>x</code> of the form <code>pos || left || right</code> hashes to the interior node at <code>pos</code>.
 With a non-empty inclusion path, the position binding rejects it at any other index; with an empty path, it verifies at any leaf index.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
-<p id="section-11.2-2">Applications <span class="bcp14">MUST NOT</span> use an <code>x</code> that is an eight-byte position followed by two node values, and <span class="bcp14">SHOULD</span> choose a form for <code>x</code> that cannot be one, for example by prefixing a domain separation byte.
+<p id="section-11.2-2">Applications <span class="bcp14">MUST NOT</span> use an <code>x</code> that is an eight-byte position followed by two node values.
+The simplest way to meet this is a form for <code>x</code> that cannot have that length, <code>8 + 2N</code> bytes where <code>N</code> is the node value size, for example a fixed length other than <code>8 + 2N</code> or a leading domain separation byte.
 Including the position in <code>x</code> also binds the position when the path is empty.
 Alternatively, a verifier that holds a trusted tree size and accumulator can require the index to be a peak of that size and the payload to equal that peak's value.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
 </section>

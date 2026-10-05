@@ -1018,12 +1018,13 @@ Table of Contents
    any other index; with an empty path, it verifies at any leaf index.
 
    Applications MUST NOT use an x that is an eight-byte position
-   followed by two node values, and SHOULD choose a form for x that
-   cannot be one, for example by prefixing a domain separation byte.
-   Including the position in x also binds the position when the path is
-   empty.  Alternatively, a verifier that holds a trusted tree size and
-   accumulator can require the index to be a peak of that size and the
-   payload to equal that peak's value.
+   followed by two node values.  The simplest way to meet this is a form
+   for x that cannot have that length, 8 + 2N bytes where N is the node
+   value size, for example a fixed length other than 8 + 2N or a leading
+   domain separation byte.  Including the position in x also binds the
+   position when the path is empty.  Alternatively, a verifier that
+   holds a trusted tree size and accumulator can require the index to be
+   a peak of that size and the payload to equal that peak's value.
 
 11.3.  Declared tree sizes
 
