@@ -126,15 +126,25 @@ This documents extends the verifiable data structure registry of {{-cose-receipt
 The CBOR representation of an inclusion proof is
 
 ~~~~ cddl
-inclusion-proof = bstr .cbor [
+; a node value: the output of H, 32 bytes for SHA-256
+hash = bstr .size 32
+
+inclusion-proof = bstr .cbor inclusion-proof-content
+
+inclusion-proof-content = [
 
   ; zero-based index of a tree node
   index: uint
 
-  ; path proving the node's inclusion
-  inclusion-path: [ + bstr ]
+  ; path proving the node's inclusion,
+  ; empty when the node is a peak
+  inclusion-path: [ * hash ]
 ]
 ~~~~
+
+Every element of an inclusion-path, a consistency-path or right-peaks is a node value.
+A node value size is a constant specified by the hash algorithm.
+A verifier MUST reject a proof in which any such element does not match the hash algorithm value size.
 
 Note that the inclusion path for the index leads to a single permanent node in the tree.
 This node will initially be a peak in the accumulator, as the tree grows it will eventually be "buried" by a new peak.
@@ -207,13 +217,13 @@ The cbor representation of an inclusion proof is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => TBD_1
+  &(vds: 395) => int ; TBD_1, see IANA Considerations
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
-- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
+- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
 
 The unprotected header for an inclusion proof signature is:
 
@@ -325,9 +335,11 @@ The cbor representation of a consistency proof is:
 
 ~~~~ cddl
 
-consistency-path = [ * bstr ]
+consistency-path = [ * hash ]
 
-consistency-proof =  bstr .cbor [
+consistency-proof = bstr .cbor consistency-proof-content
+
+consistency-proof-content = [
 
   ; previous tree size
   tree-size-1: uint
@@ -343,7 +355,7 @@ consistency-proof =  bstr .cbor [
   ; the additional peaks that
   ; complete the accumulator for tree-size-2,
   ; when appended to those produced by the consistency paths
-  right-peaks: [ *bstr ]
+  right-peaks: [ * hash ]
 ]
 ~~~~
 
@@ -387,14 +399,14 @@ The cbor representation of the protected header of a receipt of consistency is:
 ~~~~ cddl
 protected-header-map = {
   &(alg: 1) => int
-  &(vds: 395) => TBD_1
-  &(tree-size-2: TBD_2) => uint
+  &(vds: 395) => int ; TBD_1, see IANA Considerations
+  &(tree-size-2: -65933) => uint ; TBD_2, private use until assigned
   * cose-label => cose-value
 }
 ~~~~
 
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
-- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier. Value type: int.
+- vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
 - tree-size-2 (label: TBD_2): REQUIRED. The tree size to which consistency is proven; the accumulator of this tree size is the detached payload. MUST equal tree-size-2 of the last consistency-proof in the unprotected header. Value type: uint (CBOR major type 0).
 
 tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
