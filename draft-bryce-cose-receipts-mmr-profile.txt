@@ -323,17 +323,13 @@ Table of Contents
 5.1.  Verifying the Receipt of inclusion
 
    A receipt of inclusion proves that a value is a node of the tree.
-   When the inclusion-path is not empty, the path also binds the index:
-   each step hashes the position of the parent, so a verifying signature
-   proves the value is the node at the index, whatever its height.  When
-   the inclusion-path is empty, the payload is the value itself: the
-   signature proves the value is a peak of the tree, and the index is
-   not bound.
+   When the inclusion-path is not empty, the path also binds the index
+   because each step hashes the position of the parent; when it is
+   empty, see Tree size of a receipt of inclusion (Section 11.1).
 
-   The value for an entry x is H(x).  Whether a node is a leaf, and what
-   its entry commits to, are properties of the leaf commitment scheme,
-   which this profile leaves to the application; see Leaf commitment
-   scheme (Section 11.2).
+   Whether a node is a leaf, and what its entry commits to, are
+   properties of the leaf commitment scheme, which this profile leaves
+   to the application; see Leaf commitment scheme (Section 11.2).
 
    Perform the following, in order.  Verification fails if any step
    fails.
