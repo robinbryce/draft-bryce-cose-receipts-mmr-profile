@@ -1229,13 +1229,13 @@ svg {
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-hash-algorithm" class="internal xref">Hash algorithm</a></p>
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
-                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-hash-algorithm" class="internal xref">Hash algorithm</a></p>
 </li>
             </ul>
 </li>
@@ -1805,7 +1805,7 @@ This protects against implementation errors where the signature is verified but 
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the <code>vds</code> value, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted <code>vds</code> value, the trusted tree size and the trusted accumulator.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.4</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.5</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Trusted state advances only forwards.
 Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
 A verifier <span class="bcp14">MAY</span> nevertheless choose to accept such a receipt, for example after a ledger has re-issued receipts under new credentials following a key compromise (<span>[<a href="#RFC9943" class="cite xref">RFC9943</a>]</span>, Section 9.4.2), but it <span class="bcp14">MUST</span> do so as a new verification from a trusted state at the size the receipt declares, discarding the state it previously held, and <span class="bcp14">MUST NOT</span> treat the receipt as a continuation of that state.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
@@ -2272,10 +2272,11 @@ Because <code>leaf_count</code> rounds an incomplete size down to the largest co
         <h3 id="name-tree-size-of-a-receipt-of-i">
 <a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
         </h3>
-<p id="section-11.1-1">Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
-When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry (see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>), or obtains a proof against a later tree state in which the node is no longer a peak.
-A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
-Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">When the inclusion path is not empty, the receipt binds the proven node to its index, because each interior node commits to its position.
+When the path is empty, the payload is the node value and the index is not signed.
+An application that needs the position authenticated binds it into the entry (see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>), or obtains a proof against a later tree size in which the node is no longer a peak.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-2">A receipt of inclusion carries no tree size and remains valid at every later size.
+On its own, it shows that the ledger signed the node at that position, not that the node is in a history the verifier has established with receipts of consistency.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="leaf-commitment-scheme">
@@ -2283,14 +2284,14 @@ Verified without a trusted accumulator, it shows that the ledger signed the prov
         <h3 id="name-leaf-commitment-scheme">
 <a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-leaf-commitment-scheme" class="section-name selfRef">Leaf commitment scheme</a>
         </h3>
-<p id="section-11.2-1">Interior nodes are hashed as <code>H(pos || left || right)</code>; the leaf value <code>H(x)</code> is supplied by the application, which chooses what <code>x</code> commits to.
-A receipt of inclusion proves that a value is a node of the tree; it does not prove that the node is a leaf.
-Leaf values are not domain separated from interior values as they are in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>: an <code>x</code> chosen as <code>pos || left || right</code> hashes to the interior node at <code>pos</code>, and with an empty inclusion-path that value verifies at any leaf index, so a verifier holding only the receipt cannot tell such an <code>x</code> from an entry.
-With a non-empty path the position binding prevents this, because the real parent commits the real leaf.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
-<p id="section-11.2-2">Applications <span class="bcp14">SHOULD</span> choose a form for <code>x</code> that no interior pre-image can take, for example a leading domain byte, so that no <code>x</code> can collide with an interior node.
-An <code>x</code> that is itself an eight-byte position followed by two digests reproduces the interior pre-image and <span class="bcp14">MUST</span> be avoided.
-An <code>x</code> that also includes the position binds the position even when the path is empty.
-A verifier that holds a trusted tree size and accumulator can instead require that the index be a peak of that size and that the payload equal the accumulator's value at that peak.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
+<p id="section-11.2-1">Interior node values are <code>H(pos || left || right)</code>; leaf values are <code>H(x)</code> for an <code>x</code> chosen by the application.
+Unlike <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, this profile does not domain separate leaves from interior nodes.
+An <code>x</code> of the form <code>pos || left || right</code> hashes to the interior node at <code>pos</code>.
+With a non-empty inclusion path, the position binding rejects it at any other index; with an empty path, it verifies at any leaf index.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-2">Applications <span class="bcp14">MUST NOT</span> use an <code>x</code> that is an eight-byte position followed by two node values.
+The simplest way to meet this is a form for <code>x</code> that cannot have that length, <code>8 + 2N</code> bytes where <code>N</code> is the node value size, for example a fixed length other than <code>8 + 2N</code> or a leading domain separation byte.
+Including the position in <code>x</code> also binds the position when the path is empty.
+Alternatively, a verifier that holds a trusted tree size and accumulator can require the index to be a peak of that size and the payload to equal that peak's value.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="declared-tree-sizes">
@@ -2298,44 +2299,44 @@ A verifier that holds a trusted tree size and accumulator can instead require th
         <h3 id="name-declared-tree-sizes">
 <a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
         </h3>
-<p id="section-11.3-1">The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks; the shape of the proof binds tree-size-2 only when there are no right-peaks.
-If tree-size-2 were not covered by the signature, the party presenting the receipt would choose the size the verifier records as its trusted state.
-This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the size in the consistency proofs, so that a signature verifies for exactly one tree size.
-tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
-A verifier that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="the-empty-tree-as-trusted-state">
-<section id="section-11.4">
-        <h3 id="name-the-empty-tree-as-trusted-s">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
-        </h3>
-<p id="section-11.4-1">Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, those peaks, and the signature over the protected tree-size-2.
-A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
-The rules for accepting such a receipt once a later state is held are given in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="hash-algorithm">
-<section id="section-11.5">
-        <h3 id="name-hash-algorithm">
-<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-hash-algorithm" class="section-name selfRef">Hash algorithm</a>
-        </h3>
-<p id="section-11.5-1">The <code>vds</code> value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
-A log uses one hash algorithm for its lifetime, as in Section 9 of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.
-Consistency verification does not rehash origin peaks above the split or the right-peaks.
-Without the requirement that the protected <code>vds</code> value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of peaks.
+The proof alone binds tree-size-2 only when there are no right-peaks.
+If tree-size-2 were unsigned, whoever presents a receipt could choose the size a verifier records as trusted, and the ledger's next receipt would then fail to verify: a false finding of misbehaviour.
+This profile therefore signs tree-size-2 in the protected header.
+tree-size-1 is not signed: the verifier already holds the state it verifies from, and signing it would prevent a chain of proofs, or a re-based proof, from being presented under one signature.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protected-header-encoding">
-<section id="section-11.6">
+<section id="section-11.4">
         <h3 id="name-protected-header-encoding">
-<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
         </h3>
-<p id="section-11.6-1">The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
-Deterministic encoding is required because, without it, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map, and a relying party that accepts such a receipt records a state that others cannot re-verify.
-Requiring deterministic encoding, and rejecting anything else, means that any two conformant verifiers either read the same tree-size-2 or both reject the receipt; unrecognised labels are skipped so that a signer can add labels without making its receipts unverifiable, and their bytes are covered by the signature in any case.<a href="#section-11.6-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-1">tree-size-2 is read by label from the signed protected header, so verifiers agree on the signed size only if they decode that header the same way.
+Without deterministic encoding, a header with a duplicate label, a non-shortest argument or trailing bytes could be read by one decoder and rejected by another, and a relying party could record a state that others cannot re-verify.
+With it, conformant verifiers either read the same tree-size-2 or all reject the receipt.
+Unrecognised labels are skipped so that signers can add labels; their bytes are still covered by the signature.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-empty-tree-as-trusted-state">
+<section id="section-11.5">
+        <h3 id="name-the-empty-tree-as-trusted-s">
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
+        </h3>
+<p id="section-11.5-1">Every accumulator is consistent with the empty tree.
+A receipt of consistency from tree size 0 therefore proves nothing about earlier states of the ledger: its accumulator is just the right-peaks, checked only for their number and the signature.
+A verifier starting from the empty tree relies entirely on the signing key, and the size it records is the signer's assertion.
+<span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span> gives the rules for accepting such a receipt once a later state is held.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="hash-algorithm">
+<section id="section-11.6">
+        <h3 id="name-hash-algorithm">
+<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-hash-algorithm" class="section-name selfRef">Hash algorithm</a>
+        </h3>
+<p id="section-11.6-1">The <code>vds</code> value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
+A log uses one hash algorithm for its lifetime, as in Section 9 of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.
+Consistency verification does not rehash origin peaks above the split or the right-peaks.
+Without the requirement that the protected <code>vds</code> value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.<a href="#section-11.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
