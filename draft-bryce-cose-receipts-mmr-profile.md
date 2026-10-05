@@ -843,11 +843,10 @@ The rules for accepting such a receipt once a later state is held are given in [
 
 ## Hash algorithm
 
-The hash algorithm is fixed by the `vds` value, which is carried in the protected header and covered by the signature, so it cannot be changed without invalidating the receipt, and there is no separate hash parameter that could be omitted or disagree with it.
-Every node of a tree is computed with the same `H`, so a log uses one `vds` value for its lifetime; moving to a different hash algorithm means starting a new log, as for {{RFC9162}} (Section 9).
-Verifying consistency does not always recompute a node value: an origin peak above the split is carried into the new accumulator unchanged, and right-peaks are supplied by the prover.
-A receipt of consistency under a different `vds` value could therefore verify against a trusted accumulator and leave the verifier holding peaks computed with two hash algorithms, which is why [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency) requires the protected `vds` value to equal the trusted one.
-Section 7.1 of {{-cose-receipts}} recommends choosing a signature algorithm that shares cryptographic components with the verifiable data structure, for example ES256 with MMR_SHA256.
+The `vds` value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
+A log uses one hash algorithm for its lifetime, as in Section 9 of {{RFC9162}}.
+Consistency verification does not rehash origin peaks above the split or the right-peaks.
+Without the requirement that the protected `vds` value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.
 
 # IANA Considerations
 
