@@ -31,10 +31,7 @@ normative:
   RFC9942: cose-receipts
 
 informative:
-<<<<<<< HEAD
   RFC9162:
-=======
->>>>>>> 69af983 (docs: reduce entry-value confirmation to a scope sentence (review feedback))
   RFC9943:
   ReyzinYakoubov:
     title: "Efficient Asynchronous Accumulators for Distributed PKI"
