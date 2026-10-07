@@ -5,7 +5,7 @@
 TBD                                                             R. Bryce
 Internet-Draft                                                          
 Intended status: Standards Track                               J. Geater
-Expires: 8 April 2027                                     5 October 2026
+Expires: 10 April 2027                                    7 October 2026
 
 
                          COSE Receipts for MMRs
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 April 2027.
+   This Internet-Draft will expire on 10 April 2027.
 
 Copyright Notice
 
@@ -952,6 +952,12 @@ Table of Contents
 10.  Privacy Considerations
 
    See the privacy considerations section of [RFC9942].
+
+   This profile does not define the leaf pre-image x.  Confidentiality
+   of entry contents, including resistance to guess-and-confirm of low-
+   entropy entries, is the responsibility of the application that
+   constructs x (for SCITT, see the privacy considerations of
+   [RFC9943]).
 
 11.  Security Considerations
 
