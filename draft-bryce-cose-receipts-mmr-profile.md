@@ -778,6 +778,9 @@ We define `mmr_size_for_leaf_count` as
 
 See the privacy considerations section of {{-cose-receipts}}.
 
+This profile does not define the leaf pre-image `x`.
+Confidentiality of entry contents, including resistance to guess-and-confirm of low-entropy entries, is the responsibility of the application that constructs `x` (for SCITT, see the privacy considerations of {{RFC9943}}).
+
 # Security Considerations
 
 The security considerations of {{-cose-receipts}} apply.
