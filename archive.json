@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-06T00:36:24.188817+00:00",
+  "timestamp": "2026-10-08T00:36:22.836275+00:00",
   "repo": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
   "labels": [
     {
@@ -1129,28 +1129,30 @@
       "id": "PR_kwDOO_kfWc7wqMcW",
       "title": "Add Privacy Considerations: confirmation of entry values",
       "url": "https://github.com/robinbryce/draft-bryce-cose-receipts-mmr-profile/pull/10",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "dcondrey",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Adds the \"Confirmation of entry values\" subsection.",
       "createdAt": "2026-07-12T02:14:40Z",
-      "updatedAt": "2026-10-01T19:25:49Z",
+      "updatedAt": "2026-10-07T11:06:41Z",
       "baseRepository": "robinbryce/draft-bryce-cose-receipts-mmr-profile",
       "baseRefName": "main",
-      "baseRefOid": "9232f5857a58b483e24c00060129472191491940",
+      "baseRefOid": "ac11f625db05776a5ace4add620c29cc5f48b98b",
       "headRepository": "dcondrey/draft-bryce-cose-receipts-mmr-profile",
       "headRefName": "privacy-entry-value-confirmation",
-      "headRefOid": "69af98331266e12732af334208d5e846e687324c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "9661ba4dda41d9f84fa2dd19c869ab93fbbeddba",
+      "closedAt": "2026-10-07T11:06:41Z",
+      "mergedAt": "2026-10-07T11:06:41Z",
+      "mergedBy": "robinbryce",
+      "mergeCommit": {
+        "oid": "3c08c4f7956beb16d101b25b4cf761b890885e6c"
+      },
       "comments": [
         {
           "author": "dcondrey",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "This is the one I think stands apart from #7. The leaf is `H(x)` with no per-leaf salt, so a holder of an inclusion Receipt can confirm a guessed entry by recomputing the root, which for a low-entropy domain discloses the content. Unlike the distribution SHOULD in #7, the mitigation here is one the caller can actually apply, adding entropy or a secret salt before insertion, so the SHOULD accomplishes something. Not covered by the generic considerations in RFC 9943.",
           "createdAt": "2026-07-13T21:03:28Z",
           "updatedAt": "2026-07-13T21:03:28Z"
