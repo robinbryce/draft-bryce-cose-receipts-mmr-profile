@@ -787,36 +787,25 @@ The security considerations of {{-cose-receipts}} apply.
 
 ## Tree size of a receipt of inclusion
 
-Each interior node value is computed over the position of the node, so when the inclusion path is not empty the node a receipt of inclusion proves commits to its position and to the index and height of every node on its path.
-When the path is empty the payload is the node value itself and the index is not covered by the signature; an application that needs an authenticated position binds it into the entry (see [Leaf commitment scheme](#leaf-commitment-scheme)), or obtains a proof against a later tree state in which the node is no longer a peak.
-A receipt of inclusion carries no tree size: it is valid in every tree size from the one that created the proven node.
-Verified without a trusted accumulator, it shows that the ledger signed the proven node at its position, not that the node is in a history the verifier has established by receipts of consistency.
+A receipt of inclusion carries no tree size: it verifies in every later tree size, and alone does not tie the proven node to the history a verifier has established by receipts of consistency.
+When the inclusion path is empty the signature is over the node value alone and the index is not bound.
+An application that needs the position bound in this case can include it in the entry (see [Leaf commitment scheme](#leaf-commitment-scheme)) or check the node against a trusted accumulator for a tree size in which it is a peak.
 
 ## Leaf commitment scheme
 
-Interior nodes are hashed as `H(pos || left || right)`; the leaf value `H(x)` is supplied by the application, which chooses what `x` commits to.
-A receipt of inclusion proves that a value is a node of the tree; it does not prove that the node is a leaf.
-Leaf values are not domain separated from interior values as they are in {{RFC9162}}: an `x` chosen as `pos || left || right` hashes to the interior node at `pos`, and with an empty inclusion-path that value verifies at any leaf index, so a verifier holding only the receipt cannot tell such an `x` from an entry.
-With a non-empty path the position binding prevents this, because the real parent commits the real leaf.
-
-Applications SHOULD choose a form for `x` that no interior pre-image can take, for example a leading domain byte, so that no `x` can collide with an interior node.
-An `x` that is itself an eight-byte position followed by two digests reproduces the interior pre-image and MUST be avoided.
-An `x` that also includes the position binds the position even when the path is empty.
-A verifier that holds a trusted tree size and accumulator can instead require that the index be a peak of that size and that the payload equal the accumulator's value at that peak.
+Leaf values are not domain separated from interior values as they are in {{RFC9162}}: an `x` equal to the pre-image `pos || left || right` of an interior node hashes to that node.
+With a non-empty inclusion path the position is bound and the height of the index shows whether the node is a leaf.
+With an empty path such an `x` verifies as an entry at any leaf index.
+An application should choose a form for `x` that no interior pre-image can take, for example a leading domain byte, and include the position in `x` if it needs the position bound when the path is empty.
 
 ## Declared tree sizes
 
-The signed statement of a receipt of consistency is the accumulator for tree-size-2.
-A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of new peaks; the shape of the proof binds tree-size-2 only when there are no right-peaks.
-If tree-size-2 were not covered by the signature, the party presenting the receipt would choose the size the verifier records as its trusted state.
-This profile therefore carries tree-size-2 in the protected header and requires verifiers to compare it with the size in the consistency proofs, so that a signature verifies for exactly one tree size.
-tree-size-1 is not signed: the verifier already holds the state it verifies from, and a signed origin would prevent a chain of proofs, or a re-based proof, from being presented under one signature.
-A verifier that records a size the ledger never had will find the ledger's next receipt fails to verify against it, a false finding of misbehaviour against a ledger that has behaved correctly.
+The shape of a consistency proof does not fix tree-size-2 when there are right-peaks: a right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of peaks.
+A verifier that takes tree-size-2 from the unprotected proof, or omits the comparison with the protected tree-size-2, lets the presenter choose the size it records, and the ledger's next receipt then fails against that state although the ledger has behaved correctly.
 
 ## The empty tree as trusted state
 
 Every accumulator is consistent with the empty tree.
-A receipt of consistency whose first consistency-proof has tree-size-1 of 0 therefore proves nothing about any earlier state of the ledger: consistent_roots returns no roots, the accumulator for tree-size-2 is the right-peaks in their entirety, and verification reduces to the shape of tree-size-2, those peaks, and the signature over the protected tree-size-2.
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 
