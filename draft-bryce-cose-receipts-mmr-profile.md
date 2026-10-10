@@ -133,7 +133,7 @@ This document registers one value:
 
 | Name | Value | Hash algorithm | COSE algorithm | Node value size (bytes)
 |---
-|MMR_SHA256 | TBD_1 (requested assignment 3) | SHA-256 {{FIPS180-4}} | -16 {{RFC9054}} | 32
+|MMR_SHA256 | TBD_1 | SHA-256 {{FIPS180-4}} | -16 {{RFC9054}} | 32
 {: #verifiable-data-structure-values align="left" title="Verifiable Data Structure Algorithms"}
 
 Other specifications MAY register further values for this MMR.
@@ -858,7 +858,7 @@ Values for other hash algorithms may be registered by other specifications, as d
 
 | Name | Value | Description | Change Controller | Reference
 |---
-|MMR_SHA256 | TBD_1 (requested assignment 3) | Linearly addressed, position-committing, append-only logs that are integrity-protected by a post-order traversal (Merkle Mountain Range) binary Merkle tree using SHA-256 | IETF | RFCthis
+|MMR_SHA256 | TBD_1 | SHA-256 Merkle Mountain Range | IETF | RFCthis
 {: #iana-vds-algorithms align="left" title="Additions to the COSE Verifiable Data Structure Algorithms registry"}
 
 ### COSE Verifiable Data Structure Proofs
@@ -868,8 +868,8 @@ IANA is requested to add the following entries for MMR_SHA256 to that registry:
 
 | Verifiable Data Structure | Name | Label | CBOR Type | Description | Change Controller | Reference
 |---
-|TBD_1 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | RFCthis, [](#inclusion-proofs)
-|TBD_1 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | RFCthis, [](#consistency-proof)
+|TBD_1 | inclusion proofs | -1 | array (of bstr) | Proof of inclusion | IETF | [](#inclusion-proofs) of RFCthis
+|TBD_1 | consistency proofs | -2 | array (of bstr) | Proof of append-only property | IETF | [](#consistency-proof) of RFCthis
 {: #iana-vds-proofs align="left" title="Additions to the COSE Verifiable Data Structure Proofs registry"}
 
 ### COSE Header Parameters
