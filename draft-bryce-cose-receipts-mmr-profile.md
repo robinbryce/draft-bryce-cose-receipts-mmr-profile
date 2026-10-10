@@ -261,7 +261,7 @@ Whether a node is a leaf, and what its entry commits to, are properties of the l
 Perform the following, in order.
 Verification fails if any step fails.
 
-1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency). Labels the verifier does not recognise are skipped.
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); vds MUST be TBD_1. Labels the verifier does not recognise are skipped.
 1. Apply [included_root](#includedroot) to the index, the value and the inclusion-path. The result is the peak the path implies.
 1. Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.
 
@@ -454,7 +454,7 @@ A verifier MAY nevertheless choose to accept such a receipt, for example after a
 Perform the following, in order.
 Verification fails if any step fails.
 
-1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); vds MUST be TBD_1; tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
 1. The protected tree-size-2 MUST equal tree-size-2 of the last consistency-proof.
 1. tree-size-1 of the first consistency-proof MUST equal the trusted tree size.
 1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
