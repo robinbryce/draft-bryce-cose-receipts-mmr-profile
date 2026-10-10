@@ -470,6 +470,7 @@ Verification accommodates verifying the result of a cumulative series of consist
 
 The verifier MUST hold, from a source it already trusts, the `vds` value, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted `vds` value, the trusted tree size and the trusted accumulator.
 The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see [The empty tree as trusted state](#the-empty-tree-as-trusted-state) for what verification from it establishes.
+A verifier that verifies from the empty tree takes the trusted `vds` value from the protected header of that receipt; it is thereafter part of the trusted state.
 
 Trusted state advances only forwards.
 Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
@@ -838,7 +839,7 @@ A verifier that takes tree-size-2 from the unprotected proof, or omits the compa
 ## The empty tree as trusted state
 
 Every accumulator is consistent with the empty tree.
-A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
+A verifier that verifies from the empty tree places all of its trust in the signing key, the signed `vds` value and the signed tree-size-2; the hash algorithm and size it records are the signer's assertion, not values derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 
 ## Hash algorithm
