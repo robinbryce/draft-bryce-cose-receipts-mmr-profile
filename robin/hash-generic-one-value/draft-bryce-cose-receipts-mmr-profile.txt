@@ -182,41 +182,44 @@ Table of Contents
    document is specified for any hash algorithm H that:
 
    *  is deterministic and computable by any verifier from public inputs
-      alone, and produces an output of a fixed size of at least 32
-      bytes, which is the node value size; and
+      alone, and produces an output of a fixed size, which is the node
+      value size; and
 
-   *  is collision resistant and second preimage resistant, at a
-      security strength of at least 128 bits.
+   *  is collision resistant and second preimage resistant at a security
+      strength of at least 128 bits, so that the node value size is at
+      least 32 bytes.
 
    As Section 4.4.1 of [RFC9942] requires, each value in the "COSE
    Verifiable Data Structure Algorithms" registry that refers to this
    MMR identifies exactly one such H.  This document registers one
    value:
 
-   +============+==================+================+==============+
-   | Name       | Value            | Hash algorithm | Node value   |
-   |            |                  |                | size (bytes) |
-   +============+==================+================+==============+
-   | MMR_SHA256 | TBD_1 (requested | SHA-256        | 32           |
-   |            | assignment 3)    | [FIPS180-4]    |              |
-   +------------+------------------+----------------+--------------+
+   +============+=======+================+===========+==============+
+   | Name       | Value | Hash algorithm | COSE      | Node value   |
+   |            |       |                | algorithm | size (bytes) |
+   +============+=======+================+===========+==============+
+   | MMR_SHA256 | TBD_1 | SHA-256        | -16       | 32           |
+   |            |       | [FIPS180-4]    | [RFC9054] |              |
+   +------------+-------+----------------+-----------+--------------+
 
              Table 1: Verifiable Data Structure Algorithms
 
-   Implementations of this document MUST support MMR_SHA256.
-
    Other specifications MAY register further values for this MMR.  Such
-   a specification names H and the node value size, states that H meets
-   the requirements above, and registers the inclusion proof (-1) and
-   consistency proof (-2) entries in the "COSE Verifiable Data Structure
-   Proofs" registry for its value, as Section 8.2.1 of [RFC9942]
-   requires.  Apart from H and the node value size, the algorithms in
-   this document apply unchanged to every such value.
+   a specification MUST name H by its identifier in the "COSE
+   Algorithms" registry ([RFC9054]) and the node value size, MUST state
+   that H meets the requirements above, and MUST register the inclusion
+   proof (-1) and consistency proof (-2) entries in the "COSE Verifiable
+   Data Structure Proofs" registry for its value, as Section 8.2.1 of
+   [RFC9942] requires.  It meets the requirements of Section 4.4.1 of
+   [RFC9942] by normative reference to this document: the proof
+   encodings are those of Inclusion Proofs (Section 4) and Consistency
+   Proof (Section 6), and the algorithms of this document apply
+   unchanged, with H and the node value size substituted.
 
    The vds value in the protected header of a receipt fixes H and the
-   node value size.  No other parameter of a receipt declares the hash
-   algorithm.  A verifier MUST reject a receipt whose vds value it does
-   not support.
+   node value size.  The hash algorithm of the tree is declared only by
+   the vds value.  A verifier MUST reject a receipt whose vds value it
+   does not support.
 
 4.  Inclusion Proofs
 
@@ -388,7 +391,9 @@ Table of Contents
    A verifier that holds a trusted tree size and accumulator can
    additionally check that the proven node is the accumulator peak for
    the index at that size, which fixes the length of the inclusion path
-   and binds the index when the path is empty.
+   and binds the index when the path is empty.  When it does so, the
+   protected vds value MUST equal the vds value of the trusted
+   accumulator.
 
 5.2.  included_root
 
@@ -600,7 +605,9 @@ Table of Contents
    value, the trusted tree size and the trusted accumulator.  The empty
    tree, with tree size 0 and an empty accumulator, is a valid trusted
    state; see The empty tree as trusted state (Section 11.4) for what
-   verification from it establishes.
+   verification from it establishes.  A verifier that verifies from the
+   empty tree takes the trusted vds value from the protected header of
+   that receipt; it is thereafter part of the trusted state.
 
    Trusted state advances only forwards.  Step 3 below rejects a receipt
    whose first consistency-proof starts from any size other than the
@@ -1052,21 +1059,19 @@ Table of Contents
 
    Every accumulator is consistent with the empty tree.  A verifier that
    verifies from the empty tree places all of its trust in the signing
-   key and the signed tree-size-2; the size it records is the signer's
-   assertion, not a value derived from a state it held.  The rules for
-   accepting such a receipt once a later state is held are given in
-   Verifying the Receipt of consistency (Section 7.1).
+   key, the signed vds value and the signed tree-size-2; the hash
+   algorithm and size it records are the signer's assertion, not values
+   derived from a state it held.  The rules for accepting such a receipt
+   once a later state is held are given in Verifying the Receipt of
+   consistency (Section 7.1).
 
 11.5.  Hash algorithm
 
-   The vds value fixes the hash algorithm and is signed in the protected
-   header, so there is no separate hash parameter to strip or downgrade.
    A log uses one hash algorithm for its lifetime, as in Section 9 of
-   [RFC9162].  Consistency verification does not rehash origin peaks
-   above the split or the right-peaks.  Without the requirement that the
-   protected vds value equal the trusted one, a receipt under another
-   hash could therefore extend a trusted accumulator with peaks from a
-   different hash.
+   [RFC9162].  Consistency verification carries origin peaks above the
+   split and the right-peaks without rehashing them, so a verifier that
+   does not compare the protected vds value with its trusted one can be
+   left holding peaks computed with two hash algorithms.
 
 12.  IANA Considerations
 
@@ -1079,23 +1084,16 @@ Table of Contents
    for other hash algorithms may be registered by other specifications,
    as described in Section 3.
 
-   +==========+==========+======================+==========+=========+
-   |Name      |Value     | Description          |Change    |Reference|
-   |          |          |                      |Controller|         |
-   +==========+==========+======================+==========+=========+
-   |MMR_SHA256|TBD_1     | Linearly addressed,  |IETF      |RFCthis  |
-   |          |(requested| position-committing, |          |         |
-   |          |assignment| append-only logs     |          |         |
-   |          |3)        | that are integrity-  |          |         |
-   |          |          | protected by a post- |          |         |
-   |          |          | order traversal      |          |         |
-   |          |          | (Merkle Mountain     |          |         |
-   |          |          | Range) binary Merkle |          |         |
-   |          |          | tree using SHA-256   |          |         |
-   +----------+----------+----------------------+----------+---------+
+   +============+=======+================+============+===========+
+   | Name       | Value | Description    | Change     | Reference |
+   |            |       |                | Controller |           |
+   +============+=======+================+============+===========+
+   | MMR_SHA256 | TBD_1 | SHA-256 Merkle | IETF       | RFCthis   |
+   |            |       | Mountain Range |            |           |
+   +------------+-------+----------------+------------+-----------+
 
-         Table 2: Additions to the COSE Verifiable Data Structure
-                           Algorithms registry
+       Table 2: Additions to the COSE Verifiable Data Structure
+                         Algorithms registry
 
 12.1.2.  COSE Verifiable Data Structure Proofs
 
@@ -1110,13 +1108,13 @@ Table of Contents
    |Data      |           |     |Type |           |Controller|         |
    |Structure |           |     |     |           |          |         |
    +==========+===========+=====+=====+===========+==========+=========+
-   |TBD_1     |inclusion  |-1   |array|Proof of   |IETF      |RFCthis, |
-   |          |proofs     |     |(of  |inclusion  |          |Section 4|
-   |          |           |     |bstr)|           |          |         |
+   |TBD_1     |inclusion  |-1   |array|Proof of   |IETF      |Section 4|
+   |          |proofs     |     |(of  |inclusion  |          |of       |
+   |          |           |     |bstr)|           |          |RFCthis  |
    +----------+-----------+-----+-----+-----------+----------+---------+
-   |TBD_1     |consistency|-2   |array|Proof of   |IETF      |RFCthis, |
-   |          |proofs     |     |(of  |append-only|          |Section 6|
-   |          |           |     |bstr)|property   |          |         |
+   |TBD_1     |consistency|-2   |array|Proof of   |IETF      |Section 6|
+   |          |proofs     |     |(of  |append-only|          |of       |
+   |          |           |     |bstr)|property   |          |RFCthis  |
    +----------+-----------+-----+-----+-----------+----------+---------+
 
       Table 3: Additions to the COSE Verifiable Data Structure Proofs
@@ -1213,6 +1211,10 @@ Table of Contents
               Reyzin, L. and S. Yakoubov, "Efficient Asynchronous
               Accumulators for Distributed PKI", 2015,
               <https://eprint.iacr.org/2015/718.pdf>.
+
+   [RFC9054]  Schaad, J., "CBOR Object Signing and Encryption (COSE):
+              Hash Algorithms", RFC 9054, DOI 10.17487/RFC9054, August
+              2022, <https://www.rfc-editor.org/rfc/rfc9054>.
 
    [RFC9162]  Laurie, B., Messeri, E., and R. Stradling, "Certificate
               Transparency Version 2.0", RFC 9162, DOI 10.17487/RFC9162,

@@ -1367,10 +1367,10 @@ A tree of that height has <code>2^63 - 1</code> nodes.<a href="#section-2-3" cla
 <p id="section-3-1">The linearly addressed, position committing MMR defined in this document is specified for any hash algorithm <code>H</code> that:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-2.1">
-          <p id="section-3-2.1.1">is deterministic and computable by any verifier from public inputs alone, and produces an output of a fixed size of at least 32 bytes, which is the node value size; and<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-3-2.1.1">is deterministic and computable by any verifier from public inputs alone, and produces an output of a fixed size, which is the node value size; and<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-2.2">
-          <p id="section-3-2.2.1">is collision resistant and second preimage resistant, at a security strength of at least 128 bits.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-3-2.2.1">is collision resistant and second preimage resistant at a security strength of at least 128 bits, so that the node value size is at least 32 bytes.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-3-3">As Section 4.4.1 of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> requires, each value in the "COSE Verifiable Data Structure Algorithms" registry that refers to this MMR identifies exactly one such <code>H</code>.
@@ -1386,27 +1386,29 @@ This document registers one value:<a href="#section-3-3" class="pilcrow">¶</a><
             <th class="text-left" rowspan="1" colspan="1">Name</th>
             <th class="text-left" rowspan="1" colspan="1">Value</th>
             <th class="text-left" rowspan="1" colspan="1">Hash algorithm</th>
+            <th class="text-left" rowspan="1" colspan="1">COSE algorithm</th>
             <th class="text-left" rowspan="1" colspan="1">Node value size (bytes)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">MMR_SHA256</td>
-            <td class="text-left" rowspan="1" colspan="1">TBD_1 (requested assignment 3)</td>
+            <td class="text-left" rowspan="1" colspan="1">TBD_1</td>
             <td class="text-left" rowspan="1" colspan="1">SHA-256 <span>[<a href="#FIPS180-4" class="cite xref">FIPS180-4</a>]</span>
+</td>
+            <td class="text-left" rowspan="1" colspan="1">-16 <span>[<a href="#RFC9054" class="cite xref">RFC9054</a>]</span>
 </td>
             <td class="text-left" rowspan="1" colspan="1">32</td>
           </tr>
         </tbody>
       </table>
 </div>
-<p id="section-3-5">Implementations of this document <span class="bcp14">MUST</span> support MMR_SHA256.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<p id="section-3-6">Other specifications <span class="bcp14">MAY</span> register further values for this MMR.
-Such a specification names <code>H</code> and the node value size, states that <code>H</code> meets the requirements above, and registers the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> requires.
-Apart from <code>H</code> and the node value size, the algorithms in this document apply unchanged to every such value.<a href="#section-3-6" class="pilcrow">¶</a></p>
-<p id="section-3-7">The <code>vds</code> value in the protected header of a receipt fixes <code>H</code> and the node value size.
-No other parameter of a receipt declares the hash algorithm.
-A verifier <span class="bcp14">MUST</span> reject a receipt whose <code>vds</code> value it does not support.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-5">Other specifications <span class="bcp14">MAY</span> register further values for this MMR.
+Such a specification <span class="bcp14">MUST</span> name <code>H</code> by its identifier in the "COSE Algorithms" registry (<span>[<a href="#RFC9054" class="cite xref">RFC9054</a>]</span>) and the node value size, <span class="bcp14">MUST</span> state that <code>H</code> meets the requirements above, and <span class="bcp14">MUST</span> register the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> requires.
+It meets the requirements of Section 4.4.1 of <span>[<a href="#RFC9942" class="cite xref">RFC9942</a>]</span> by normative reference to this document: the proof encodings are those of <span><a href="#inclusion-proofs" class="internal xref">Inclusion Proofs</a> (<a href="#inclusion-proofs" class="auto internal xref">Section 4</a>)</span> and <span><a href="#consistency-proof" class="internal xref">Consistency Proof</a> (<a href="#consistency-proof" class="auto internal xref">Section 6</a>)</span>, and the algorithms of this document apply unchanged, with <code>H</code> and the node value size substituted.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">The <code>vds</code> value in the protected header of a receipt fixes <code>H</code> and the node value size.
+The hash algorithm of the tree is declared only by the <code>vds</code> value.
+A verifier <span class="bcp14">MUST</span> reject a receipt whose <code>vds</code> value it does not support.<a href="#section-3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="inclusion-proofs">
@@ -1580,7 +1582,8 @@ Verification fails if any step fails.<a href="#section-5.1-3" class="pilcrow">¶
 </li>
         </ol>
 <p id="section-5.1-5">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
-<p id="section-5.1-6">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which fixes the length of the inclusion path and binds the index when the path is empty.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which fixes the length of the inclusion path and binds the index when the path is empty.
+When it does so, the protected <code>vds</code> value <span class="bcp14">MUST</span> equal the <code>vds</code> value of the trusted accumulator.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="includedroot">
@@ -1798,7 +1801,8 @@ This protects against implementation errors where the signature is verified but 
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the <code>vds</code> value, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted <code>vds</code> value, the trusted tree size and the trusted accumulator.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.4</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.4</a>)</span> for what verification from it establishes.
+A verifier that verifies from the empty tree takes the trusted <code>vds</code> value from the protected header of that receipt; it is thereafter part of the trusted state.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Trusted state advances only forwards.
 Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
 A verifier <span class="bcp14">MAY</span> nevertheless choose to accept such a receipt, for example after a ledger has re-issued receipts under new credentials following a key compromise (<span>[<a href="#RFC9943" class="cite xref">RFC9943</a>]</span>, Section 9.4.2), but it <span class="bcp14">MUST</span> do so as a new verification from a trusted state at the size the receipt declares, discarding the state it previously held, and <span class="bcp14">MUST NOT</span> treat the receipt as a continuation of that state.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
@@ -2298,7 +2302,7 @@ A verifier that takes tree-size-2 from the unprotected proof, or omits the compa
 <a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
         </h3>
 <p id="section-11.4-1">Every accumulator is consistent with the empty tree.
-A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
+A verifier that verifies from the empty tree places all of its trust in the signing key, the signed <code>vds</code> value and the signed tree-size-2; the hash algorithm and size it records are the signer's assertion, not values derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2307,10 +2311,8 @@ The rules for accepting such a receipt once a later state is held are given in <
         <h3 id="name-hash-algorithm">
 <a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-hash-algorithm" class="section-name selfRef">Hash algorithm</a>
         </h3>
-<p id="section-11.5-1">The <code>vds</code> value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
-A log uses one hash algorithm for its lifetime, as in Section 9 of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.
-Consistency verification does not rehash origin peaks above the split or the right-peaks.
-Without the requirement that the protected <code>vds</code> value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.5-1">A log uses one hash algorithm for its lifetime, as in Section 9 of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.
+Consistency verification carries origin peaks above the split and the right-peaks without rehashing them, so a verifier that does not compare the protected <code>vds</code> value with its trusted one can be left holding peaks computed with two hash algorithms.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2350,8 +2352,8 @@ Values for other hash algorithms may be registered by other specifications, as d
             <tbody>
               <tr>
                 <td class="text-left" rowspan="1" colspan="1">MMR_SHA256</td>
-                <td class="text-left" rowspan="1" colspan="1">TBD_1 (requested assignment 3)</td>
-                <td class="text-left" rowspan="1" colspan="1">Linearly addressed, position-committing, append-only logs that are integrity-protected by a post-order traversal (Merkle Mountain Range) binary Merkle tree using SHA-256</td>
+                <td class="text-left" rowspan="1" colspan="1">TBD_1</td>
+                <td class="text-left" rowspan="1" colspan="1">SHA-256 Merkle Mountain Range</td>
                 <td class="text-left" rowspan="1" colspan="1">IETF</td>
                 <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               </tr>
@@ -2392,8 +2394,8 @@ IANA is requested to add the following entries for MMR_SHA256 to that registry:<
                 <td class="text-left" rowspan="1" colspan="1">array (of bstr)</td>
                 <td class="text-left" rowspan="1" colspan="1">Proof of inclusion</td>
                 <td class="text-left" rowspan="1" colspan="1">IETF</td>
-                <td class="text-left" rowspan="1" colspan="1">RFCthis, <a href="#inclusion-proofs" class="auto internal xref">Section 4</a>
-</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <a href="#inclusion-proofs" class="auto internal xref">Section 4</a> of RFCthis</td>
               </tr>
               <tr>
                 <td class="text-left" rowspan="1" colspan="1">TBD_1</td>
@@ -2402,8 +2404,8 @@ IANA is requested to add the following entries for MMR_SHA256 to that registry:<
                 <td class="text-left" rowspan="1" colspan="1">array (of bstr)</td>
                 <td class="text-left" rowspan="1" colspan="1">Proof of append-only property</td>
                 <td class="text-left" rowspan="1" colspan="1">IETF</td>
-                <td class="text-left" rowspan="1" colspan="1">RFCthis, <a href="#consistency-proof" class="auto internal xref">Section 6</a>
-</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <a href="#consistency-proof" class="auto internal xref">Section 6</a> of RFCthis</td>
               </tr>
             </tbody>
           </table>
@@ -2518,6 +2520,10 @@ IANA is requested to add the following entries for MMR_SHA256 to that registry:<
 <dt id="ReyzinYakoubov">[ReyzinYakoubov]</dt>
         <dd>
 <span class="refAuthor">Reyzin, L.</span> and <span class="refAuthor">S. Yakoubov</span>, <span class="refTitle">"Efficient Asynchronous Accumulators for Distributed PKI"</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://eprint.iacr.org/2015/718.pdf">https://eprint.iacr.org/2015/718.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9054">[RFC9054]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Hash Algorithms"</span>, <span class="seriesInfo">RFC 9054</span>, <span class="seriesInfo">DOI 10.17487/RFC9054</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9054">https://www.rfc-editor.org/rfc/rfc9054</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9162">[RFC9162]</dt>
         <dd>
