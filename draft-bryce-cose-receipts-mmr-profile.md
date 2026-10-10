@@ -225,6 +225,8 @@ protected-header-map = {
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
 
+The protected header MUST meet the encoding requirements given in [COSE Receipt of Consistency](#cose-receipt-of-consistency), and a verifier MUST apply the same acceptance rules to it.
+
 The unprotected header for an inclusion proof signature is:
 
 ~~~~ cddl
@@ -258,6 +260,7 @@ Whether a node is a leaf, and what its entry commits to, are properties of the l
 Perform the following, in order.
 Verification fails if any step fails.
 
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency). Labels the verifier does not recognise are skipped.
 1. Apply [included_root](#includedroot) to the index, the value and the inclusion-path. The result is the peak the path implies.
 1. Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.
 
