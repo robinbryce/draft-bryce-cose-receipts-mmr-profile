@@ -182,8 +182,9 @@ Table of Contents
    The linearly addressed, position committing MMR defined in this
    document is specified for any hash algorithm H that:
 
-   *  is deterministic and unkeyed, and produces an output of a fixed
-      size of at least 32 bytes, which is the node value size; and
+   *  is deterministic and computable by any verifier from public inputs
+      alone, and produces an output of a fixed size of at least 32
+      bytes, which is the node value size; and
 
    *  is collision resistant and second preimage resistant, at a
       security strength of at least 128 bits.
