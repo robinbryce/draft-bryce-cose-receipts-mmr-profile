@@ -414,6 +414,7 @@ The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section
 The protected header map MUST occupy the whole of the protected header byte string.
 A verifier MUST reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
 A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.
+Together these ensure that any two conformant verifiers either read the same tree-size-2 or both reject the receipt, and that a signer can add labels without making its receipts unverifiable.
 
 The unprotected header for a consistency proof signature is:
 
@@ -808,12 +809,6 @@ A verifier that takes tree-size-2 from the unprotected proof, or omits the compa
 Every accumulator is consistent with the empty tree.
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
-
-## Protected header encoding
-
-The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
-Deterministic encoding is required because, without it, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map, and a relying party that accepts such a receipt records a state that others cannot re-verify.
-Requiring deterministic encoding, and rejecting anything else, means that any two conformant verifiers either read the same tree-size-2 or both reject the receipt; unrecognised labels are skipped so that a signer can add labels without making its receipts unverifiable, and their bytes are covered by the signature in any case.
 
 # IANA Considerations
 
