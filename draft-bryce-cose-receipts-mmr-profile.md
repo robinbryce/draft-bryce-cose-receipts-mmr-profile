@@ -39,6 +39,7 @@ normative:
     seriesinfo:
       FIPS: PUB 180-4
 informative:
+  RFC9054:
   RFC9162:
   RFC9943:
   ReyzinYakoubov:
@@ -130,13 +131,13 @@ The linearly addressed, position committing MMR defined in this document is spec
 As Section 4.4.1 of {{-cose-receipts}} requires, each value in the "COSE Verifiable Data Structure Algorithms" registry that refers to this MMR identifies exactly one such `H`.
 This document registers one value:
 
-| Name | Value | Hash algorithm | Node value size (bytes)
+| Name | Value | Hash algorithm | COSE algorithm | Node value size (bytes)
 |---
-|MMR_SHA256 | TBD_1 (requested assignment 3) | SHA-256 {{FIPS180-4}} | 32
+|MMR_SHA256 | TBD_1 (requested assignment 3) | SHA-256 {{FIPS180-4}} | -16 {{RFC9054}} | 32
 {: #verifiable-data-structure-values align="left" title="Verifiable Data Structure Algorithms"}
 
 Other specifications MAY register further values for this MMR.
-Such a specification MUST name `H` and the node value size, MUST state that `H` meets the requirements above, and MUST register the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of {{-cose-receipts}} requires.
+Such a specification MUST name `H` by its identifier in the "COSE Algorithms" registry ({{RFC9054}}) and the node value size, MUST state that `H` meets the requirements above, and MUST register the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of {{-cose-receipts}} requires.
 It meets the requirements of Section 4.4.1 of {{-cose-receipts}} by normative reference to this document: the proof encodings are those of [Inclusion Proofs](#inclusion-proofs) and [Consistency Proof](#consistency-proof), and the algorithms of this document apply unchanged, with `H` and the node value size substituted.
 
 The `vds` value in the protected header of a receipt fixes `H` and the node value size.
