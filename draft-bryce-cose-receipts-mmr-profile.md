@@ -844,10 +844,8 @@ The rules for accepting such a receipt once a later state is held are given in [
 
 ## Hash algorithm
 
-The `vds` value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
 A log uses one hash algorithm for its lifetime, as in Section 9 of {{RFC9162}}.
-Consistency verification does not rehash origin peaks above the split or the right-peaks.
-Without the requirement that the protected `vds` value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.
+Consistency verification carries origin peaks above the split and the right-peaks without rehashing them, so a verifier that does not compare the protected `vds` value with its trusted one can be left holding peaks computed with two hash algorithms.
 
 # IANA Considerations
 
