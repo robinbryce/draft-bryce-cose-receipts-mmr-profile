@@ -125,8 +125,8 @@ A tree of that height has `2^63 - 1` nodes.
 
 The linearly addressed, position committing MMR defined in this document is specified for any hash algorithm `H` that:
 
-- is deterministic and computable by any verifier from public inputs alone, and produces an output of a fixed size of at least 32 bytes, which is the node value size; and
-- is collision resistant and second preimage resistant, at a security strength of at least 128 bits.
+- is deterministic and computable by any verifier from public inputs alone, and produces an output of a fixed size, which is the node value size; and
+- is collision resistant and second preimage resistant at a security strength of at least 128 bits, so that the node value size is at least 32 bytes.
 
 As Section 4.4.1 of {{-cose-receipts}} requires, each value in the "COSE Verifiable Data Structure Algorithms" registry that refers to this MMR identifies exactly one such `H`.
 This document registers one value:
