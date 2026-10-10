@@ -1545,7 +1545,7 @@ When the inclusion-path is not empty, the path also binds the index because each
 Verification fails if any step fails.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
 <li id="section-5.1-4.1">
-            <p id="section-5.1-4.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>. Labels the verifier does not recognise are skipped.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-4.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; vds <span class="bcp14">MUST</span> be TBD_1. Labels the verifier does not recognise are skipped.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-4.2">
             <p id="section-5.1-4.2.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
@@ -1742,11 +1742,12 @@ protected-header-map = {
       </ul>
 <p id="section-7-4">tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.
 A receipt of consistency under this profile that omits the protected tree-size-2 <span class="bcp14">MUST</span> be rejected.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+<p id="section-7-5">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): definite lengths only, arguments in shortest form, and keys sorted in the bytewise lexicographic order of their encodings.
 The protected header map <span class="bcp14">MUST</span> occupy the whole of the protected header byte string.
-A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
-A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.
-Together these ensure that any two conformant verifiers either read the same tree-size-2 or both reject the receipt, and that a signer can add labels without making its receipts unverifiable.<a href="#section-7-5" class="pilcrow">¶</a></p>
+A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not so encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, unless the label is listed in the crit header parameter (<span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>, Section 3.1).
+tree-size-2 need not be listed in crit; a receipt that omits it is rejected regardless.
+These requirements give the protected header a single encoding, so that a verifier can meet the duplicate-label prohibition of <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>, Section 9, by checking that labels strictly increase, without a general CBOR decoder.<a href="#section-7-5" class="pilcrow">¶</a></p>
 <p id="section-7-6">The unprotected header for a consistency proof signature is:<a href="#section-7-6" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-7-7">
 <pre>
@@ -1780,7 +1781,7 @@ A verifier <span class="bcp14">MAY</span> nevertheless choose to accept such a r
 Verification fails if any step fails.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-5">
 <li id="section-7.1-5.1">
-            <p id="section-7.1-5.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; tree-size-2 <span class="bcp14">MUST</span> be present and <span class="bcp14">MUST</span> be an unsigned integer. Labels the verifier does not recognise are skipped.<a href="#section-7.1-5.1.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-5.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; vds <span class="bcp14">MUST</span> be TBD_1; tree-size-2 <span class="bcp14">MUST</span> be present and <span class="bcp14">MUST</span> be an unsigned integer. Labels the verifier does not recognise are skipped.<a href="#section-7.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-5.2">
             <p id="section-7.1-5.2.1">The protected tree-size-2 <span class="bcp14">MUST</span> equal tree-size-2 of the last consistency-proof.<a href="#section-7.1-5.2.1" class="pilcrow">¶</a></p>
@@ -2370,6 +2371,10 @@ The rules for accepting such a receipt once a later state is held are given in <
 <dt id="RFC8949">[RFC8949]</dt>
         <dd>
 <span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9052">[RFC9052]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Structures and Process"</span>, <span class="seriesInfo">STD 96</span>, <span class="seriesInfo">RFC 9052</span>, <span class="seriesInfo">DOI 10.17487/RFC9052</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9052">https://www.rfc-editor.org/rfc/rfc9052</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9053">[RFC9053]</dt>
         <dd>
