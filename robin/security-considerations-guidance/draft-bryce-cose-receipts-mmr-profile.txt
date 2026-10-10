@@ -83,7 +83,6 @@ Table of Contents
      11.2.  Leaf commitment scheme
      11.3.  Declared tree sizes
      11.4.  The empty tree as trusted state
-     11.5.  Protected header encoding
    12. IANA Considerations
      12.1.  Additions to Existing Registries
        12.1.1.  COSE Verifiable Data Structure Algorithms
@@ -297,6 +296,10 @@ Table of Contents
       identifier, the value registered by this document (TBD_1).  Value
       type: int.
 
+   The protected header MUST meet the encoding requirements given in
+   COSE Receipt of Consistency (Section 7), and a verifier MUST apply
+   the same acceptance rules to it.
+
    The unprotected header for an inclusion proof signature is:
 
    inclusion-proofs = [ + inclusion-proof ]
@@ -334,10 +337,14 @@ Table of Contents
    Perform the following, in order.  Verification fails if any step
    fails.
 
-   1.  Apply included_root (Section 5.2) to the index, the value and the
+   1.  Decode the protected header.  It MUST be deterministically
+       encoded as required in COSE Receipt of Consistency (Section 7).
+       Labels the verifier does not recognise are skipped.
+
+   2.  Apply included_root (Section 5.2) to the index, the value and the
        inclusion-path.  The result is the peak the path implies.
 
-   2.  Set the COSE Sign1 payload to the bytes of that peak and verify
+   3.  Set the COSE Sign1 payload to the bytes of that peak and verify
        the signature of the COSE Sign1.
 
    It is recommended that implementations return a single boolean result
@@ -522,7 +529,10 @@ Table of Contents
    labels, or contains bytes beyond the protected header map.  A
    verifier MUST ignore protected header labels it does not recognise,
    whatever the type of their values, provided each value is a well-
-   formed definite-length item.
+   formed definite-length item.  Together these ensure that any two
+   conformant verifiers either read the same tree-size-2 or both reject
+   the receipt, and that a signer can add labels without making its
+   receipts unverifiable.
 
    The unprotected header for a consistency proof signature is:
 
@@ -1005,23 +1015,6 @@ Table of Contents
    assertion, not a value derived from a state it held.  The rules for
    accepting such a receipt once a later state is held are given in
    Verifying the Receipt of consistency (Section 7.1).
-
-11.5.  Protected header encoding
-
-   The protected header is signed as a byte string, and tree-size-2 is
-   read from it by label, so two verifiers agree on the signed size only
-   if they agree on which byte strings are valid protected headers and
-   how the map in them is read.  Deterministic encoding is required
-   because, without it, a header can be constructed that one decoder
-   reads and another rejects, for example one with a duplicate label, an
-   argument in non-shortest form, or bytes after the map, and a relying
-   party that accepts such a receipt records a state that others cannot
-   re-verify.  Requiring deterministic encoding, and rejecting anything
-   else, means that any two conformant verifiers either read the same
-   tree-size-2 or both reject the receipt; unrecognised labels are
-   skipped so that a signer can add labels without making its receipts
-   unverifiable, and their bytes are covered by the signature in any
-   case.
 
 12.  IANA Considerations
 
