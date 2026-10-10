@@ -291,6 +291,7 @@ Verification fails if any step fails.
 It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.
 
 A verifier that holds a trusted tree size and accumulator can additionally check that the proven node is the accumulator peak for the index at that size, which fixes the length of the inclusion path and binds the index when the path is empty.
+When it does so, the protected `vds` value MUST equal the `vds` value of the trusted accumulator.
 
 ## included_root
 
