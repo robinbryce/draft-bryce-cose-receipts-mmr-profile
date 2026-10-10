@@ -1229,13 +1229,10 @@ svg {
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-declared-tree-sizes" class="internal xref">Declared tree sizes</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-protected-header-encoding" class="internal xref">Protected header encoding</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-the-empty-tree-as-trusted-s" class="internal xref">The empty tree as trusted state</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
-                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-hash-algorithm" class="internal xref">Hash algorithm</a></p>
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-hash-algorithm" class="internal xref">Hash algorithm</a></p>
 </li>
             </ul>
 </li>
@@ -1540,8 +1537,9 @@ protected-header-map = {
           <p id="section-5-3.2.1">vds (label: 395): <span class="bcp14">REQUIRED</span>. verifiable data structure algorithm identifier, a value identifying the MMR defined in this document, such as MMR_SHA256, see <a href="#description-of-the-verifiable-data-structure" class="auto internal xref">Section 3</a>. It fixes the hash algorithm <code>H</code>. Value type: int.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-5-4">The unprotected header for an inclusion proof signature is:<a href="#section-5-4" class="pilcrow">¶</a></p>
-<div class="lang-cddl sourcecode" id="section-5-5">
+<p id="section-5-4">The protected header <span class="bcp14">MUST</span> meet the encoding requirements given in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>, and a verifier <span class="bcp14">MUST</span> apply the same acceptance rules to it.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">The unprotected header for an inclusion proof signature is:<a href="#section-5-5" class="pilcrow">¶</a></p>
+<div class="lang-cddl sourcecode" id="section-5-6">
 <pre>
 inclusion-proofs = [ + inclusion-proof ]
 
@@ -1553,13 +1551,13 @@ unprotected-header-map = {
   &amp;(vdp: 396) =&gt; verifiable-proofs
   * cose-label =&gt; cose-value
 }
-</pre><a href="#section-5-5" class="pilcrow">¶</a>
+</pre><a href="#section-5-6" class="pilcrow">¶</a>
 </div>
-<p id="section-5-6">The payload of an inclusion proof signature is the tree peak committing to the nodes inclusion, or the node itself where the proof path is empty.
-The algorithm <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> obtains this value.<a href="#section-5-6" class="pilcrow">¶</a></p>
-<p id="section-5-7">The payload <span class="bcp14">MUST</span> be detached.
+<p id="section-5-7">The payload of an inclusion proof signature is the tree peak committing to the nodes inclusion, or the node itself where the proof path is empty.
+The algorithm <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> obtains this value.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">The payload <span class="bcp14">MUST</span> be detached.
 Detaching the payload forces verifiers to recompute the root from the inclusion proof,
-this protects against implementation errors where the signature is verified but the payload merkle root does not match the inclusion proof.<a href="#section-5-7" class="pilcrow">¶</a></p>
+this protects against implementation errors where the signature is verified but the payload merkle root does not match the inclusion proof.<a href="#section-5-8" class="pilcrow">¶</a></p>
 <div id="verifying-the-receipt-of-inclusion">
 <section id="section-5.1">
         <h3 id="name-verifying-the-receipt-of-in">
@@ -1572,10 +1570,13 @@ When the inclusion-path is not empty, the path also binds the index because each
 Verification fails if any step fails.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
 <li id="section-5.1-4.1">
-            <p id="section-5.1-4.1.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-4.1.1">Decode the protected header. It <span class="bcp14">MUST</span> be deterministically encoded as required in <span><a href="#cose-receipt-of-consistency" class="internal xref">COSE Receipt of Consistency</a> (<a href="#cose-receipt-of-consistency" class="auto internal xref">Section 7</a>)</span>; the <code>vds</code> value <span class="bcp14">MUST</span> be one the verifier supports, see <span><a href="#description-of-the-verifiable-data-structure" class="internal xref">Description of the Verifiable Data Structure</a> (<a href="#description-of-the-verifiable-data-structure" class="auto internal xref">Section 3</a>)</span>. Labels the verifier does not recognise are skipped.<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-4.2">
-            <p id="section-5.1-4.2.1">Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-4.2.1">Apply <span><a href="#includedroot" class="internal xref">included_root</a> (<a href="#includedroot" class="auto internal xref">Section 5.2</a>)</span> to the index, the value and the inclusion-path. The result is the peak the path implies.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-4.3">
+            <p id="section-5.1-4.3.1">Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.<a href="#section-5.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-5.1-5">It is recommended that implementations return a single boolean result for Receipt verification operations, to reduce the chance of accepting a valid signature over an invalid inclusion proof.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
@@ -1766,10 +1767,12 @@ protected-header-map = {
       </ul>
 <p id="section-7-4">tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.
 A receipt of consistency under this profile that omits the protected tree-size-2 <span class="bcp14">MUST</span> be rejected.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+<p id="section-7-5">The protected header <span class="bcp14">MUST</span> be encoded as deterministic CBOR (<span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, Section 4.2.1): definite lengths only, arguments in shortest form, and keys sorted in the bytewise lexicographic order of their encodings.
 The protected header map <span class="bcp14">MUST</span> occupy the whole of the protected header byte string.
-A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
-A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.<a href="#section-7-5" class="pilcrow">¶</a></p>
+A verifier <span class="bcp14">MUST</span> reject a receipt whose protected header is not so encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier <span class="bcp14">MUST</span> ignore protected header labels it does not recognise, whatever the type of their values, unless the label is listed in the crit header parameter (<span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>, Section 3.1).
+tree-size-2 need not be listed in crit; a receipt that omits it is rejected regardless.
+These requirements give the protected header a single encoding, so that a verifier can meet the duplicate-label prohibition of <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>, Section 9, by checking that labels strictly increase, without a general CBOR decoder.<a href="#section-7-5" class="pilcrow">¶</a></p>
 <p id="section-7-6">The unprotected header for a consistency proof signature is:<a href="#section-7-6" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-7-7">
 <pre>
@@ -1795,7 +1798,7 @@ This protects against implementation errors where the signature is verified but 
         </h3>
 <p id="section-7.1-1">Verification accommodates verifying the result of a cumulative series of consistency proofs.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The verifier <span class="bcp14">MUST</span> hold, from a source it already trusts, the <code>vds</code> value, the tree size and the accumulator of the state it is verifying consistency from; these are referred to below as the trusted <code>vds</code> value, the trusted tree size and the trusted accumulator.
-The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.5</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+The empty tree, with tree size 0 and an empty accumulator, is a valid trusted state; see <span><a href="#the-empty-tree-as-trusted-state" class="internal xref">The empty tree as trusted state</a> (<a href="#the-empty-tree-as-trusted-state" class="auto internal xref">Section 11.4</a>)</span> for what verification from it establishes.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Trusted state advances only forwards.
 Step 3 below rejects a receipt whose first consistency-proof starts from any size other than the trusted size, including a receipt that starts from the empty tree once a later state is held.
 A verifier <span class="bcp14">MAY</span> nevertheless choose to accept such a receipt, for example after a ledger has re-issued receipts under new credentials following a key compromise (<span>[<a href="#RFC9943" class="cite xref">RFC9943</a>]</span>, Section 9.4.2), but it <span class="bcp14">MUST</span> do so as a new verification from a trusted state at the size the receipt declares, discarding the state it previously held, and <span class="bcp14">MUST NOT</span> treat the receipt as a continuation of that state.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
@@ -2264,11 +2267,9 @@ Confidentiality of entry contents, including resistance to guess-and-confirm of 
         <h3 id="name-tree-size-of-a-receipt-of-i">
 <a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-tree-size-of-a-receipt-of-i" class="section-name selfRef">Tree size of a receipt of inclusion</a>
         </h3>
-<p id="section-11.1-1">When the inclusion path is not empty, the receipt binds the proven node to its index, because each interior node commits to its position.
-When the path is empty, the payload is the node value and the index is not signed.
-An application that needs the position authenticated binds it into the entry (see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>), or obtains a proof against a later tree size in which the node is no longer a peak.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
-<p id="section-11.1-2">A receipt of inclusion carries no tree size and remains valid at every later size.
-On its own, it shows that the ledger signed the node at that position, not that the node is in a history the verifier has established with receipts of consistency.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">A receipt of inclusion carries no tree size: it verifies in every later tree size, and alone does not tie the proven node to the history a verifier has established by receipts of consistency.
+When the inclusion path is empty the signature is over the node value alone and the index is not bound.
+An application that needs the position bound in this case can include it in the entry (see <span><a href="#leaf-commitment-scheme" class="internal xref">Leaf commitment scheme</a> (<a href="#leaf-commitment-scheme" class="auto internal xref">Section 11.2</a>)</span>) or check the node against a trusted accumulator for a tree size in which it is a peak.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="leaf-commitment-scheme">
@@ -2276,14 +2277,10 @@ On its own, it shows that the ledger signed the node at that position, not that 
         <h3 id="name-leaf-commitment-scheme">
 <a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-leaf-commitment-scheme" class="section-name selfRef">Leaf commitment scheme</a>
         </h3>
-<p id="section-11.2-1">Interior node values are <code>H(pos || left || right)</code>; leaf values are <code>H(x)</code> for an <code>x</code> chosen by the application.
-Unlike <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, this profile does not domain separate leaves from interior nodes.
-An <code>x</code> of the form <code>pos || left || right</code> hashes to the interior node at <code>pos</code>.
-With a non-empty inclusion path, the position binding rejects it at any other index; with an empty path, it verifies at any leaf index.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
-<p id="section-11.2-2">Applications <span class="bcp14">MUST NOT</span> use an <code>x</code> that is an eight-byte position followed by two node values.
-The simplest way to meet this is a form for <code>x</code> that cannot have that length, <code>8 + 2N</code> bytes where <code>N</code> is the node value size, for example a fixed length other than <code>8 + 2N</code> or a leading domain separation byte.
-Including the position in <code>x</code> also binds the position when the path is empty.
-Alternatively, a verifier that holds a trusted tree size and accumulator can require the index to be a peak of that size and the payload to equal that peak's value.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
+<p id="section-11.2-1">Leaf values are not domain separated from interior values as they are in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>: an <code>x</code> equal to the pre-image <code>pos || left || right</code> of an interior node hashes to that node.
+With a non-empty inclusion path the position is bound and the height of the index shows whether the node is a leaf.
+With an empty path such an <code>x</code> verifies as an entry at any leaf index.
+An application should choose a form for <code>x</code> that no interior pre-image can take, for example a leading domain byte, and include the position in <code>x</code> if it needs the position bound when the path is empty.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="declared-tree-sizes">
@@ -2291,44 +2288,29 @@ Alternatively, a verifier that holds a trusted tree size and accumulator can req
         <h3 id="name-declared-tree-sizes">
 <a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-declared-tree-sizes" class="section-name selfRef">Declared tree sizes</a>
         </h3>
-<p id="section-11.3-1">A right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of peaks.
-The proof alone binds tree-size-2 only when there are no right-peaks.
-If tree-size-2 were unsigned, whoever presents a receipt could choose the size a verifier records as trusted, and the ledger's next receipt would then fail to verify: a false finding of misbehaviour.
-This profile therefore signs tree-size-2 in the protected header.
-tree-size-1 is not signed: the verifier already holds the state it verifies from, and signing it would prevent a chain of proofs, or a re-based proof, from being presented under one signature.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="protected-header-encoding">
-<section id="section-11.4">
-        <h3 id="name-protected-header-encoding">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-protected-header-encoding" class="section-name selfRef">Protected header encoding</a>
-        </h3>
-<p id="section-11.4-1">tree-size-2 is read by label from the signed protected header, so verifiers agree on the signed size only if they decode that header the same way.
-Without deterministic encoding, a header with a duplicate label, a non-shortest argument or trailing bytes could be read by one decoder and rejected by another, and a relying party could record a state that others cannot re-verify.
-With it, conformant verifiers either read the same tree-size-2 or all reject the receipt.
-Unrecognised labels are skipped so that signers can add labels; their bytes are still covered by the signature.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">The shape of a consistency proof does not fix tree-size-2 when there are right-peaks: a right-peak carries no height, so the same consistency paths and right-peaks complete the accumulator of every tree size that adds the same number of peaks.
+A verifier that takes tree-size-2 from the unprotected proof, or omits the comparison with the protected tree-size-2, lets the presenter choose the size it records, and the ledger's next receipt then fails against that state although the ledger has behaved correctly.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-empty-tree-as-trusted-state">
-<section id="section-11.5">
+<section id="section-11.4">
         <h3 id="name-the-empty-tree-as-trusted-s">
-<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-the-empty-tree-as-trusted-s" class="section-name selfRef">The empty tree as trusted state</a>
         </h3>
-<p id="section-11.5-1">Every accumulator is consistent with the empty tree.
-A receipt of consistency from tree size 0 therefore proves nothing about earlier states of the ledger: its accumulator is just the right-peaks, checked only for their number and the signature.
-A verifier starting from the empty tree relies entirely on the signing key, and the size it records is the signer's assertion.
-<span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span> gives the rules for accepting such a receipt once a later state is held.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-1">Every accumulator is consistent with the empty tree.
+A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
+The rules for accepting such a receipt once a later state is held are given in <span><a href="#verifying-the-receipt-of-consistency" class="internal xref">Verifying the Receipt of consistency</a> (<a href="#verifying-the-receipt-of-consistency" class="auto internal xref">Section 7.1</a>)</span>.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hash-algorithm">
-<section id="section-11.6">
+<section id="section-11.5">
         <h3 id="name-hash-algorithm">
-<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-hash-algorithm" class="section-name selfRef">Hash algorithm</a>
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-hash-algorithm" class="section-name selfRef">Hash algorithm</a>
         </h3>
-<p id="section-11.6-1">The <code>vds</code> value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
+<p id="section-11.5-1">The <code>vds</code> value fixes the hash algorithm and is signed in the protected header, so there is no separate hash parameter to strip or downgrade.
 A log uses one hash algorithm for its lifetime, as in Section 9 of <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.
 Consistency verification does not rehash origin peaks above the split or the right-peaks.
-Without the requirement that the protected <code>vds</code> value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.<a href="#section-11.6-1" class="pilcrow">¶</a></p>
+Without the requirement that the protected <code>vds</code> value equal the trusted one, a receipt under another hash could therefore extend a trusted accumulator with peaks from a different hash.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2495,6 +2477,10 @@ IANA is requested to add the following entries for MMR_SHA256 to that registry:<
 <dt id="RFC8949">[RFC8949]</dt>
         <dd>
 <span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9052">[RFC9052]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Structures and Process"</span>, <span class="seriesInfo">STD 96</span>, <span class="seriesInfo">RFC 9052</span>, <span class="seriesInfo">DOI 10.17487/RFC9052</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9052">https://www.rfc-editor.org/rfc/rfc9052</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9053">[RFC9053]</dt>
         <dd>

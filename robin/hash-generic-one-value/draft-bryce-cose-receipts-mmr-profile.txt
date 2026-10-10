@@ -82,9 +82,8 @@ Table of Contents
      11.1.  Tree size of a receipt of inclusion
      11.2.  Leaf commitment scheme
      11.3.  Declared tree sizes
-     11.4.  Protected header encoding
-     11.5.  The empty tree as trusted state
-     11.6.  Hash algorithm
+     11.4.  The empty tree as trusted state
+     11.5.  Hash algorithm
    12. IANA Considerations
      12.1.  Additions to Existing Registries
        12.1.1.  COSE Verifiable Data Structure Algorithms
@@ -329,6 +328,10 @@ Table of Contents
       such as MMR_SHA256, see Section 3.  It fixes the hash algorithm H.
       Value type: int.
 
+   The protected header MUST meet the encoding requirements given in
+   COSE Receipt of Consistency (Section 7), and a verifier MUST apply
+   the same acceptance rules to it.
+
    The unprotected header for an inclusion proof signature is:
 
    inclusion-proofs = [ + inclusion-proof ]
@@ -366,10 +369,16 @@ Table of Contents
    Perform the following, in order.  Verification fails if any step
    fails.
 
-   1.  Apply included_root (Section 5.2) to the index, the value and the
+   1.  Decode the protected header.  It MUST be deterministically
+       encoded as required in COSE Receipt of Consistency (Section 7);
+       the vds value MUST be one the verifier supports, see Description
+       of the Verifiable Data Structure (Section 3).  Labels the
+       verifier does not recognise are skipped.
+
+   2.  Apply included_root (Section 5.2) to the index, the value and the
        inclusion-path.  The result is the peak the path implies.
 
-   2.  Set the COSE Sign1 payload to the bytes of that peak and verify
+   3.  Set the COSE Sign1 payload to the bytes of that peak and verify
        the signature of the COSE Sign1.
 
    It is recommended that implementations return a single boolean result
@@ -547,15 +556,20 @@ Table of Contents
    tree-size-2 MUST be rejected.
 
    The protected header MUST be encoded as deterministic CBOR
-   ([RFC8949], Section 4.2.1): arguments in shortest form, definite
-   lengths only, keys in canonical order, no duplicate keys, and no
-   tags.  The protected header map MUST occupy the whole of the
-   protected header byte string.  A verifier MUST reject a receipt whose
-   protected header is not deterministically encoded, contains duplicate
-   labels, or contains bytes beyond the protected header map.  A
-   verifier MUST ignore protected header labels it does not recognise,
-   whatever the type of their values, provided each value is a well-
-   formed definite-length item.
+   ([RFC8949], Section 4.2.1): definite lengths only, arguments in
+   shortest form, and keys sorted in the bytewise lexicographic order of
+   their encodings.  The protected header map MUST occupy the whole of
+   the protected header byte string.  A verifier MUST reject a receipt
+   whose protected header is not so encoded, contains duplicate labels,
+   or contains bytes beyond the protected header map.  A verifier MUST
+   ignore protected header labels it does not recognise, whatever the
+   type of their values, unless the label is listed in the crit header
+   parameter ([RFC9052], Section 3.1). tree-size-2 need not be listed in
+   crit; a receipt that omits it is rejected regardless.  These
+   requirements give the protected header a single encoding, so that a
+   verifier can meet the duplicate-label prohibition of [RFC9052],
+   Section 9, by checking that labels strictly increase, without a
+   general CBOR decoder.
 
    The unprotected header for a consistency proof signature is:
 
@@ -585,7 +599,7 @@ Table of Contents
    consistency from; these are referred to below as the trusted vds
    value, the trusted tree size and the trusted accumulator.  The empty
    tree, with tree size 0 and an empty accumulator, is a valid trusted
-   state; see The empty tree as trusted state (Section 11.5) for what
+   state; see The empty tree as trusted state (Section 11.4) for what
    verification from it establishes.
 
    Trusted state advances only forwards.  Step 3 below rejects a receipt
@@ -1002,75 +1016,48 @@ Table of Contents
 
 11.1.  Tree size of a receipt of inclusion
 
-   When the inclusion path is not empty, the receipt binds the proven
-   node to its index, because each interior node commits to its
-   position.  When the path is empty, the payload is the node value and
-   the index is not signed.  An application that needs the position
-   authenticated binds it into the entry (see Leaf commitment scheme
-   (Section 11.2)), or obtains a proof against a later tree size in
-   which the node is no longer a peak.
-
-   A receipt of inclusion carries no tree size and remains valid at
-   every later size.  On its own, it shows that the ledger signed the
-   node at that position, not that the node is in a history the verifier
-   has established with receipts of consistency.
+   A receipt of inclusion carries no tree size: it verifies in every
+   later tree size, and alone does not tie the proven node to the
+   history a verifier has established by receipts of consistency.  When
+   the inclusion path is empty the signature is over the node value
+   alone and the index is not bound.  An application that needs the
+   position bound in this case can include it in the entry (see Leaf
+   commitment scheme (Section 11.2)) or check the node against a trusted
+   accumulator for a tree size in which it is a peak.
 
 11.2.  Leaf commitment scheme
 
-   Interior node values are H(pos || left || right); leaf values are
-   H(x) for an x chosen by the application.  Unlike [RFC9162], this
-   profile does not domain separate leaves from interior nodes.  An x of
-   the form pos || left || right hashes to the interior node at pos.
-   With a non-empty inclusion path, the position binding rejects it at
-   any other index; with an empty path, it verifies at any leaf index.
-
-   Applications MUST NOT use an x that is an eight-byte position
-   followed by two node values.  The simplest way to meet this is a form
-   for x that cannot have that length, 8 + 2N bytes where N is the node
-   value size, for example a fixed length other than 8 + 2N or a leading
-   domain separation byte.  Including the position in x also binds the
-   position when the path is empty.  Alternatively, a verifier that
-   holds a trusted tree size and accumulator can require the index to be
-   a peak of that size and the payload to equal that peak's value.
+   Leaf values are not domain separated from interior values as they are
+   in [RFC9162]: an x equal to the pre-image pos || left || right of an
+   interior node hashes to that node.  With a non-empty inclusion path
+   the position is bound and the height of the index shows whether the
+   node is a leaf.  With an empty path such an x verifies as an entry at
+   any leaf index.  An application should choose a form for x that no
+   interior pre-image can take, for example a leading domain byte, and
+   include the position in x if it needs the position bound when the
+   path is empty.
 
 11.3.  Declared tree sizes
 
-   A right-peak carries no height, so the same consistency paths and
-   right-peaks complete the accumulator of every tree size that adds the
-   same number of peaks.  The proof alone binds tree-size-2 only when
-   there are no right-peaks.  If tree-size-2 were unsigned, whoever
-   presents a receipt could choose the size a verifier records as
-   trusted, and the ledger's next receipt would then fail to verify: a
-   false finding of misbehaviour.  This profile therefore signs tree-
-   size-2 in the protected header. tree-size-1 is not signed: the
-   verifier already holds the state it verifies from, and signing it
-   would prevent a chain of proofs, or a re-based proof, from being
-   presented under one signature.
+   The shape of a consistency proof does not fix tree-size-2 when there
+   are right-peaks: a right-peak carries no height, so the same
+   consistency paths and right-peaks complete the accumulator of every
+   tree size that adds the same number of peaks.  A verifier that takes
+   tree-size-2 from the unprotected proof, or omits the comparison with
+   the protected tree-size-2, lets the presenter choose the size it
+   records, and the ledger's next receipt then fails against that state
+   although the ledger has behaved correctly.
 
-11.4.  Protected header encoding
+11.4.  The empty tree as trusted state
 
-   tree-size-2 is read by label from the signed protected header, so
-   verifiers agree on the signed size only if they decode that header
-   the same way.  Without deterministic encoding, a header with a
-   duplicate label, a non-shortest argument or trailing bytes could be
-   read by one decoder and rejected by another, and a relying party
-   could record a state that others cannot re-verify.  With it,
-   conformant verifiers either read the same tree-size-2 or all reject
-   the receipt.  Unrecognised labels are skipped so that signers can add
-   labels; their bytes are still covered by the signature.
+   Every accumulator is consistent with the empty tree.  A verifier that
+   verifies from the empty tree places all of its trust in the signing
+   key and the signed tree-size-2; the size it records is the signer's
+   assertion, not a value derived from a state it held.  The rules for
+   accepting such a receipt once a later state is held are given in
+   Verifying the Receipt of consistency (Section 7.1).
 
-11.5.  The empty tree as trusted state
-
-   Every accumulator is consistent with the empty tree.  A receipt of
-   consistency from tree size 0 therefore proves nothing about earlier
-   states of the ledger: its accumulator is just the right-peaks,
-   checked only for their number and the signature.  A verifier starting
-   from the empty tree relies entirely on the signing key, and the size
-   it records is the signer's assertion.  Verifying the Receipt of
-   consistency (Section 7.1) gives the rules for accepting such a
-   receipt once a later state is held.
-
-11.6.  Hash algorithm
+11.5.  Hash algorithm
 
    The vds value fixes the hash algorithm and is signed in the protected
    header, so there is no separate hash parameter to strip or downgrade.
@@ -1183,6 +1170,11 @@ Table of Contents
               Representation (CBOR)", STD 94, RFC 8949,
               DOI 10.17487/RFC8949, December 2020,
               <https://www.rfc-editor.org/rfc/rfc8949>.
+
+   [RFC9052]  Schaad, J., "CBOR Object Signing and Encryption (COSE):
+              Structures and Process", STD 96, RFC 9052,
+              DOI 10.17487/RFC9052, August 2022,
+              <https://www.rfc-editor.org/rfc/rfc9052>.
 
    [RFC9053]  Schaad, J., "CBOR Object Signing and Encryption (COSE):
               Initial Algorithms", RFC 9053, DOI 10.17487/RFC9053,
