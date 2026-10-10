@@ -138,8 +138,8 @@ This document registers one value:
 Implementations of this document MUST support MMR_SHA256.
 
 Other specifications MAY register further values for this MMR.
-Such a specification names `H` and the node value size, states that `H` meets the requirements above, and registers the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of {{-cose-receipts}} requires.
-Apart from `H` and the node value size, the algorithms in this document apply unchanged to every such value.
+Such a specification MUST name `H` and the node value size, MUST state that `H` meets the requirements above, and MUST register the inclusion proof (-1) and consistency proof (-2) entries in the "COSE Verifiable Data Structure Proofs" registry for its value, as Section 8.2.1 of {{-cose-receipts}} requires.
+It meets the requirements of Section 4.4.1 of {{-cose-receipts}} by normative reference to this document: the proof encodings are those of [Inclusion Proofs](#inclusion-proofs) and [Consistency Proof](#consistency-proof), and the algorithms of this document apply unchanged, with `H` and the node value size substituted.
 
 The `vds` value in the protected header of a receipt fixes `H` and the node value size.
 No other parameter of a receipt declares the hash algorithm.
