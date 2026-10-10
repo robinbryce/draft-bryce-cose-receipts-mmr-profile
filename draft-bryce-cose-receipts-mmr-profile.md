@@ -141,7 +141,7 @@ Such a specification MUST name `H` by its identifier in the "COSE Algorithms" re
 It meets the requirements of Section 4.4.1 of {{-cose-receipts}} by normative reference to this document: the proof encodings are those of [Inclusion Proofs](#inclusion-proofs) and [Consistency Proof](#consistency-proof), and the algorithms of this document apply unchanged, with `H` and the node value size substituted.
 
 The `vds` value in the protected header of a receipt fixes `H` and the node value size.
-No other parameter of a receipt declares the hash algorithm.
+The hash algorithm of the tree is declared only by the `vds` value.
 A verifier MUST reject a receipt whose `vds` value it does not support.
 
 # Inclusion Proofs
