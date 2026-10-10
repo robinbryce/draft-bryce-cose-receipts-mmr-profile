@@ -27,6 +27,7 @@ normative:
   RFC2119:
   RFC8174:
   RFC8949:
+  RFC9052:
   RFC9053: COSE
   RFC9942: cose-receipts
 
@@ -413,11 +414,12 @@ protected-header-map = {
 tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 A receipt of consistency under this profile that omits the protected tree-size-2 MUST be rejected.
 
-The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): definite lengths only, arguments in shortest form, and keys sorted in the bytewise lexicographic order of their encodings.
 The protected header map MUST occupy the whole of the protected header byte string.
-A verifier MUST reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
-A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.
-Together these ensure that any two conformant verifiers either read the same tree-size-2 or both reject the receipt, and that a signer can add labels without making its receipts unverifiable.
+A verifier MUST reject a receipt whose protected header is not so encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, unless the label is listed in the crit header parameter ({{RFC9052}}, Section 3.1).
+tree-size-2 need not be listed in crit; a receipt that omits it is rejected regardless.
+These requirements give the protected header a single encoding, so that a verifier can meet the duplicate-label prohibition of {{RFC9052}}, Section 9, by checking that labels strictly increase, without a general CBOR decoder.
 
 The unprotected header for a consistency proof signature is:
 
