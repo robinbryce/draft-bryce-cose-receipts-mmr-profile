@@ -27,6 +27,7 @@ normative:
   RFC2119:
   RFC8174:
   RFC8949:
+  RFC9052:
   RFC9053: COSE
   RFC9942: cose-receipts
 
@@ -225,6 +226,8 @@ protected-header-map = {
 - alg (label: 1): REQUIRED. Signature algorithm identifier. Value type: int.
 - vds (label: 395): REQUIRED. verifiable data structure algorithm identifier, the value registered by this document (TBD_1). Value type: int.
 
+The protected header MUST meet the encoding requirements given in [COSE Receipt of Consistency](#cose-receipt-of-consistency), and a verifier MUST apply the same acceptance rules to it.
+
 The unprotected header for an inclusion proof signature is:
 
 ~~~~ cddl
@@ -258,6 +261,7 @@ Whether a node is a leaf, and what its entry commits to, are properties of the l
 Perform the following, in order.
 Verification fails if any step fails.
 
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); vds MUST be TBD_1. Labels the verifier does not recognise are skipped.
 1. Apply [included_root](#includedroot) to the index, the value and the inclusion-path. The result is the peak the path implies.
 1. Set the COSE Sign1 payload to the bytes of that peak and verify the signature of the COSE Sign1.
 
@@ -410,10 +414,12 @@ protected-header-map = {
 tree-size-1 is not carried in the protected header: the verifier holds the tree size and accumulator it verifies consistency from, as described in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
 A receipt of consistency under this profile that omits the protected tree-size-2 MUST be rejected.
 
-The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): arguments in shortest form, definite lengths only, keys in canonical order, no duplicate keys, and no tags.
+The protected header MUST be encoded as deterministic CBOR ({{RFC8949}}, Section 4.2.1): definite lengths only, arguments in shortest form, and keys sorted in the bytewise lexicographic order of their encodings.
 The protected header map MUST occupy the whole of the protected header byte string.
-A verifier MUST reject a receipt whose protected header is not deterministically encoded, contains duplicate labels, or contains bytes beyond the protected header map.
-A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, provided each value is a well-formed definite-length item.
+A verifier MUST reject a receipt whose protected header is not so encoded, contains duplicate labels, or contains bytes beyond the protected header map.
+A verifier MUST ignore protected header labels it does not recognise, whatever the type of their values, unless the label is listed in the crit header parameter ({{RFC9052}}, Section 3.1).
+tree-size-2 need not be listed in crit; a receipt that omits it is rejected regardless.
+These requirements give the protected header a single encoding, so that a verifier can meet the duplicate-label prohibition of {{RFC9052}}, Section 9, by checking that labels strictly increase, without a general CBOR decoder.
 
 The unprotected header for a consistency proof signature is:
 
@@ -448,7 +454,7 @@ A verifier MAY nevertheless choose to accept such a receipt, for example after a
 Perform the following, in order.
 Verification fails if any step fails.
 
-1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
+1. Decode the protected header. It MUST be deterministically encoded as required in [COSE Receipt of Consistency](#cose-receipt-of-consistency); vds MUST be TBD_1; tree-size-2 MUST be present and MUST be an unsigned integer. Labels the verifier does not recognise are skipped.
 1. The protected tree-size-2 MUST equal tree-size-2 of the last consistency-proof.
 1. tree-size-1 of the first consistency-proof MUST equal the trusted tree size.
 1. Initialize sizefrom to the trusted tree size and accumulatorfrom to the trusted accumulator.
@@ -808,12 +814,6 @@ A verifier that takes tree-size-2 from the unprotected proof, or omits the compa
 Every accumulator is consistent with the empty tree.
 A verifier that verifies from the empty tree places all of its trust in the signing key and the signed tree-size-2; the size it records is the signer's assertion, not a value derived from a state it held.
 The rules for accepting such a receipt once a later state is held are given in [Verifying the Receipt of consistency](#verifying-the-receipt-of-consistency).
-
-## Protected header encoding
-
-The protected header is signed as a byte string, and tree-size-2 is read from it by label, so two verifiers agree on the signed size only if they agree on which byte strings are valid protected headers and how the map in them is read.
-Deterministic encoding is required because, without it, a header can be constructed that one decoder reads and another rejects, for example one with a duplicate label, an argument in non-shortest form, or bytes after the map, and a relying party that accepts such a receipt records a state that others cannot re-verify.
-Requiring deterministic encoding, and rejecting anything else, means that any two conformant verifiers either read the same tree-size-2 or both reject the receipt; unrecognised labels are skipped so that a signer can add labels without making its receipts unverifiable, and their bytes are covered by the signature in any case.
 
 # IANA Considerations
 
